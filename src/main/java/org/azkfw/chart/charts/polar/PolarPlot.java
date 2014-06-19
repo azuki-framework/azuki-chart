@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.util.List;
 
 import org.azkfw.chart.plot.AbstractPlot;
 import org.azkfw.graphics.Point;
@@ -40,7 +41,7 @@ public class PolarPlot extends AbstractPlot {
 	private PolarAxis axis;
 
 	private PolarDataset dataset;
-
+	
 	public PolarPlot() {
 		axis = new PolarAxis();
 		dataset = null;
@@ -48,6 +49,10 @@ public class PolarPlot extends AbstractPlot {
 
 	public void setDataset(final PolarDataset aDataset) {
 		dataset = aDataset;
+	}
+	
+	private String toStringValue(final double aValue) {
+		return String.format("%.2f", aValue);
 	}
 
 	@Override
@@ -102,9 +107,29 @@ public class PolarPlot extends AbstractPlot {
 			double rangeY = pixYPerValue * (value - minValue);
 			g.drawLine((int)(ptChartMiddle.getX()+rangeX), (int)(ptChartMiddle.getY()), (int)(ptChartMiddle.getX()+rangeX), (int)(ptChartMiddle.getY()+8.f));
 			
-			String str = Double.toString(value);
+			String str = toStringValue(value);
 			int strWidth = fm.stringWidth(str);
 			g.drawString(str, (int)(ptChartMiddle.getX()+rangeX-(strWidth/2)), (int)(ptChartMiddle.getY()+8.f+fontSize));
+		}
+		
+		for (PolarSeries series : dataset.getSeriesList()) {
+			List<PolarSeriesPoint> points = series.getPoints();
+			
+			int[] pxs = new int[points.size()+1];
+			int[] pys = new int[points.size()+1];
+			for (int i = 0 ; i < points.size() ;i++) {
+				PolarSeriesPoint point = points.get(i);				
+				pxs[i] = (int)(ptChartMiddle.getX() + pixXPerValue * point.getRange() *  Math.cos( RADIANS(point.getAngle()) ));
+				pys[i] = (int)(ptChartMiddle.getY() - pixYPerValue * point.getRange() *  Math.sin( RADIANS(point.getAngle()) ));
+			}
+			pxs[points.size()] = pxs[0];
+			pys[points.size()] = pys[0];
+			
+			g.setColor(new Color(0x00, 0x99,0x44, 64));
+			g.fillPolygon(pxs, pys, points.size()+1);
+			
+			g.setColor(new Color(0x00, 0x99,0x44,255));
+			g.drawPolygon(pxs, pys, points.size()+1);
 		}
 
 		// XXX: debug
@@ -114,4 +139,8 @@ public class PolarPlot extends AbstractPlot {
 		return true;
 	}
 
+
+	protected static double RADIANS(double aAngle) {
+		return aAngle * Math.PI / 180.0;
+	}
 }

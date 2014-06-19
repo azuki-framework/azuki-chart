@@ -17,10 +17,14 @@
  */
 package org.azkfw.chart;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 
+import org.azkfw.chart.charts.polar.PolarDataset;
+import org.azkfw.chart.charts.polar.PolarPlot;
+import org.azkfw.chart.charts.polar.PolarSeries;
 import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
 
@@ -35,8 +39,14 @@ public final class AzukiChart {
 
 	private Plot plot;
 
+	private Color backgroundColor;
+
 	public AzukiChart(final Plot aPlot) {
 		plot = aPlot;
+	}
+
+	public void setBackgoundColor(final Color aColor) {
+		backgroundColor = aColor;
 	}
 
 	public Plot getPlot() {
@@ -46,17 +56,36 @@ public final class AzukiChart {
 	public boolean draw(final Graphics2D g, final float x, final float y, final float width, final float height) {
 		boolean result = false;
 		if (null != plot) {
+			if (null != backgroundColor) {
+				g.setColor(backgroundColor);
+				g.fillRect((int) (x), (int) (y), (int) (width), (int) (height));
+			}
 			result = plot.draw(g, x, y, width, height);
 		}
 		return result;
 	}
 
 	public static void main(final String[] args) {
+		if (1 != args.length) {
+			System.out.println("argument error.");
+			return;
+		}
 
 		AzukiChart chart = AzukiChartFactory.createPolarChart();
+		chart.setBackgoundColor(Color.WHITE);
 
+		PolarPlot plot = (PolarPlot) chart.getPlot();
+
+		PolarDataset dataset = new PolarDataset();
+
+		PolarSeries series = new PolarSeries();
+		for (int i = 0; i < 36; i++) {
+			series.add(i * 10, i * 0.02);
+		}
+		dataset.addSeries(series);
+		plot.setDataset(dataset);
 		try {
-			AzukiChartUtility.saveChartAsPNG(new File("PolarChart.png"), chart, 800, 800);
+			AzukiChartUtility.saveChartAsPNG(new File(args[0]), chart, 800, 800);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

@@ -17,9 +17,6 @@
  */
 package org.azkfw.chart.charts.polar;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * このクラスは、
  * 
@@ -27,24 +24,21 @@ import java.util.List;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarSeries {
+public class PolarSeriesPoint {
+	private double angle;
+	private double range;
 
-	private List<PolarSeriesPoint> points;
-
-	public PolarSeries() {
-		points = new ArrayList<PolarSeriesPoint>();
+	public PolarSeriesPoint(final double aAngle, final double aRange) {
+		angle = aAngle;
+		range = aRange;
 	}
 
-	public void add(final PolarSeriesPoint aPoint) {
-		points.add(aPoint);
+	public double getAngle() {
+		return angle;
 	}
 
-	public void add(final double aAngle, final double aRange) {
-		PolarSeriesPoint point = new PolarSeriesPoint(aAngle, aRange);
-		points.add(point);
+	public double getRange() {
+		return range;
 	}
 
-	public List<PolarSeriesPoint> getPoints() {
-		return points;
-	}
 }

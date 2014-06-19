@@ -40,7 +40,7 @@ public class PolarAxis {
 	private double scale;
 	/** 補助目盛 */
 	private double assistScale;
-
+	
 	/**
 	 * コンストラクタ
 	 */
