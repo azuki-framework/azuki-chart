@@ -51,9 +51,16 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.azkfw</groupId>
-			<artifactId>azuki-base</artifactId>
-			<version>1.0.0</version>
+			<artifactId>azuki-graphics</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+	
+	<dependency>
+	<groupId>org.jfree</groupId>
+	<artifactId>jfreechart</artifactId>
+	<version>1.0.17</version>
+</dependency>
+	
 	
 		<dependency>
 			<groupId>junit</groupId>

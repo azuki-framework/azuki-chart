@@ -17,48 +17,38 @@
  */
 package org.azkfw.chart;
 
-import java.awt.Graphics2D;
-import java.io.File;
-import java.io.IOException;
-
-import org.azkfw.chart.plot.Plot;
-import org.azkfw.chart.util.AzukiChartUtility;
+import org.azkfw.chart.charts.line.LinePlot;
+import org.azkfw.chart.charts.polar.PolarPlot;
 
 /**
- * このクラスは、チャートクラスです。
+ * このクラスは、チャート生成を行うファクトリークラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/18
  * @author Kawakicchi
  */
-public final class AzukiChart {
+public class AzukiChartFactory {
 
-	private Plot plot;
-
-	public AzukiChart(final Plot aPlot) {
-		plot = aPlot;
+	/**
+	 * 折れ線グラフのインスタンスを生成する。
+	 * 
+	 * @return 折れ線グラフ
+	 */
+	public static AzukiChart createLineChart() {
+		LinePlot plot = new LinePlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
 	}
 
-	public Plot getPlot() {
-		return plot;
+	/**
+	 * 極座標グラフのインスタンスを生成する。
+	 * 
+	 * @return 極座標グラフ
+	 */
+	public static AzukiChart createPolarChart() {
+		PolarPlot polar = new PolarPlot();
+		AzukiChart chart = new AzukiChart(polar);
+		return chart;
 	}
 
-	public boolean draw(final Graphics2D g, final float x, final float y, final float width, final float height) {
-		boolean result = false;
-		if (null != plot) {
-			result = plot.draw(g, x, y, width, height);
-		}
-		return result;
-	}
-
-	public static void main(final String[] args) {
-
-		AzukiChart chart = AzukiChartFactory.createPolarChart();
-
-		try {
-			AzukiChartUtility.saveChartAsPNG(new File("PolarChart.png"), chart, 800, 800);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
 }

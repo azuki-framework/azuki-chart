@@ -15,50 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart;
+package org.azkfw.chart.charts.line;
 
 import java.awt.Graphics2D;
-import java.io.File;
-import java.io.IOException;
 
-import org.azkfw.chart.plot.Plot;
-import org.azkfw.chart.util.AzukiChartUtility;
+import org.azkfw.chart.plot.AbstractPlot;
 
 /**
- * このクラスは、チャートクラスです。
+ * このクラスは、折れ線グラフのプロットクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/18
+ * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public final class AzukiChart {
+public class LinePlot extends AbstractPlot {
 
-	private Plot plot;
+	@Override
+	protected boolean doDraw(final Graphics2D g, final float x, final float y, final float width, final float height) {
 
-	public AzukiChart(final Plot aPlot) {
-		plot = aPlot;
+		return false;
 	}
 
-	public Plot getPlot() {
-		return plot;
-	}
-
-	public boolean draw(final Graphics2D g, final float x, final float y, final float width, final float height) {
-		boolean result = false;
-		if (null != plot) {
-			result = plot.draw(g, x, y, width, height);
-		}
-		return result;
-	}
-
-	public static void main(final String[] args) {
-
-		AzukiChart chart = AzukiChartFactory.createPolarChart();
-
-		try {
-			AzukiChartUtility.saveChartAsPNG(new File("PolarChart.png"), chart, 800, 800);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
 }
