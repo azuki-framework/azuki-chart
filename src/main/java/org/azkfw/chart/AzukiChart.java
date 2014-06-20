@@ -22,9 +22,11 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 
+import org.azkfw.chart.charts.polar.PolarAxis;
 import org.azkfw.chart.charts.polar.PolarDataset;
 import org.azkfw.chart.charts.polar.PolarPlot;
 import org.azkfw.chart.charts.polar.PolarSeries;
+import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
 
@@ -75,14 +77,32 @@ public final class AzukiChart {
 		chart.setBackgoundColor(Color.WHITE);
 
 		PolarPlot plot = (PolarPlot) chart.getPlot();
+		
+		PolarAxis axis = plot.getAxis();
+		axis.setDisplayFormat(new NumericDisplayFormat(2));
 
 		PolarDataset dataset = new PolarDataset();
 
-		PolarSeries series = new PolarSeries();
+		PolarSeries series1 = new PolarSeries();
+		series1.add(0, 1.0);
+		series1.add(30, 0.1);
+		series1.add(90, 0.5);
+		series1.add(180, 0.6);
+		series1.add(270, 0.6);
+		dataset.addSeries(series1);
+
+		PolarSeries series2 = new PolarSeries();
 		for (int i = 0; i < 36; i++) {
-			series.add(i * 10, i * 0.02);
+			series2.add(i * 10, i * 0.02);
 		}
-		dataset.addSeries(series);
+		dataset.addSeries(series2);
+		
+		PolarSeries series3 = new PolarSeries();
+		for (int i = 0; i < 360; i++) {
+			series3.add(i, 0.85);
+		}
+		dataset.addSeries(series3);
+		
 		plot.setDataset(dataset);
 		try {
 			AzukiChartUtility.saveChartAsPNG(new File(args[0]), chart, 800, 800);

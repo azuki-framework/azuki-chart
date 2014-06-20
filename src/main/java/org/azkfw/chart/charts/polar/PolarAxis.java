@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart.charts.polar;
 
+import org.azkfw.chart.displayformat.DisplayFormat;
+
 /**
  * このクラスは、極座標グラフの軸情報を保持するクラスです。
  * 
@@ -40,19 +42,30 @@ public class PolarAxis {
 	private double scale;
 	/** 補助目盛 */
 	private double assistScale;
-	
+
+	private boolean assistAxis;
+	private double assistAxisAngle;
+
+	/** 表示形式 */
+	private DisplayFormat displayFormat;
+
 	/**
 	 * コンストラクタ
 	 */
 	public PolarAxis() {
 		minValue = 0.0;
-		minValueAutoFit = false;
+		minValueAutoFit = true;
 
 		maxValue = 1.0;
-		maxValueAutoFit = false;
+		maxValueAutoFit = true;
 
 		scale = 0.2;
 		assistScale = 0.1;
+
+		assistAxis = true;
+		assistAxisAngle = 30.f;
+
+		displayFormat = null;
 	}
 
 	public void setMinimumValue(final double aValue) {
@@ -101,5 +114,29 @@ public class PolarAxis {
 
 	public double getAssistScale() {
 		return assistScale;
+	}
+
+	public void setAssistAxis(final boolean aAssist) {
+		assistAxis = aAssist;
+	}
+
+	public boolean isAssistAxis() {
+		return assistAxis;
+	}
+
+	public void setAssistAxisAngle(final double aAngle) {
+		assistAxisAngle = aAngle;
+	}
+
+	public double getAssistAxisAngle() {
+		return assistAxisAngle;
+	}
+
+	public void setDisplayFormat(final DisplayFormat aDisplayFormat) {
+		displayFormat = aDisplayFormat;
+	}
+
+	public DisplayFormat getDisplayFormat() {
+		return displayFormat;
 	}
 }
