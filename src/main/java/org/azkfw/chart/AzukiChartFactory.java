@@ -17,7 +17,10 @@
  */
 package org.azkfw.chart;
 
+import org.azkfw.chart.charts.area.AreaPlot;
+import org.azkfw.chart.charts.bar.BarPlot;
 import org.azkfw.chart.charts.line.LinePlot;
+import org.azkfw.chart.charts.pie.PiePlot;
 import org.azkfw.chart.charts.polar.PolarPlot;
 
 /**
@@ -28,6 +31,17 @@ import org.azkfw.chart.charts.polar.PolarPlot;
  * @author Kawakicchi
  */
 public class AzukiChartFactory {
+
+	/**
+	 * 棒グラフのインスタンスを生成する。
+	 * 
+	 * @return
+	 */
+	public static AzukiChart createBarChart() {
+		BarPlot plot = new BarPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
 
 	/**
 	 * 折れ線グラフのインスタンスを生成する。
@@ -41,13 +55,35 @@ public class AzukiChartFactory {
 	}
 
 	/**
+	 * エリアグラフのインスタンスを生成する。
+	 * 
+	 * @return エリアグラフ
+	 */
+	public static AzukiChart createAreaChart() {
+		AreaPlot plot = new AreaPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 円グラフのインスタンスを生成する。
+	 * 
+	 * @return 円グラフ
+	 */
+	public static AzukiChart createPieChart() {
+		PiePlot plot = new PiePlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
 	 * 極座標グラフのインスタンスを生成する。
 	 * 
 	 * @return 極座標グラフ
 	 */
 	public static AzukiChart createPolarChart() {
-		PolarPlot polar = new PolarPlot();
-		AzukiChart chart = new AzukiChart(polar);
+		PolarPlot plot = new PolarPlot();
+		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
 

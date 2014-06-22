@@ -15,25 +15,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.line;
-
-import java.awt.Graphics2D;
-
-import org.azkfw.chart.plot.AbstractPlot;
+package org.azkfw.chart.charts.pie;
 
 /**
- * このクラスは、折れ線グラフのプロットクラスです。
+ * このクラスは、円グラフのプロットクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class LinePlot extends AbstractPlot {
+public class PieData {
 
-	@Override
-	protected boolean doDraw(final Graphics2D g, final float aX, final float aY, final float aWidth, final float aHeight) {
+	private String title;
+	private double value;
 
-		return false;
+	public PieData() {
+		title = null;
+		value = 0.0;
 	}
 
+	public PieData(final String aTitle, final double aValue) {
+		title = aTitle;
+		value = aValue;
+	}
+
+	public void setTitle(final String aTitle) {
+		title = aTitle;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setValue(final double aValue) {
+		value = aValue;
+	}
+
+	public double getValue() {
+		return value;
+	}
 }

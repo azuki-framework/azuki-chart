@@ -36,10 +36,13 @@ import org.azkfw.graphics.Size;
  */
 public class PolarPlot extends AbstractPlot {
 
+	/** X軸 */
 	private PolarAxis axis;
 
+	/** データセット */
 	private PolarDataset dataset;
 
+	/** Looks */
 	private PolarLooks looks;
 
 	public PolarPlot() {
@@ -83,18 +86,6 @@ public class PolarPlot extends AbstractPlot {
 		// Draw axis scale
 		int fontSize = looks.getAxisFont().getSize();
 		FontMetrics fm = g.getFontMetrics();
-
-		double maxWidth= 0;
-		for (double value = minValue; value <= maxValue; value += scale) {
-			double rangeX = pixXPerValue * (value - minValue);
-			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
-			int strWidth = fm.stringWidth(str);
-			maxWidth = rangeX + (strWidth / 2);
-		}
-
-		if (szChart.getWidth() < maxWidth) {
-
-		}
 
 		// Draw assist axis
 		if (axis.isAssistAxis()) {

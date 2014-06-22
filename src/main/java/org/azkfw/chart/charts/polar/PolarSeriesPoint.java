@@ -25,8 +25,15 @@ package org.azkfw.chart.charts.polar;
  * @author Kawakicchi
  */
 public class PolarSeriesPoint {
+
 	private double angle;
+
 	private double range;
+
+	public PolarSeriesPoint() {
+		angle = 0.0;
+		range = 1.0;
+	}
 
 	public PolarSeriesPoint(final double aAngle, final double aRange) {
 		angle = aAngle;

@@ -22,6 +22,10 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 
+import org.azkfw.chart.charts.line.LinePlot;
+import org.azkfw.chart.charts.pie.PieData;
+import org.azkfw.chart.charts.pie.PieDataset;
+import org.azkfw.chart.charts.pie.PiePlot;
 import org.azkfw.chart.charts.polar.PolarAxis;
 import org.azkfw.chart.charts.polar.PolarDataset;
 import org.azkfw.chart.charts.polar.PolarPlot;
@@ -73,11 +77,36 @@ public final class AzukiChart {
 			return;
 		}
 
+		createPieChart(new File(args[0]));
+		//createPolarChart(new File(args[0]));
+	}
+
+	public static void createPieChart(final File aFile) {
+		AzukiChart chart = AzukiChartFactory.createPieChart();
+		chart.setBackgoundColor(Color.WHITE);
+		
+		PiePlot plot = (PiePlot) chart.getPlot();
+
+		PieDataset dataset = new PieDataset();
+		
+		dataset.addData(new PieData("", 50.f));
+		dataset.addData(new PieData("", 30.f));
+		dataset.addData(new PieData("", 15.f));
+		dataset.addData(new PieData("", 5.f));
+
+		plot.setDataset(dataset);
+		try {
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 800, 800);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	public static void createPolarChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createPolarChart();
 		chart.setBackgoundColor(Color.WHITE);
 
 		PolarPlot plot = (PolarPlot) chart.getPlot();
-		
+
 		PolarAxis axis = plot.getAxis();
 		axis.setDisplayFormat(new NumericDisplayFormat(2));
 
@@ -96,16 +125,16 @@ public final class AzukiChart {
 			series2.add(i * 10, i * 0.02);
 		}
 		dataset.addSeries(series2);
-		
+
 		PolarSeries series3 = new PolarSeries();
 		for (int i = 0; i < 360; i++) {
 			series3.add(i, 0.85);
 		}
 		dataset.addSeries(series3);
-		
+
 		plot.setDataset(dataset);
 		try {
-			AzukiChartUtility.saveChartAsPNG(new File(args[0]), chart, 800, 800);
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 800, 800);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

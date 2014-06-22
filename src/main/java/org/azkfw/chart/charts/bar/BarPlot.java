@@ -15,20 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.line;
+package org.azkfw.chart.charts.bar;
 
 import java.awt.Graphics2D;
 
 import org.azkfw.chart.plot.AbstractPlot;
 
 /**
- * このクラスは、折れ線グラフのプロットクラスです。
+ * このクラスは、棒グラフのプロットクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class LinePlot extends AbstractPlot {
+public class BarPlot extends AbstractPlot {
 
 	@Override
 	protected boolean doDraw(final Graphics2D g, final float aX, final float aY, final float aWidth, final float aHeight) {
