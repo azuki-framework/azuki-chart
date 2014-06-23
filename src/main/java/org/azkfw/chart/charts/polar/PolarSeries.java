@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * このクラスは、
+ * このクラスは、極座標のシリーズクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
@@ -29,21 +29,78 @@ import java.util.List;
  */
 public class PolarSeries {
 
+	/**
+	 * タイトル
+	 */
+	private String title;
+
+	/**
+	 * ポイント
+	 */
 	private List<PolarSeriesPoint> points;
 
+	/**
+	 * コンストラクタ
+	 */
 	public PolarSeries() {
+		title = null;
 		points = new ArrayList<PolarSeriesPoint>();
 	}
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aPoints ポイント
+	 */
+	public PolarSeries(final String aTitle, final List<PolarSeriesPoint> aPoints) {
+		title = aTitle;
+		points = new ArrayList<>(aPoints);
+	}
+
+	/**
+	 * タイトルを設定する。
+	 * 
+	 * @param aTitle タイトル
+	 */
+	public void setTitle(final String aTitle) {
+		title = aTitle;
+	}
+
+	/**
+	 * タイトルを取得する。
+	 * 
+	 * @return タイトル
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * ポイントを追加する。
+	 * 
+	 * @param aPoint ポイント
+	 */
 	public void add(final PolarSeriesPoint aPoint) {
 		points.add(aPoint);
 	}
 
+	/**
+	 * ポイントを追加する。
+	 * 
+	 * @param aAngle 角度
+	 * @param aRange 値
+	 */
 	public void add(final double aAngle, final double aRange) {
 		PolarSeriesPoint point = new PolarSeriesPoint(aAngle, aRange);
 		points.add(point);
 	}
 
+	/**
+	 * ポイント一覧を取得する。
+	 * 
+	 * @return ポイント一覧
+	 */
 	public List<PolarSeriesPoint> getPoints() {
 		return points;
 	}

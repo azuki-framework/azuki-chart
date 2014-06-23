@@ -45,6 +45,9 @@ public class PolarPlot extends AbstractPlot {
 	/** Looks */
 	private PolarLooks looks;
 
+	/**
+	 * コンストラクタ
+	 */
 	public PolarPlot() {
 		axis = new PolarAxis();
 		dataset = null;

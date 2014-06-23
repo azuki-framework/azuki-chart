@@ -26,31 +26,67 @@ package org.azkfw.chart.charts.pie;
  */
 public class PieData {
 
+	/**
+	 * タイトル
+	 */
 	private String title;
+
+	/**
+	 * 値
+	 */
 	private double value;
 
+	/**
+	 * コンストラクタ
+	 */
 	public PieData() {
 		title = null;
 		value = 0.0;
 	}
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle
+	 * @param aValue
+	 */
 	public PieData(final String aTitle, final double aValue) {
 		title = aTitle;
 		value = aValue;
 	}
 
+	/**
+	 * タイトルを設定する。
+	 * 
+	 * @param aTitle タイトル
+	 */
 	public void setTitle(final String aTitle) {
 		title = aTitle;
 	}
 
+	/**
+	 * タイトルを取得する。
+	 * 
+	 * @return タイトル
+	 */
 	public String getTitle() {
 		return title;
 	}
 
+	/**
+	 * 値を設定する。
+	 * 
+	 * @param aValue 値
+	 */
 	public void setValue(final double aValue) {
 		value = aValue;
 	}
 
+	/**
+	 * 値を取得する。
+	 * 
+	 * @return 値
+	 */
 	public double getValue() {
 		return value;
 	}
