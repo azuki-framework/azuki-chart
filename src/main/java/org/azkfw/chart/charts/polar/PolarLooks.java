@@ -130,9 +130,10 @@ public class PolarLooks extends AbstractLooks {
 	 * データのストロークを取得する。
 	 * 
 	 * @param aIndex データインデックス
+	 * @param aSeries シリーズデータ
 	 * @return ストローク
 	 */
-	public Stroke getSeriesStroke(final int aIndex) {
+	public Stroke getSeriesStroke(final int aIndex, final PolarSeries aSeries) {
 		return new BasicStroke(2.f);
 	}
 
@@ -140,9 +141,10 @@ public class PolarLooks extends AbstractLooks {
 	 * データのストロークカラーを取得する。
 	 * 
 	 * @param aIndex データインデックス
+	 * @param aSeries シリーズデータ
 	 * @return カラー
 	 */
-	public Color getSeriesStrokeColor(final int aIndex) {
+	public Color getSeriesStrokeColor(final int aIndex, final PolarSeries aSeries) {
 		Color color = null;
 		if (aIndex < COLORS.size()) {
 			color = COLORS.get(aIndex);
@@ -156,10 +158,11 @@ public class PolarLooks extends AbstractLooks {
 	 * データの塗りつぶしカラーを取得する。
 	 * 
 	 * @param aIndex データインデックス
+	 * @param aSeries シリーズデータ
 	 * @return カラー
 	 */
-	public Color getSeriesFillColor(final int aIndex) {
-		Color color = getSeriesStrokeColor(aIndex);
+	public Color getSeriesFillColor(final int aIndex, final PolarSeries aSeries) {
+		Color color = getSeriesStrokeColor(aIndex, aSeries);
 		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 64);
 		return color;
 	}

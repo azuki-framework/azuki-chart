@@ -40,6 +40,8 @@ public class PolarAxis {
 
 	/** 目盛 */
 	private double scale;
+	/** 目盛自動設定 */
+	private boolean scaleAutoFit;
 	/** 補助目盛 */
 	private double assistScale;
 
@@ -60,6 +62,8 @@ public class PolarAxis {
 		maxValueAutoFit = true;
 
 		scale = 0.2;
+		scaleAutoFit = true;
+
 		assistScale = 0.1;
 
 		assistAxis = true;
@@ -106,6 +110,14 @@ public class PolarAxis {
 
 	public double getScale() {
 		return scale;
+	}
+
+	public void setScaleAutoFit(final boolean aAutoFit) {
+		scaleAutoFit = aAutoFit;
+	}
+
+	public boolean isScaleAutoFit() {
+		return scaleAutoFit;
 	}
 
 	public void setAssistScale(final double aScale) {

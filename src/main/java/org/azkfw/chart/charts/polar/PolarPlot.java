@@ -24,6 +24,7 @@ import java.awt.Graphics2D;
 import java.util.List;
 
 import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Size;
 
@@ -45,6 +46,9 @@ public class PolarPlot extends AbstractPlot {
 	/** Looks */
 	private PolarLooks looks;
 
+	/** Margin */
+	private Margin margin;
+
 	/**
 	 * コンストラクタ
 	 */
@@ -52,6 +56,7 @@ public class PolarPlot extends AbstractPlot {
 		axis = new PolarAxis();
 		dataset = null;
 		looks = new PolarLooks();
+		margin = null;
 	}
 
 	public void setLooks(final PolarLooks aLooks) {
@@ -66,29 +71,59 @@ public class PolarPlot extends AbstractPlot {
 		return axis;
 	}
 
+	public void setMargin(final Margin aMargin) {
+		margin = aMargin;
+	}
+
 	@Override
 	protected boolean doDraw(final Graphics2D g, final float aX, final float aY, final float aWidth, final float aHeight) {
-		Size szChart = new Size(aWidth, aHeight);
-		Point ptChartMiddle = new Point(aX + (aWidth / 2.f), aY + (aHeight / 2.f));
+		Size szChart = null;
+		Point ptChartMiddle = null;
+		if (null != margin) {
+			szChart = new Size(aWidth - (margin.getLeft() + margin.getRight()), aHeight - (margin.getTop() + margin.getBottom()));
+			ptChartMiddle = new Point(aX + margin.getLeft() + (szChart.getWidth() / 2.f), aY + margin.getTop() + (szChart.getHeight() / 2.f));
+		} else {
+			szChart = new Size(aWidth, aHeight);
+			ptChartMiddle = new Point(aX + (aWidth / 2.f), aY + (aHeight / 2.f));
+		}
 
-		double maxValue = axis.getMaximumValue();
-		if (axis.isMaximumValueAutoFit() && null != dataset) {
-			// TODO: 
+		Double dataMaxValue = null;
+		Double dataMinValue = null;
+		if (null != dataset) {
+			for (PolarSeries series : dataset.getSeriesList()) {
+				for (PolarSeriesPoint point : series.getPoints()) {
+					if (null == dataMaxValue) {
+						dataMaxValue = point.getRange();
+						dataMinValue = point.getRange();
+					} else {
+						dataMaxValue = (dataMaxValue < point.getRange()) ? point.getRange() : dataMaxValue;
+						dataMinValue = (dataMinValue > point.getRange()) ? point.getRange() : dataMinValue;
+					}
+				}
+			}
 		}
+
+		// XXX: range は0より大きい値を想定
 		double minValue = axis.getMinimumValue();
-		if (axis.isMinimumValueAutoFit() && null != dataset) {
-			// TODO: 
-		}
+		double maxValue = axis.getMaximumValue();
 		double scale = axis.getScale();
-		// TODO: auto scale
+		if (null != dataset) {
+			if (axis.isMinimumValueAutoFit()) {
+				minValue = dataMinValue;
+			}
+			if (axis.isMaximumValueAutoFit()) {
+				maxValue = dataMaxValue;
+			}
+			if (axis.isScaleAutoFit()) {
+				double diff = maxValue - minValue;
+				int s = (int) (Math.log10(diff));
+				scale = Math.pow(10, s);
+			}
+		}
 
 		double difValue = maxValue - minValue;
 		double pixXPerValue = (szChart.getWidth() / 2.f) / difValue;
 		double pixYPerValue = (szChart.getWidth() / 2.f) / difValue;
-
-		// Draw axis scale
-		int fontSize = looks.getAxisFont().getSize();
-		FontMetrics fm = g.getFontMetrics();
 
 		// Draw assist axis
 		if (axis.isAssistAxis()) {
@@ -128,20 +163,14 @@ public class PolarPlot extends AbstractPlot {
 		}
 
 		// Draw axis scale
-		fontSize = looks.getAxisFont().getSize();
-		g.setColor(looks.getAxisFontColor());
-		g.setFont(looks.getAxisFont());
-		fm = g.getFontMetrics();
+		g.setColor(looks.getAxisLineColor());
 		g.setStroke(new BasicStroke(1.f));
 		for (double value = minValue; value <= maxValue; value += scale) {
 			double rangeX = pixXPerValue * (value - minValue);
-			double rangeY = pixYPerValue * (value - minValue);
+			// double rangeY = pixYPerValue * (value - minValue);
+
 			g.drawLine((int) (ptChartMiddle.getX() + rangeX), (int) (ptChartMiddle.getY()), (int) (ptChartMiddle.getX() + rangeX),
 					(int) (ptChartMiddle.getY() + 8.f));
-
-			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
-			int strWidth = fm.stringWidth(str);
-			g.drawString(str, (int) (ptChartMiddle.getX() + rangeX - (strWidth / 2)), (int) (ptChartMiddle.getY() + 8.f + fontSize));
 		}
 
 		// Draw series
@@ -154,29 +183,57 @@ public class PolarPlot extends AbstractPlot {
 			int[] pys = new int[points.size() + 1];
 			for (int i = 0; i < points.size(); i++) {
 				PolarSeriesPoint point = points.get(i);
-				pxs[i] = (int) (ptChartMiddle.getX() + pixXPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
-				pys[i] = (int) (ptChartMiddle.getY() - pixYPerValue * point.getRange() * Math.sin(RADIANS(point.getAngle())));
+				int x = (int) (ptChartMiddle.getX() + pixXPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
+				int y = (int) (ptChartMiddle.getY() - pixYPerValue * point.getRange() * Math.sin(RADIANS(point.getAngle())));
+				// TODO: 定数化
+				if (x > 100000) {
+					x = 100000;
+				} else if (x < -100000) {
+					x = -100000;
+				}
+				if (y > 100000) {
+					y = 100000;
+				} else if (y < -100000) {
+					y = -100000;
+				}
+				pxs[i] = x;
+				pys[i] = y;
 			}
 			pxs[points.size()] = pxs[0];
 			pys[points.size()] = pys[0];
 
-			Color fillColor = looks.getSeriesFillColor(index);
+			Color fillColor = looks.getSeriesFillColor(index, series);
 			if (null != fillColor) {
 				g.setColor(fillColor);
 				g.fillPolygon(pxs, pys, points.size() + 1);
 			}
 
-			Color strokeColor = looks.getSeriesStrokeColor(index);
+			Color strokeColor = looks.getSeriesStrokeColor(index, series);
 			if (null != strokeColor) {
-				g.setStroke(looks.getSeriesStroke(index));
+				g.setStroke(looks.getSeriesStroke(index, series));
 				g.setColor(strokeColor);
 				g.drawPolygon(pxs, pys, points.size() + 1);
 			}
 		}
 
-		// XXX: debug
+		// Draw axis scale
+		int fontSize = looks.getAxisFont().getSize();
+		FontMetrics fm = g.getFontMetrics();
+		g.setColor(looks.getAxisFontColor());
+		g.setFont(looks.getAxisFont());
 		g.setStroke(new BasicStroke(1.f));
-		g.setColor(Color.RED);
+		for (double value = minValue; value <= maxValue; value += scale) {
+			double rangeX = pixXPerValue * (value - minValue);
+			// double rangeY = pixYPerValue * (value - minValue);
+
+			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
+			int strWidth = fm.stringWidth(str);
+			g.drawString(str, (int) (ptChartMiddle.getX() + rangeX - (strWidth / 2)), (int) (ptChartMiddle.getY() + 8.f + fontSize));
+		}
+
+		// XXX: debug
+		//g.setStroke(new BasicStroke(1.f));
+		//g.setColor(Color.RED);
 		//g.drawRect((int) aX, (int) aY, (int) (aWidth - 1), (int) (aHeight - 1));
 		return true;
 	}

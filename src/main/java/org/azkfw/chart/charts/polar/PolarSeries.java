@@ -51,6 +51,16 @@ public class PolarSeries {
 	 * コンストラクタ
 	 * 
 	 * @param aTitle タイトル
+	 */
+	public PolarSeries(final String aTitle) {
+		title = aTitle;
+		points = new ArrayList<PolarSeriesPoint>();
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
 	 * @param aPoints ポイント
 	 */
 	public PolarSeries(final String aTitle, final List<PolarSeriesPoint> aPoints) {
