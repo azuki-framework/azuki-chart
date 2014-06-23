@@ -22,6 +22,7 @@ import org.azkfw.chart.charts.bar.BarPlot;
 import org.azkfw.chart.charts.line.LinePlot;
 import org.azkfw.chart.charts.pie.PiePlot;
 import org.azkfw.chart.charts.polar.PolarPlot;
+import org.azkfw.chart.charts.polararea.PolarAreaPlot;
 
 /**
  * このクラスは、チャート生成を行うファクトリークラスです。
@@ -87,4 +88,14 @@ public class AzukiChartFactory {
 		return chart;
 	}
 
+	/**
+	 * 鶏頭図のインスタンスを生成する。
+	 * 
+	 * @return 鶏頭図
+	 */
+	public static AzukiChart createPolarAreaChart() {
+		PolarAreaPlot plot = new PolarAreaPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
 }
