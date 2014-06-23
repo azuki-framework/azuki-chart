@@ -23,6 +23,7 @@ import org.azkfw.chart.charts.line.LinePlot;
 import org.azkfw.chart.charts.pie.PiePlot;
 import org.azkfw.chart.charts.polar.PolarPlot;
 import org.azkfw.chart.charts.polararea.PolarAreaPlot;
+import org.azkfw.chart.charts.radar.RadarPlot;
 
 /**
  * このクラスは、チャート生成を行うファクトリークラスです。
@@ -84,6 +85,17 @@ public class AzukiChartFactory {
 	 */
 	public static AzukiChart createPolarChart() {
 		PolarPlot plot = new PolarPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+	
+	/**
+	 * レーダーチャートのインスタンスを生成する。
+	 * 
+	 * @return レーダーチャート
+	 */
+	public static AzukiChart createRadarChart() {
+		RadarPlot plot = new RadarPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}

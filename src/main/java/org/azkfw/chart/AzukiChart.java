@@ -33,6 +33,10 @@ import org.azkfw.chart.charts.polararea.PolarAreaAxis;
 import org.azkfw.chart.charts.polararea.PolarAreaDataset;
 import org.azkfw.chart.charts.polararea.PolarAreaPlot;
 import org.azkfw.chart.charts.polararea.PolarAreaSeries;
+import org.azkfw.chart.charts.radar.RadarAxis;
+import org.azkfw.chart.charts.radar.RadarDataset;
+import org.azkfw.chart.charts.radar.RadarPlot;
+import org.azkfw.chart.charts.radar.RadarSeries;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
@@ -82,7 +86,8 @@ public final class AzukiChart {
 
 		//createPieChart(new File(args[0]));
 		//createPolarChart(new File(args[0]));
-		createPolarAreaChart(new File(args[0]));
+		//createPolarAreaChart(new File(args[0]));
+		createRadarChart(new File(args[0]));
 	}
 
 	public static void createPieChart(final File aFile) {
@@ -157,11 +162,12 @@ public final class AzukiChart {
 		PolarAreaDataset dataset = new PolarAreaDataset();
 
 		PolarAreaSeries series1 = new PolarAreaSeries();
-		series1.add(1.0);
+		series1.add(1.6);
 		series1.add(0.1);
 		series1.add(0.5);
 		series1.add(0.6);
 		series1.add(0.6);
+		series1.add(0.3);
 		dataset.addSeries(series1);
 
 		PolarAreaSeries series2 = new PolarAreaSeries();
@@ -171,7 +177,46 @@ public final class AzukiChart {
 		dataset.addSeries(series2);
 
 		PolarAreaSeries series3 = new PolarAreaSeries();
-		for (int i = 0; i < 360; i++) {
+		for (int i = 0; i < 6; i++) {
+			series3.add(0.85);
+		}
+		dataset.addSeries(series3);
+
+		plot.setDataset(dataset);
+		try {
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 800, 800);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createRadarChart(final File aFile) {
+		AzukiChart chart = AzukiChartFactory.createRadarChart();
+		chart.setBackgoundColor(Color.WHITE);
+
+		RadarPlot plot = (RadarPlot) chart.getPlot();
+
+		RadarAxis axis = plot.getAxis();
+		axis.setDisplayFormat(new NumericDisplayFormat(1));
+
+		RadarDataset dataset = new RadarDataset();
+
+		RadarSeries series1 = new RadarSeries();
+		series1.add(2.5);
+		series1.add(1.1);
+		series1.add(0.5);
+		series1.add(1.6);
+		series1.add(0.6);
+		dataset.addSeries(series1);
+
+		RadarSeries series2 = new RadarSeries();
+		for (int i = 0; i < 6; i++) {
+			series2.add(i * 0.1);
+		}
+		dataset.addSeries(series2);
+
+		RadarSeries series3 = new RadarSeries();
+		for (int i = 0; i < 6; i++) {
 			series3.add(0.85);
 		}
 		dataset.addSeries(series3);
