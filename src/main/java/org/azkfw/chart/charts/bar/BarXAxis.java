@@ -15,58 +15,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.radar;
+package org.azkfw.chart.charts.bar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.dataset.AbstractDataset;
+import org.azkfw.chart.displayformat.DisplayFormat;
+import org.azkfw.chart.displayformat.StringDisplayFormat;
 
 /**
- * このクラスは、レーダーチャートのデータセット情報を保持するクラスです。
+ * このクラスは、棒グラフのX軸情報を保持するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class RadarDataset extends AbstractDataset {
+public class BarXAxis {
 
-	/** シリーズリスト */
-	private List<RadarSeries> seriesList;
-
-	/**
-	 * コンストラクタ
-	 */
-	public RadarDataset() {
-		super();
-		seriesList = new ArrayList<RadarSeries>();
-	}
+	/** 表示形式 */
+	private DisplayFormat displayFormat;
 
 	/**
 	 * コンストラクタ
-	 * 
-	 * @param aTitle タイトル
 	 */
-	public RadarDataset(final String aTitle) {
-		super(aTitle);
-		seriesList = new ArrayList<RadarSeries>();
+	public BarXAxis() {
+		displayFormat = new StringDisplayFormat();
 	}
 
 	/**
-	 * シリーズを追加する。
+	 * 表示形式を設定する。
 	 * 
-	 * @param aSeries シリーズ
+	 * @param aDisplayFormat 表示形式
 	 */
-	public void addSeries(final RadarSeries aSeries) {
-		seriesList.add(aSeries);
+	public void setDisplayFormat(final DisplayFormat aDisplayFormat) {
+		displayFormat = aDisplayFormat;
 	}
 
 	/**
-	 * シリーズリストを取得する。
+	 * 表示形式を取得する。
 	 * 
-	 * @return シリーズリスト
+	 * @return 表示形式
 	 */
-	public List<RadarSeries> getSeriesList() {
-		return seriesList;
+	public DisplayFormat getDisplayFormat() {
+		return displayFormat;
 	}
 }

@@ -17,6 +17,9 @@
  */
 package org.azkfw.chart.looks;
 
+import org.azkfw.chart.looks.legend.LegendDesign;
+import org.azkfw.chart.looks.title.TitleDesign;
+
 /**
  * このクラスは、グラフルックス機能を実装するための基底クラスです。
  * 
@@ -24,6 +27,29 @@ package org.azkfw.chart.looks;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class AbstractLooks {
+public abstract class AbstractLooks {
 
+	private TitleDesign titleDesign;
+	private LegendDesign legendDesign;
+
+	public AbstractLooks() {
+		titleDesign = null;
+		legendDesign = null;
+	}
+
+	public final void setTitleDesign(final TitleDesign aDesign) {
+		titleDesign = aDesign;
+	}
+
+	public final TitleDesign getTitleDesign() {
+		return titleDesign;
+	}
+
+	public final void setLegendDesign(final LegendDesign aDesign) {
+		legendDesign = aDesign;
+	}
+
+	public final LegendDesign getLegendDesign() {
+		return legendDesign;
+	}
 }

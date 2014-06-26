@@ -18,6 +18,7 @@
 package org.azkfw.chart.charts.polar;
 
 import org.azkfw.chart.displayformat.DisplayFormat;
+import org.azkfw.chart.displayformat.StringDisplayFormat;
 
 /**
  * このクラスは、極座標グラフの軸情報を保持するクラスです。
@@ -69,7 +70,7 @@ public class PolarAxis {
 		assistAxis = true;
 		assistAxisAngle = 30.f;
 
-		displayFormat = null;
+		displayFormat = new StringDisplayFormat();
 	}
 
 	public void setMinimumValue(final double aValue) {

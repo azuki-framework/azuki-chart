@@ -15,48 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.pie;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.dataset.AbstractDataset;
 
 /**
- * このクラスは、円グラフのデータセット情報を保持するクラスです。
- * 
- * @since 1.0.0
- * @version 1.0.0 2014/06/22
- * @author Kawakicchi
+ * 散布図関連のクラスおよびインタフェースを提供します。
  */
-public class PieDataset extends AbstractDataset {
+package org.azkfw.chart.charts.scatter;
 
-	private List<PieData> dataList;
-
-	/**
-	 * コンストラクタ
-	 */
-	public PieDataset() {
-		super();
-		dataList = new ArrayList<PieData>();
-	}
-
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public PieDataset(final String aTitle) {
-		super(aTitle);
-		dataList = new ArrayList<PieData>();
-	}
-
-	public void addData(final PieData aData) {
-		dataList.add(aData);
-	}
-
-	public List<PieData> getDataList() {
-		return dataList;
-	}
-
-}

@@ -15,51 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.displayformat;
 
 /**
- * このクラスは、データセット機能の実装を行うための基底クラスです。
+ * このクラスは、文字列型の表示形式を実装するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public abstract class AbstractDataset implements Dataset {
+public class StringDisplayFormat implements DisplayFormat {
 
-	/** タイトル */
-	private String title;
-
-	/**
-	 * コンストラクタ
-	 */
-	public AbstractDataset() {
-		title = null;
+	public StringDisplayFormat() {
 	}
 
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public AbstractDataset(final String aTitle) {
-		title = aTitle;
-	}
-
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public final void setTitle(final String aTitle) {
-		title = aTitle;
-	}
-
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public final String getTitle() {
-		return title;
+	@Override
+	public String toString(final double aValue) {
+		return Double.toString(aValue);
 	}
 }

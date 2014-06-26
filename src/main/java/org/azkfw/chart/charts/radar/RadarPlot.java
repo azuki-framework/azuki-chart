@@ -79,6 +79,8 @@ public class RadarPlot extends AbstractPlot {
 	protected boolean doDraw(final Graphics2D g, final float aX, final float aY, final float aWidth, final float aHeight) {
 		Size szChart = null;
 		Point ptChartMiddle = null;
+
+		// マージン適用
 		if (null != margin) {
 			szChart = new Size(aWidth - (margin.getLeft() + margin.getRight()), aHeight - (margin.getTop() + margin.getBottom()));
 			ptChartMiddle = new Point(aX + margin.getLeft() + (szChart.getWidth() / 2.f), aY + margin.getTop() + (szChart.getHeight() / 2.f));
@@ -87,7 +89,7 @@ public class RadarPlot extends AbstractPlot {
 			ptChartMiddle = new Point(aX + (aWidth / 2.f), aY + (aHeight / 2.f));
 		}
 
-		int cntPoint = 5;
+		// データ最小値・最大値取得
 		Double dataMaxValue = null;
 		Double dataMinValue = null;
 		if (null != dataset) {
@@ -102,38 +104,53 @@ public class RadarPlot extends AbstractPlot {
 					}
 				}
 			}
+		}
+		System.out.println(String.format("Data minimum value : %f", dataMinValue));
+		System.out.println(String.format("Data maximum value : %f", dataMaxValue));
+
+		// データポイント数取得
+		int dataPointSize = 5;
+		if (null != dataset) {
 			if (0 < dataset.getSeriesList().size()) {
-				cntPoint = dataset.getSeriesList().get(0).getPoints().size();
+				dataPointSize = dataset.getSeriesList().get(0).getPoints().size();
 			}
 		}
+		System.out.println(String.format("Data point size : %d", dataPointSize));
 
+		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
 		double minValue = axis.getMinimumValue();
 		double maxValue = axis.getMaximumValue();
 		double scale = axis.getScale();
-		if (null != dataset) {
-			if (axis.isMinimumValueAutoFit()) {
+		if (axis.isMinimumValueAutoFit()) {
+			if (null != dataMinValue) {
 				minValue = dataMinValue;
 			}
-			if (axis.isMaximumValueAutoFit()) {
+		}
+		if (axis.isMaximumValueAutoFit()) {
+			if (null != dataMaxValue) {
 				maxValue = dataMaxValue;
 			}
-			if (axis.isScaleAutoFit()) {
-				double diff = maxValue - minValue;
-				int s = (int) (Math.log10(diff));
-				scale = Math.pow(10, s);
-			}
 		}
+		if (axis.isScaleAutoFit()) {
+			double diff = maxValue - minValue;
+			int s = (int) (Math.log10(diff));
+			scale = Math.pow(10, s);
+		}
+		System.out.println(String.format("Axis minimum value : %f", minValue));
+		System.out.println(String.format("Axis maximum value : %f", maxValue));
+		System.out.println(String.format("Axis scale value : %f", scale));
 
+		// スケール計算
 		double difValue = maxValue - minValue;
 		double pixXPerValue = (szChart.getWidth() / 2.f) / difValue;
-		double pixYPerValue = (szChart.getWidth() / 2.f) / difValue;
+		double pixYPerValue = (szChart.getHeight() / 2.f) / difValue;
 
 		// Draw axis
 		g.setColor(looks.getAxisLineColor());
 		g.setStroke(looks.getAxisLineStroke());
-		for (int i = 0; i < cntPoint; i++) {
-			double angle = (360.f / cntPoint) * i + 90;
+		for (int i = 0; i < dataPointSize; i++) {
+			double angle = (360.f / dataPointSize) * i + 90;
 			int x = (int) (ptChartMiddle.getX() + (pixXPerValue * maxValue * Math.cos(RADIANS(angle))));
 			int y = (int) (ptChartMiddle.getY() - (pixYPerValue * maxValue * Math.sin(RADIANS(angle))));
 			g.drawLine((int) (ptChartMiddle.getX()), (int) (ptChartMiddle.getY()), (int) (x), (int) (y));
@@ -143,18 +160,18 @@ public class RadarPlot extends AbstractPlot {
 		g.setColor(looks.getAxisCircleColor());
 		g.setStroke(looks.getAxisCircleStroke());
 		for (double value = minValue; value <= maxValue; value += scale) {
-			int[] pxs = new int[cntPoint + 1];
-			int[] pys = new int[cntPoint + 1];
-			for (int i = 0; i < cntPoint; i++) {
-				double angle = (360.f / cntPoint) * i + 90;
+			int[] pxs = new int[dataPointSize + 1];
+			int[] pys = new int[dataPointSize + 1];
+			for (int i = 0; i < dataPointSize; i++) {
+				double angle = (360.f / dataPointSize) * i + 90;
 				int x = (int) (ptChartMiddle.getX() + (pixXPerValue * value * Math.cos(RADIANS(angle))));
 				int y = (int) (ptChartMiddle.getY() - (pixYPerValue * value * Math.sin(RADIANS(angle))));
 				pxs[i] = x;
 				pys[i] = y;
 			}
-			pxs[cntPoint] = pxs[0];
-			pys[cntPoint] = pys[0];
-			g.drawPolyline(pxs, pys, cntPoint + 1);
+			pxs[dataPointSize] = pxs[0];
+			pys[dataPointSize] = pys[0];
+			g.drawPolyline(pxs, pys, dataPointSize + 1);
 		}
 
 		// Draw series
@@ -164,13 +181,13 @@ public class RadarPlot extends AbstractPlot {
 
 			List<RadarSeriesPoint> points = series.getPoints();
 
-			int[] pxs = new int[cntPoint + 1];
-			int[] pys = new int[cntPoint + 1];
+			int[] pxs = new int[dataPointSize + 1];
+			int[] pys = new int[dataPointSize + 1];
 
 			for (int i = 0; i < points.size(); i++) {
 				RadarSeriesPoint point = points.get(i);
 
-				double angle = -1 * (360.f / cntPoint) * i + 90;
+				double angle = -1 * (360.f / dataPointSize) * i + 90;
 				double value = point.getValue();
 
 				int x = (int) (ptChartMiddle.getX() + (pixXPerValue * value * Math.cos(RADIANS(angle))));
@@ -189,19 +206,19 @@ public class RadarPlot extends AbstractPlot {
 				pxs[i] = x;
 				pys[i] = y;
 			}
-			pxs[cntPoint] = pxs[0];
-			pys[cntPoint] = pys[0];
+			pxs[dataPointSize] = pxs[0];
+			pys[dataPointSize] = pys[0];
 
 			Color fillColor = looks.getSeriesFillColor(index, series);
 			if (null != fillColor) {
 				g.setColor(fillColor);
-				g.fillPolygon(pxs, pys, cntPoint + 1);
+				g.fillPolygon(pxs, pys, dataPointSize + 1);
 			}
 			Color strokeColor = looks.getSeriesStrokeColor(index, series);
 			if (null != strokeColor) {
 				g.setStroke(looks.getSeriesStroke(index, series));
 				g.setColor(strokeColor);
-				g.drawPolyline(pxs, pys, cntPoint + 1);
+				g.drawPolyline(pxs, pys, dataPointSize + 1);
 			}
 		}
 

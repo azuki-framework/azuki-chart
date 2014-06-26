@@ -18,6 +18,7 @@
 package org.azkfw.chart.charts.radar;
 
 import org.azkfw.chart.displayformat.DisplayFormat;
+import org.azkfw.chart.displayformat.StringDisplayFormat;
 
 /**
  * このクラスは、レーダーチャートの軸情報を保持するクラスです。
@@ -63,7 +64,7 @@ public class RadarAxis {
 
 		assistScale = 0.1;
 
-		displayFormat = null;
+		displayFormat = new StringDisplayFormat();
 	}
 
 	public void setMinimumValue(final double aValue) {

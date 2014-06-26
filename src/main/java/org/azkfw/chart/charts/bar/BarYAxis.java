@@ -15,19 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.polararea;
+package org.azkfw.chart.charts.bar;
 
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.displayformat.StringDisplayFormat;
 
 /**
- * このクラスは、鶏頭図の軸情報を保持するクラスです。
+ * このクラスは、棒グラフのY軸情報を保持するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class PolarAreaAxis {
+public class BarYAxis {
 
 	/** 最小値 */
 	private double minValue;
@@ -43,11 +43,6 @@ public class PolarAreaAxis {
 	private double scale;
 	/** 目盛自動設定 */
 	private boolean scaleAutoFit;
-	/** 補助目盛 */
-	private double assistScale;
-
-	private boolean assistAxis;
-	private double assistAxisAngle;
 
 	/** 表示形式 */
 	private DisplayFormat displayFormat;
@@ -55,7 +50,7 @@ public class PolarAreaAxis {
 	/**
 	 * コンストラクタ
 	 */
-	public PolarAreaAxis() {
+	public BarYAxis() {
 		minValue = 0.0;
 		minValueAutoFit = true;
 
@@ -64,11 +59,6 @@ public class PolarAreaAxis {
 
 		scale = 0.2;
 		scaleAutoFit = true;
-
-		assistScale = 0.1;
-
-		assistAxis = true;
-		assistAxisAngle = 30.f;
 
 		displayFormat = new StringDisplayFormat();
 	}
@@ -121,34 +111,20 @@ public class PolarAreaAxis {
 		return scaleAutoFit;
 	}
 
-	public void setAssistScale(final double aScale) {
-		assistScale = aScale;
-	}
-
-	public double getAssistScale() {
-		return assistScale;
-	}
-
-	public void setAssistAxis(final boolean aAssist) {
-		assistAxis = aAssist;
-	}
-
-	public boolean isAssistAxis() {
-		return assistAxis;
-	}
-
-	public void setAssistAxisAngle(final double aAngle) {
-		assistAxisAngle = aAngle;
-	}
-
-	public double getAssistAxisAngle() {
-		return assistAxisAngle;
-	}
-
+	/**
+	 * 表示形式を設定する。
+	 * 
+	 * @param aDisplayFormat 表示形式
+	 */
 	public void setDisplayFormat(final DisplayFormat aDisplayFormat) {
 		displayFormat = aDisplayFormat;
 	}
 
+	/**
+	 * 表示形式を取得する。
+	 * 
+	 * @return 表示形式
+	 */
 	public DisplayFormat getDisplayFormat() {
 		return displayFormat;
 	}

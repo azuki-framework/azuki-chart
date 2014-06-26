@@ -31,16 +31,41 @@ import org.azkfw.chart.dataset.AbstractDataset;
  */
 public class PolarAreaDataset extends AbstractDataset {
 
+	/** シリーズリスト */
 	private List<PolarAreaSeries> seriesList;
 
+	/**
+	 * コンストラクタ
+	 */
 	public PolarAreaDataset() {
+		super();
 		seriesList = new ArrayList<PolarAreaSeries>();
 	}
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 */
+	public PolarAreaDataset(final String aTitle) {
+		super(aTitle);
+		seriesList = new ArrayList<PolarAreaSeries>();
+	}
+
+	/**
+	 * シリーズを追加する。
+	 * 
+	 * @param aSeries シリーズ
+	 */
 	public void addSeries(final PolarAreaSeries aSeries) {
 		seriesList.add(aSeries);
 	}
 
+	/**
+	 * シリーズリストを取得する。
+	 * 
+	 * @return シリーズリスト
+	 */
 	public List<PolarAreaSeries> getSeriesList() {
 		return seriesList;
 	}

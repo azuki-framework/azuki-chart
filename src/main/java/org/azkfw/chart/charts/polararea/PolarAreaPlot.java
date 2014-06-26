@@ -79,6 +79,8 @@ public class PolarAreaPlot extends AbstractPlot {
 	protected boolean doDraw(final Graphics2D g, final float aX, final float aY, final float aWidth, final float aHeight) {
 		Size szChart = null;
 		Point ptChartMiddle = null;
+
+		// マージン適用
 		if (null != margin) {
 			szChart = new Size(aWidth - (margin.getLeft() + margin.getRight()), aHeight - (margin.getTop() + margin.getBottom()));
 			ptChartMiddle = new Point(aX + margin.getLeft() + (szChart.getWidth() / 2.f), aY + margin.getTop() + (szChart.getHeight() / 2.f));
@@ -87,6 +89,7 @@ public class PolarAreaPlot extends AbstractPlot {
 			ptChartMiddle = new Point(aX + (aWidth / 2.f), aY + (aHeight / 2.f));
 		}
 
+		// データ最小値・最大値取得
 		Double dataMaxValue = null;
 		Double dataMinValue = null;
 		if (null != dataset) {
@@ -102,28 +105,37 @@ public class PolarAreaPlot extends AbstractPlot {
 				}
 			}
 		}
+		System.out.println(String.format("Data minimum value : %f", dataMinValue));
+		System.out.println(String.format("Data maximum value : %f", dataMaxValue));
 
+		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
 		double minValue = axis.getMinimumValue();
 		double maxValue = axis.getMaximumValue();
 		double scale = axis.getScale();
-		if (null != dataset) {
-			if (axis.isMinimumValueAutoFit()) {
+		if (axis.isMinimumValueAutoFit()) {
+			if (null != dataMinValue) {
 				minValue = dataMinValue;
 			}
-			if (axis.isMaximumValueAutoFit()) {
+		}
+		if (axis.isMaximumValueAutoFit()) {
+			if (null != dataMaxValue) {
 				maxValue = dataMaxValue;
 			}
-			if (axis.isScaleAutoFit()) {
-				double diff = maxValue - minValue;
-				int s = (int) (Math.log10(diff));
-				scale = Math.pow(10, s);
-			}
 		}
+		if (axis.isScaleAutoFit()) {
+			double diff = maxValue - minValue;
+			int s = (int) (Math.log10(diff));
+			scale = Math.pow(10, s);
+		}
+		System.out.println(String.format("Axis minimum value : %f", minValue));
+		System.out.println(String.format("Axis maximum value : %f", maxValue));
+		System.out.println(String.format("Axis scale value : %f", scale));
 
+		// スケール計算
 		double difValue = maxValue - minValue;
 		double pixXPerValue = (szChart.getWidth() / 2.f) / difValue;
-		double pixYPerValue = (szChart.getWidth() / 2.f) / difValue;
+		double pixYPerValue = (szChart.getHeight() / 2.f) / difValue;
 
 		// Draw assist axis
 		if (axis.isAssistAxis()) {

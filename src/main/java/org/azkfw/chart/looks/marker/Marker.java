@@ -15,51 +15,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.looks.marker;
+
+import java.awt.Graphics2D;
+
+import org.azkfw.graphics.Size;
 
 /**
- * このクラスは、データセット機能の実装を行うための基底クラスです。
+ * このインターフェースは、グラフポイントマーカー機能を表現したインターフェースです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public abstract class AbstractDataset implements Dataset {
-
-	/** タイトル */
-	private String title;
+public interface Marker {
 
 	/**
-	 * コンストラクタ
-	 */
-	public AbstractDataset() {
-		title = null;
-	}
-
-	/**
-	 * コンストラクタ
+	 * マーカーサイズを取得する。
 	 * 
-	 * @param aTitle タイトル
+	 * @return サイズ
 	 */
-	public AbstractDataset(final String aTitle) {
-		title = aTitle;
-	}
+	public Size getSize();
 
 	/**
-	 * タイトルを設定する。
+	 * マーカーを描画する。
 	 * 
-	 * @param aTitle タイトル
+	 * @param g Graphics
+	 * @param aX 描画位置X座標
+	 * @param aY 描画位置X座標
 	 */
-	public final void setTitle(final String aTitle) {
-		title = aTitle;
-	}
-
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public final String getTitle() {
-		return title;
-	}
+	public void draw(final Graphics2D g, final float aX, final float aY);
 }

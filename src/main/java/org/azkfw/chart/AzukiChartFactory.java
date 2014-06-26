@@ -24,6 +24,7 @@ import org.azkfw.chart.charts.pie.PiePlot;
 import org.azkfw.chart.charts.polar.PolarPlot;
 import org.azkfw.chart.charts.polararea.PolarAreaPlot;
 import org.azkfw.chart.charts.radar.RadarPlot;
+import org.azkfw.chart.charts.scatter.ScatterPlot;
 
 /**
  * このクラスは、チャート生成を行うファクトリークラスです。
@@ -37,7 +38,7 @@ public class AzukiChartFactory {
 	/**
 	 * 棒グラフのインスタンスを生成する。
 	 * 
-	 * @return
+	 * @return 棒グラフ
 	 */
 	public static AzukiChart createBarChart() {
 		BarPlot plot = new BarPlot();
@@ -52,6 +53,17 @@ public class AzukiChartFactory {
 	 */
 	public static AzukiChart createLineChart() {
 		LinePlot plot = new LinePlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 散布図のインスタンスを生成する。
+	 * 
+	 * @return 散布図
+	 */
+	public static AzukiChart createScatterChart() {
+		ScatterPlot plot = new ScatterPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -88,7 +100,7 @@ public class AzukiChartFactory {
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
-	
+
 	/**
 	 * レーダーチャートのインスタンスを生成する。
 	 * 

@@ -22,6 +22,9 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 
+import org.azkfw.chart.charts.bar.BarDataset;
+import org.azkfw.chart.charts.bar.BarPlot;
+import org.azkfw.chart.charts.bar.BarYAxis;
 import org.azkfw.chart.charts.pie.PieData;
 import org.azkfw.chart.charts.pie.PieDataset;
 import org.azkfw.chart.charts.pie.PiePlot;
@@ -37,9 +40,15 @@ import org.azkfw.chart.charts.radar.RadarAxis;
 import org.azkfw.chart.charts.radar.RadarDataset;
 import org.azkfw.chart.charts.radar.RadarPlot;
 import org.azkfw.chart.charts.radar.RadarSeries;
+import org.azkfw.chart.charts.scatter.ScatterDataset;
+import org.azkfw.chart.charts.scatter.ScatterPlot;
+import org.azkfw.chart.charts.scatter.ScatterSeries;
+import org.azkfw.chart.charts.scatter.ScatterXAxis;
+import org.azkfw.chart.charts.scatter.ScatterYAxis;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
+import org.azkfw.graphics.Margin;
 
 /**
  * このクラスは、チャートクラスです。
@@ -87,7 +96,66 @@ public final class AzukiChart {
 		//createPieChart(new File(args[0]));
 		//createPolarChart(new File(args[0]));
 		//createPolarAreaChart(new File(args[0]));
-		createRadarChart(new File(args[0]));
+		// createRadarChart(new File(args[0]));
+		// createBarChart(new File(args[0]));
+		createScatterChart(new File(args[0]));
+	}
+
+	public static void createScatterChart(final File aFile) {
+		AzukiChart chart = AzukiChartFactory.createScatterChart();
+		chart.setBackgoundColor(Color.WHITE);
+
+		ScatterPlot plot = (ScatterPlot) chart.getPlot();
+		//plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
+
+		ScatterXAxis xAxis = plot.getXAxis();
+		ScatterYAxis yAxis = plot.getYAxis();
+		xAxis.setDisplayFormat(new NumericDisplayFormat(0));
+		xAxis.setScaleAutoFit(false);
+		xAxis.setScale(45);
+		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
+		yAxis.setMinimumValueAutoFit(false);
+		yAxis.setMinimumValue(-1.5);
+		yAxis.setMaximumValueAutoFit(false);
+		yAxis.setMaximumValue(1.5);
+
+		ScatterDataset dataset = new ScatterDataset("SmpaleChart (Scatter)");
+
+		ScatterSeries seriesSin = new ScatterSeries("Sin");
+		ScatterSeries seriesCos = new ScatterSeries("Cos");
+		for (int i = 0; i <= 360; i+=10) {
+			seriesSin.add(i, Math.sin(RADIANS(i)));
+			seriesCos.add(i, Math.cos(RADIANS(i)));
+		}
+		dataset.addSeries(seriesSin);
+		dataset.addSeries(seriesCos);
+
+		plot.setDataset(dataset);
+		try {
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void createBarChart(final File aFile) {
+		AzukiChart chart = AzukiChartFactory.createBarChart();
+		chart.setBackgoundColor(Color.WHITE);
+
+		BarPlot plot = (BarPlot) chart.getPlot();
+		plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
+
+		BarYAxis yAxis = plot.getYAxis();
+		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
+
+		BarDataset dataset = new BarDataset();
+
+		plot.setDataset(dataset);
+		try {
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public static void createPieChart(final File aFile) {
@@ -189,7 +257,7 @@ public final class AzukiChart {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void createRadarChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createRadarChart();
 		chart.setBackgoundColor(Color.WHITE);
@@ -227,5 +295,9 @@ public final class AzukiChart {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	private static double RADIANS(double aAngle) {
+		return aAngle * Math.PI / 180.0;
 	}
 }

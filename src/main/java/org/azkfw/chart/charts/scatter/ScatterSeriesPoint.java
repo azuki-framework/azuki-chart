@@ -15,58 +15,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.radar;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.dataset.AbstractDataset;
+package org.azkfw.chart.charts.scatter;
 
 /**
- * このクラスは、レーダーチャートのデータセット情報を保持するクラスです。
+ * このクラスは、散布図のポイント情報を保持したクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class RadarDataset extends AbstractDataset {
+public class ScatterSeriesPoint {
 
-	/** シリーズリスト */
-	private List<RadarSeries> seriesList;
+	/**
+	 * x値
+	 */
+	private double x;
+	/**
+	 * y値
+	 */
+	private double y;
 
 	/**
 	 * コンストラクタ
 	 */
-	public RadarDataset() {
-		super();
-		seriesList = new ArrayList<RadarSeries>();
+	public ScatterSeriesPoint() {
+		x = 1.0;
+		y = 1.0;
 	}
 
 	/**
 	 * コンストラクタ
 	 * 
-	 * @param aTitle タイトル
+	 * @param aX x値
+	 * @param aY y値
 	 */
-	public RadarDataset(final String aTitle) {
-		super(aTitle);
-		seriesList = new ArrayList<RadarSeries>();
+	public ScatterSeriesPoint(final double aX, final double aY) {
+		x = aX;
+		y = aY;
 	}
 
 	/**
-	 * シリーズを追加する。
+	 * x値を取得する。
 	 * 
-	 * @param aSeries シリーズ
+	 * @return 値
 	 */
-	public void addSeries(final RadarSeries aSeries) {
-		seriesList.add(aSeries);
+	public double getX() {
+		return x;
 	}
 
 	/**
-	 * シリーズリストを取得する。
+	 * y値を取得する。
 	 * 
-	 * @return シリーズリスト
+	 * @return 値
 	 */
-	public List<RadarSeries> getSeriesList() {
-		return seriesList;
+	public double getY() {
+		return y;
 	}
+
 }

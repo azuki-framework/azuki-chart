@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.radar;
+package org.azkfw.chart.charts.scatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,23 +23,23 @@ import java.util.List;
 import org.azkfw.chart.dataset.AbstractDataset;
 
 /**
- * このクラスは、レーダーチャートのデータセット情報を保持するクラスです。
+ * このクラスは、散布図のデータセット情報を保持するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class RadarDataset extends AbstractDataset {
+public class ScatterDataset extends AbstractDataset {
 
 	/** シリーズリスト */
-	private List<RadarSeries> seriesList;
+	private List<ScatterSeries> seriesList;
 
 	/**
 	 * コンストラクタ
 	 */
-	public RadarDataset() {
+	public ScatterDataset() {
 		super();
-		seriesList = new ArrayList<RadarSeries>();
+		seriesList = new ArrayList<ScatterSeries>();
 	}
 
 	/**
@@ -47,9 +47,9 @@ public class RadarDataset extends AbstractDataset {
 	 * 
 	 * @param aTitle タイトル
 	 */
-	public RadarDataset(final String aTitle) {
+	public ScatterDataset(final String aTitle) {
 		super(aTitle);
-		seriesList = new ArrayList<RadarSeries>();
+		seriesList = new ArrayList<ScatterSeries>();
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class RadarDataset extends AbstractDataset {
 	 * 
 	 * @param aSeries シリーズ
 	 */
-	public void addSeries(final RadarSeries aSeries) {
+	public void addSeries(final ScatterSeries aSeries) {
 		seriesList.add(aSeries);
 	}
 
@@ -66,7 +66,7 @@ public class RadarDataset extends AbstractDataset {
 	 * 
 	 * @return シリーズリスト
 	 */
-	public List<RadarSeries> getSeriesList() {
+	public List<ScatterSeries> getSeriesList() {
 		return seriesList;
 	}
 }

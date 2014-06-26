@@ -15,51 +15,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.looks.marker;
+
+import java.awt.Color;
 
 /**
- * このクラスは、データセット機能の実装を行うための基底クラスです。
+ * このインターフェースは、グラフポイントマーカー機能を表現したインターフェースです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public abstract class AbstractDataset implements Dataset {
-
-	/** タイトル */
-	private String title;
+public abstract class AbstractMarker implements Marker {
 
 	/**
 	 * コンストラクタ
 	 */
-	public AbstractDataset() {
-		title = null;
+	public AbstractMarker() {
+
 	}
 
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public AbstractDataset(final String aTitle) {
-		title = aTitle;
+	protected final Color upColor(final Color aColor) {
+		return addColor(aColor, 100);
 	}
 
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public final void setTitle(final String aTitle) {
-		title = aTitle;
+	protected final Color downColor(final Color aColor) {
+		return addColor(aColor, -100);
 	}
 
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public final String getTitle() {
-		return title;
+	protected final Color addColor(final Color aColor, final int add) {
+		int red = aColor.getRed() + add;
+		int green = aColor.getGreen() + add;
+		int blue = aColor.getBlue() + add;
+		if (0 > red)
+			red = 0;
+		if (0 > green)
+			green = 0;
+		if (0 > blue)
+			blue = 0;
+		if (255 < red)
+			red = 255;
+		if (255 < green)
+			green = 255;
+		if (255 < blue)
+			blue = 255;
+		return new Color(red, green, blue, aColor.getAlpha());
 	}
 }
