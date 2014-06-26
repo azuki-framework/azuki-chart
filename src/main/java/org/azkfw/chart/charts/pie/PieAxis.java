@@ -15,26 +15,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.area;
+package org.azkfw.chart.charts.pie;
 
-import java.awt.Graphics2D;
-
-import org.azkfw.chart.plot.AbstractPlot;
-import org.azkfw.graphics.Rect;
+import org.azkfw.chart.displayformat.DisplayFormat;
+import org.azkfw.chart.displayformat.StringDisplayFormat;
 
 /**
- * このクラスは、エリアグラフのプロットクラスです。
+ * このクラスは、円グラフの軸情報を保持するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class AreaPlot extends AbstractPlot {
+public class PieAxis {
 
-	@Override
-	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
+	/** 表示形式 */
+	private DisplayFormat displayFormat;
 
-		return false;
+	/**
+	 * コンストラクタ
+	 */
+	public PieAxis() {
+		displayFormat = new StringDisplayFormat();
 	}
 
+	/**
+	 * 表示形式を設定する。
+	 * 
+	 * @param aDisplayFormat 表示形式
+	 */
+	public void setDisplayFormat(final DisplayFormat aDisplayFormat) {
+		displayFormat = aDisplayFormat;
+	}
+
+	/**
+	 * 表示形式を取得する。
+	 * 
+	 * @return 表示形式
+	 */
+	public DisplayFormat getDisplayFormat() {
+		return displayFormat;
+	}
 }

@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.azkfw.chart.looks.AbstractLooks;
+import org.azkfw.chart.looks.legend.CustomLegendDesign;
+import org.azkfw.chart.looks.title.CustomTitleDesign;
 
 /**
  * @since 1.0.0
@@ -45,6 +47,11 @@ public class PieLooks extends AbstractLooks {
 		COLORS.add(new Color(125, 96, 160, 255));
 		COLORS.add(new Color(70, 170, 197, 255));
 		COLORS.add(new Color(246, 146, 64, 255));
+	}
+	
+	public PieLooks() {
+		setTitleDesign(new CustomTitleDesign());
+		setLegendDesign(new CustomLegendDesign());
 	}
 
 	/**

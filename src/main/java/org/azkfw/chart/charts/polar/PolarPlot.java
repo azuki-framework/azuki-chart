@@ -24,8 +24,8 @@ import java.awt.Graphics2D;
 import java.util.List;
 
 import org.azkfw.chart.plot.AbstractPlot;
-import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;
+import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
 
 /**
@@ -46,9 +46,6 @@ public class PolarPlot extends AbstractPlot {
 	/** Looks */
 	private PolarLooks looks;
 
-	/** Margin */
-	private Margin margin;
-
 	/**
 	 * コンストラクタ
 	 */
@@ -56,7 +53,6 @@ public class PolarPlot extends AbstractPlot {
 		axis = new PolarAxis();
 		dataset = null;
 		looks = new PolarLooks();
-		margin = null;
 	}
 
 	/**
@@ -86,28 +82,12 @@ public class PolarPlot extends AbstractPlot {
 		return axis;
 	}
 
-	/**
-	 * マージンを設定する。
-	 * 
-	 * @param aMargin マージン
-	 */
-	public void setMargin(final Margin aMargin) {
-		margin = aMargin;
-	}
-
 	@Override
-	protected boolean doDraw(final Graphics2D g, final float aX, final float aY, final float aWidth, final float aHeight) {
+	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
 		Size szChart = null;
 		Point ptChartMiddle = null;
-
-		// マージン適用
-		if (null != margin) {
-			szChart = new Size(aWidth - (margin.getLeft() + margin.getRight()), aHeight - (margin.getTop() + margin.getBottom()));
-			ptChartMiddle = new Point(aX + margin.getLeft() + (szChart.getWidth() / 2.f), aY + margin.getTop() + (szChart.getHeight() / 2.f));
-		} else {
-			szChart = new Size(aWidth, aHeight);
-			ptChartMiddle = new Point(aX + (aWidth / 2.f), aY + (aHeight / 2.f));
-		}
+		szChart = new Size(aRect.getWidth(), aRect.getHeight());
+		ptChartMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
 
 		// データ最小値・最大値取得
 		Double dataMinValue = null;

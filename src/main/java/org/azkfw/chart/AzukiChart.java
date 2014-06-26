@@ -93,12 +93,12 @@ public final class AzukiChart {
 			return;
 		}
 
-		//createPieChart(new File(args[0]));
+		//createScatterChart(new File(args[0]));
+		createPieChart(new File(args[0]));
 		//createPolarChart(new File(args[0]));
 		//createPolarAreaChart(new File(args[0]));
 		// createRadarChart(new File(args[0]));
 		// createBarChart(new File(args[0]));
-		createScatterChart(new File(args[0]));
 	}
 
 	public static void createScatterChart(final File aFile) {
@@ -109,10 +109,11 @@ public final class AzukiChart {
 		//plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
 
 		ScatterXAxis xAxis = plot.getXAxis();
-		ScatterYAxis yAxis = plot.getYAxis();
 		xAxis.setDisplayFormat(new NumericDisplayFormat(0));
 		xAxis.setScaleAutoFit(false);
 		xAxis.setScale(45);
+		
+		ScatterYAxis yAxis = plot.getYAxis();
 		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
 		yAxis.setMinimumValueAutoFit(false);
 		yAxis.setMinimumValue(-1.5);
@@ -120,17 +121,16 @@ public final class AzukiChart {
 		yAxis.setMaximumValue(1.5);
 
 		ScatterDataset dataset = new ScatterDataset("SmpaleChart (Scatter)");
-
-		ScatterSeries seriesSin = new ScatterSeries("Sin");
-		ScatterSeries seriesCos = new ScatterSeries("Cos");
+		ScatterSeries seriesSin = new ScatterSeries("Sine");
+		ScatterSeries seriesCos = new ScatterSeries("Cosine");
 		for (int i = 0; i <= 360; i+=10) {
 			seriesSin.add(i, Math.sin(RADIANS(i)));
 			seriesCos.add(i, Math.cos(RADIANS(i)));
 		}
 		dataset.addSeries(seriesSin);
 		dataset.addSeries(seriesCos);
-
 		plot.setDataset(dataset);
+		
 		try {
 			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
 		} catch (IOException ex) {
@@ -138,6 +138,27 @@ public final class AzukiChart {
 		}
 	}
 
+	public static void createPieChart(final File aFile) {
+		AzukiChart chart = AzukiChartFactory.createPieChart();
+		chart.setBackgoundColor(Color.WHITE);
+
+		PiePlot plot = (PiePlot) chart.getPlot();
+		//plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
+
+		PieDataset dataset = new PieDataset("SmpaleChart (Pie)");
+		dataset.addData(new PieData("Japan", 50.f));
+		dataset.addData(new PieData("America", 30.f));
+		dataset.addData(new PieData("England", 15.f));
+		dataset.addData(new PieData("Germany", 5.f));
+		plot.setDataset(dataset);
+		
+		try {
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 800, 800);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	public static void createBarChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createBarChart();
 		chart.setBackgoundColor(Color.WHITE);
@@ -153,27 +174,6 @@ public final class AzukiChart {
 		plot.setDataset(dataset);
 		try {
 			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public static void createPieChart(final File aFile) {
-		AzukiChart chart = AzukiChartFactory.createPieChart();
-		chart.setBackgoundColor(Color.WHITE);
-
-		PiePlot plot = (PiePlot) chart.getPlot();
-
-		PieDataset dataset = new PieDataset();
-
-		dataset.addData(new PieData("", 50.f));
-		dataset.addData(new PieData("", 30.f));
-		dataset.addData(new PieData("", 15.f));
-		dataset.addData(new PieData("", 5.f));
-
-		plot.setDataset(dataset);
-		try {
-			AzukiChartUtility.saveChartAsPNG(aFile, chart, 800, 800);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

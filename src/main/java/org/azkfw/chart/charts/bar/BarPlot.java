@@ -24,6 +24,7 @@ import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractPlot;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;
+import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
 
 /**
@@ -46,9 +47,6 @@ public class BarPlot extends AbstractPlot {
 	/** Looks */
 	private BarLooks looks;
 
-	/** Margin */
-	private Margin margin;
-
 	/**
 	 * コンストラクタ
 	 */
@@ -57,7 +55,6 @@ public class BarPlot extends AbstractPlot {
 		axisY = new BarYAxis();
 		dataset = null;
 		looks = new BarLooks();
-		margin = null;
 	}
 
 	/**
@@ -96,17 +93,8 @@ public class BarPlot extends AbstractPlot {
 		return axisY;
 	}
 
-	/**
-	 * マージンを設定する。
-	 * 
-	 * @param aMargin マージン
-	 */
-	public void setMargin(final Margin aMargin) {
-		margin = aMargin;
-	}
-
 	@Override
-	protected boolean doDraw(final Graphics2D g, final float aX, final float aY, final float aWidth, final float aHeight) {
+	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
 		// データ最小値・最大値取得
 		Double dataMinValue = null;
 		Double dataMaxValue = null;
@@ -170,15 +158,8 @@ public class BarPlot extends AbstractPlot {
 
 		Size szChart = null;
 		Point ptChart = null;
-
-		// マージン適用
-		if (null != margin) {
-			szChart = new Size(aWidth - (margin.getLeft() + margin.getRight()), aHeight - (margin.getTop() + margin.getBottom()));
-			ptChart = new Point(aX + margin.getLeft(), aY + margin.getTop());
-		} else {
-			szChart = new Size(aWidth, aHeight);
-			ptChart = new Point(aX, aY);
-		}
+		szChart = new Size(aRect.getWidth(), aRect.getHeight());
+		ptChart = new Point(aRect.getX(), aRect.getY());
 
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 

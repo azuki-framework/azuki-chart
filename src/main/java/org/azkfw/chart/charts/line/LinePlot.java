@@ -20,6 +20,7 @@ package org.azkfw.chart.charts.line;
 import java.awt.Graphics2D;
 
 import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.graphics.Rect;
 
 /**
  * このクラスは、折れ線グラフのプロットクラスです。
@@ -31,7 +32,7 @@ import org.azkfw.chart.plot.AbstractPlot;
 public class LinePlot extends AbstractPlot {
 
 	@Override
-	protected boolean doDraw(final Graphics2D g, final float aX, final float aY, final float aWidth, final float aHeight) {
+	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
 
 		return false;
 	}
