@@ -219,6 +219,10 @@ public class PiePlot extends AbstractPlot {
 			for (int i = 0; i < dataList.size(); i++) {
 				PieData data = dataList.get(i);
 				// draw color
+				g.setColor(looks.getDataFillColor(i));
+				g.fillRect(xLegend, yLegend, fontHeight, fontHeight);
+				g.setColor(looks.getDataStrokeColor(i));
+				g.drawRect(xLegend, yLegend, fontHeight, fontHeight);
 				// draw title
 				int strWidth = fm.stringWidth(data.getTitle());
 				g.setFont(font);
@@ -233,6 +237,10 @@ public class PiePlot extends AbstractPlot {
 			for (int i = 0; i < dataList.size(); i++) {
 				PieData data = dataList.get(i);
 				// draw color
+				g.setColor(looks.getDataFillColor(i));
+				g.fillRect(xLegend, yLegend, fontHeight, fontHeight);
+				g.setColor(looks.getDataStrokeColor(i));
+				g.drawRect(xLegend, yLegend, fontHeight, fontHeight);
 				// draw title
 				g.setFont(font);
 				g.setColor(design.getFontColor());
