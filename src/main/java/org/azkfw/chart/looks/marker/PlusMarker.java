@@ -19,9 +19,9 @@ package org.azkfw.chart.looks.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
@@ -53,13 +53,13 @@ public class PlusMarker extends AbstractMarker {
 	}
 
 	@Override
-	public void draw(final Graphics2D g, final float aX, final float aY) {
+	public void draw(final Graphics g, final float aX, final float aY) {
 		if (null != stroke && null != strokeColor) {
 			g.setColor(strokeColor);
 			g.setStroke(stroke);
 
-			g.drawLine((int) (aX + (size / 2)), (int) (aY), (int) (aX + (size / 2)), (int) (aY + size));
-			g.drawLine((int) (aX), (int) (aY + (size / 2)), (int) (aX + size), (int) (aY + (size / 2)));
+			g.drawLine(aX + (size / 2), aY, aX + (size / 2), aY + size);
+			g.drawLine(aX, aY + (size / 2), aX + size, aY + (size / 2));
 		}
 	}
 

@@ -48,6 +48,8 @@ import org.azkfw.chart.charts.scatter.ScatterYAxis;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
+import org.azkfw.graphics.AzukiGraphics2D;
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 
 /**
@@ -59,28 +61,76 @@ import org.azkfw.graphics.Margin;
  */
 public final class AzukiChart {
 
+	/**
+	 * プロット情報
+	 */
 	private Plot plot;
 
+	/**
+	 * 背景色
+	 */
 	private Color backgroundColor;
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aPlot プロット情報
+	 */
 	public AzukiChart(final Plot aPlot) {
 		plot = aPlot;
 	}
 
+	/**
+	 * 背景色を設定する。
+	 * 
+	 * @param aColor 背景色
+	 */
 	public void setBackgoundColor(final Color aColor) {
 		backgroundColor = aColor;
 	}
 
+	/**
+	 * プロット情報を取得する。
+	 * 
+	 * @return プロット情報
+	 */
 	public Plot getPlot() {
 		return plot;
 	}
 
+	/**
+	 * グラフを描画する。
+	 * 
+	 * @param g Graphics
+	 * @param x グラフ描画X座標
+	 * @param y グラフ描画Y座標
+	 * @param width グラフ描画横幅
+	 * @param height グラフ描画縦幅
+	 * @return 結果
+	 */
 	public boolean draw(final Graphics2D g, final float x, final float y, final float width, final float height) {
+		boolean result = false;
+		Graphics graphics = new AzukiGraphics2D(g);
+		result = draw(graphics, x, y, width, height);
+		return result;
+	}
+
+	/**
+	 * グラフを描画する。
+	 * 
+	 * @param g Graphics
+	 * @param x グラフ描画X座標
+	 * @param y グラフ描画Y座標
+	 * @param width グラフ描画横幅
+	 * @param height グラフ描画縦幅
+	 * @return 結果
+	 */
+	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
 		boolean result = false;
 		if (null != plot) {
 			if (null != backgroundColor) {
 				g.setColor(backgroundColor);
-				g.fillRect((int) (x), (int) (y), (int) (width), (int) (height));
+				g.fillRect(x, y, width, height);
 			}
 			result = plot.draw(g, x, y, width, height);
 		}
@@ -93,11 +143,12 @@ public final class AzukiChart {
 			return;
 		}
 
-		//createScatterChart(new File(args[0]));
-		createPieChart(new File(args[0]));
+		// createScatterChart(new File(args[0]));
+		// createPieChart(new File(args[0]));
+		createRadarChart(new File(args[0]));
+		 
 		//createPolarChart(new File(args[0]));
 		//createPolarAreaChart(new File(args[0]));
-		// createRadarChart(new File(args[0]));
 		// createBarChart(new File(args[0]));
 	}
 
@@ -112,7 +163,7 @@ public final class AzukiChart {
 		xAxis.setDisplayFormat(new NumericDisplayFormat(0));
 		xAxis.setScaleAutoFit(false);
 		xAxis.setScale(45);
-		
+
 		ScatterYAxis yAxis = plot.getYAxis();
 		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
 		yAxis.setMinimumValueAutoFit(false);
@@ -123,14 +174,14 @@ public final class AzukiChart {
 		ScatterDataset dataset = new ScatterDataset("SmpaleChart (Scatter)");
 		ScatterSeries seriesSin = new ScatterSeries("Sine");
 		ScatterSeries seriesCos = new ScatterSeries("Cosine");
-		for (int i = 0; i <= 360; i+=10) {
+		for (int i = 0; i <= 360; i += 10) {
 			seriesSin.add(i, Math.sin(RADIANS(i)));
 			seriesCos.add(i, Math.cos(RADIANS(i)));
 		}
 		dataset.addSeries(seriesSin);
 		dataset.addSeries(seriesCos);
 		plot.setDataset(dataset);
-		
+
 		try {
 			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
 		} catch (IOException ex) {
@@ -151,14 +202,14 @@ public final class AzukiChart {
 		dataset.addData(new PieData("England", 15.f));
 		dataset.addData(new PieData("Germany", 5.f));
 		plot.setDataset(dataset);
-		
+
 		try {
 			AzukiChartUtility.saveChartAsPNG(aFile, chart, 800, 800);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void createBarChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createBarChart();
 		chart.setBackgoundColor(Color.WHITE);
@@ -296,7 +347,7 @@ public final class AzukiChart {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private static double RADIANS(double aAngle) {
 		return aAngle * Math.PI / 180.0;
 	}

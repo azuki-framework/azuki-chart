@@ -19,9 +19,9 @@ package org.azkfw.chart.looks.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
@@ -56,18 +56,18 @@ public class DiaMarker extends AbstractMarker {
 	}
 
 	@Override
-	public void draw(final Graphics2D g, final float aX, final float aY) {
-		int[] xps = new int[5];
-		int[] yps = new int[5];
+	public void draw(final Graphics g, final float aX, final float aY) {
+		float[] xps = new float[5];
+		float[] yps = new float[5];
 
-		xps[0] = (int) (aX + (size / 2));
-		yps[0] = (int) (aY);
-		xps[1] = (int) (aX);
-		yps[1] = (int) (aY + (size / 2));
-		xps[2] = (int) (aX + (size / 2));
-		yps[2] = (int) (aY + size);
-		xps[3] = (int) (aX + size);
-		yps[3] = (int) (aY + (size / 2));
+		xps[0] = aX + (size / 2);
+		yps[0] = aY;
+		xps[1] = aX;
+		yps[1] = aY + (size / 2);
+		xps[2] = aX + (size / 2);
+		yps[2] = aY + size;
+		xps[3] = aX + size;
+		yps[3] = aY + (size / 2);
 		xps[4] = xps[0];
 		yps[4] = yps[0];
 

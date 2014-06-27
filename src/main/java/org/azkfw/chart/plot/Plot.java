@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.plot;
 
-import java.awt.Graphics2D;
+import org.azkfw.graphics.Graphics;
 
 /**
  * このインターフェースは、グラフプロット機能を表現したインターフェースです。
@@ -28,5 +28,5 @@ import java.awt.Graphics2D;
  */
 public interface Plot {
 
-	public boolean draw(final Graphics2D g, final float x, final float y, final float width, final float height);
+	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height);
 }

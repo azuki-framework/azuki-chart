@@ -50,6 +50,8 @@ public class CustomLegendDesign implements LegendDesign {
 	private Color strokeColor;
 
 	private Color backgroundColor;
+	
+	private float space;
 
 	public CustomLegendDesign() {
 		display = true;
@@ -64,6 +66,8 @@ public class CustomLegendDesign implements LegendDesign {
 		strokeColor = null;
 
 		backgroundColor = null;
+		
+		space = 4.f;
 	}
 
 	public void setDisplay(final boolean aDisplay) {
@@ -141,5 +145,9 @@ public class CustomLegendDesign implements LegendDesign {
 
 	public Color getBackgroundColor() {
 		return backgroundColor;
+	}
+	
+	public float getSpace() {
+		return space;
 	}
 }

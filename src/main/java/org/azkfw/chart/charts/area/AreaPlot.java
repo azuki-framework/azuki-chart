@@ -17,9 +17,8 @@
  */
 package org.azkfw.chart.charts.area;
 
-import java.awt.Graphics2D;
-
 import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Rect;
 
 /**
@@ -32,7 +31,7 @@ import org.azkfw.graphics.Rect;
 public class AreaPlot extends AbstractPlot {
 
 	@Override
-	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
+	protected boolean doDraw(final Graphics g, final Rect aRect) {
 
 		return false;
 	}

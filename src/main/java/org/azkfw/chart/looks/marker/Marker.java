@@ -17,8 +17,7 @@
  */
 package org.azkfw.chart.looks.marker;
 
-import java.awt.Graphics2D;
-
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
@@ -44,5 +43,5 @@ public interface Marker {
 	 * @param aX 描画位置X座標
 	 * @param aY 描画位置X座標
 	 */
-	public void draw(final Graphics2D g, final float aX, final float aY);
+	public void draw(final Graphics g, final float aX, final float aY);
 }

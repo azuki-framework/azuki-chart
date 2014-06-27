@@ -19,9 +19,9 @@ package org.azkfw.chart.looks.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
@@ -56,16 +56,16 @@ public class TriangleMarker extends AbstractMarker {
 	}
 
 	@Override
-	public void draw(final Graphics2D g, final float aX, final float aY) {
-		int[] xps = new int[4];
-		int[] yps = new int[4];
+	public void draw(final Graphics g, final float aX, final float aY) {
+		float[] xps = new float[4];
+		float[] yps = new float[4];
 
-		xps[0] = (int) (aX + (size / 2));
-		yps[0] = (int) (aY);
-		xps[1] = (int) (aX);
-		yps[1] = (int) (aY + size);
-		xps[2] = (int) (aX + size);
-		yps[2] = (int) (aY + size);
+		xps[0] = aX + (size / 2);
+		yps[0] = aY;
+		xps[1] = aX;
+		yps[1] = aY + size;
+		xps[2] = aX + size;
+		yps[2] = aY + size;
 		xps[3] = xps[0];
 		yps[3] = yps[0];
 

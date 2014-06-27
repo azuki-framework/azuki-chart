@@ -20,14 +20,12 @@ package org.azkfw.chart.charts.pie;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 import java.util.List;
 
-import org.azkfw.chart.charts.scatter.ScatterSeries;
 import org.azkfw.chart.looks.legend.LegendDesign;
 import org.azkfw.chart.looks.legend.LegendDesign.LegendPosition;
-import org.azkfw.chart.looks.marker.Marker;
 import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Point;
@@ -76,7 +74,7 @@ public class PiePlot extends AbstractPlot {
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
+	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
@@ -101,8 +99,8 @@ public class PiePlot extends AbstractPlot {
 			Color fillColor = looks.getDataFillColor(index);
 			int size = (int) (-1 * 360.f * data.getValue() / totalValue);
 			g.setColor(fillColor);
-			g.fillArc((int) (ptChartMiddle.getX() - (szChart.getWidth() / 2.f)), (int) (ptChartMiddle.getY() - (szChart.getHeight() / 2.f)),
-					(int) (szChart.getWidth()), (int) (szChart.getHeight()), angle, size);
+			g.fillArc(ptChartMiddle.getX() - (szChart.getWidth() / 2.f), ptChartMiddle.getY() - (szChart.getHeight() / 2.f), szChart.getWidth(),
+					szChart.getHeight(), angle, size);
 			angle += size;
 		}
 		angle = 90;
@@ -128,7 +126,7 @@ public class PiePlot extends AbstractPlot {
 		return true;
 	}
 
-	private Rect fitLegend(final Graphics2D g, Rect rtChart) {
+	private Rect fitLegend(final Graphics g, Rect rtChart) {
 		Rect rtLegend = null;
 		if (null != looks.getLegendDesign() && null != dataset && null != dataset.getDataList() && 0 < dataset.getDataList().size()) {
 			LegendDesign design = looks.getLegendDesign();
@@ -144,17 +142,26 @@ public class PiePlot extends AbstractPlot {
 
 				// get size
 				if (LegendPosition.Top == pos || LegendPosition.Bottom == pos) {
-					for (PieData data : dataset.getDataList()) {
-						rtLegend.setHeight(font.getSize());
-						int strWidth = fm.stringWidth(data.getTitle());
-						rtLegend.addWidth((font.getSize() * 2) + strWidth);
+					for (int i = 0; i < dataset.getDataList().size(); i++) {
+						PieData data = dataset.getDataList().get(i);
 
+						int strWidth = fm.stringWidth(data.getTitle());
+						rtLegend.setHeight(font.getSize());
+						rtLegend.addWidth((font.getSize() * 2) + strWidth);
+						if (0 < i) {
+							rtLegend.addWidth(design.getSpace());
+						}
 					}
 				} else if (LegendPosition.Left == pos || LegendPosition.Right == pos) {
-					for (PieData data : dataset.getDataList()) {
-						rtLegend.addHeight(font.getSize());
+					for (int i = 0; i < dataset.getDataList().size(); i++) {
+						PieData data = dataset.getDataList().get(i);
+
 						int strWidth = fm.stringWidth(data.getTitle());
+						rtLegend.addHeight(font.getSize());
 						rtLegend.setWidth(Math.max(rtLegend.getWidth(), (font.getSize() * 2) + strWidth));
+						if (0 < i) {
+							rtLegend.addHeight(design.getSpace());
+						}
 					}
 				}
 				if (null != margin) { // Add margin
@@ -190,7 +197,8 @@ public class PiePlot extends AbstractPlot {
 		}
 		return rtLegend;
 	}
-	private void drawLegend(final Graphics2D g, final Rect aRect) {
+
+	private void drawLegend(final Graphics g, final Rect aRect) {
 		LegendDesign design = looks.getLegendDesign();
 
 		Margin mgn = (null != design.getMargin()) ? design.getMargin() : new Margin();
@@ -220,15 +228,16 @@ public class PiePlot extends AbstractPlot {
 				PieData data = dataList.get(i);
 				// draw color
 				g.setColor(looks.getDataFillColor(i));
-				g.fillRect(xLegend, yLegend, fontHeight, fontHeight);
+				g.fillRect(xLegend + (fontHeight / 2), yLegend, fontHeight, fontHeight);
 				g.setColor(looks.getDataStrokeColor(i));
-				g.drawRect(xLegend, yLegend, fontHeight, fontHeight);
+				g.drawRect(xLegend + (fontHeight / 2), yLegend, fontHeight, fontHeight);
 				// draw title
 				int strWidth = fm.stringWidth(data.getTitle());
 				g.setFont(font);
 				g.setColor(design.getFontColor());
-				g.drawString(data.getTitle(), (fontHeight * 2) + xLegend, yLegend + fontHeight);
-				xLegend += (fontHeight * 2) + strWidth;
+				g.drawStringA(data.getTitle(), (fontHeight * 2) + xLegend, yLegend);
+
+				xLegend += design.getSpace() + (fontHeight * 2) + strWidth;
 			}
 		} else if (design.getPosition() == LegendPosition.Left || design.getPosition() == LegendPosition.Right) {
 			List<PieData> dataList = dataset.getDataList();
@@ -238,14 +247,15 @@ public class PiePlot extends AbstractPlot {
 				PieData data = dataList.get(i);
 				// draw color
 				g.setColor(looks.getDataFillColor(i));
-				g.fillRect(xLegend, yLegend, fontHeight, fontHeight);
+				g.fillRect(xLegend + (fontHeight / 2), yLegend, fontHeight, fontHeight);
 				g.setColor(looks.getDataStrokeColor(i));
-				g.drawRect(xLegend, yLegend, fontHeight, fontHeight);
+				g.drawRect(xLegend + (fontHeight / 2), yLegend, fontHeight, fontHeight);
 				// draw title
 				g.setFont(font);
 				g.setColor(design.getFontColor());
-				g.drawString(data.getTitle(), (fontHeight * 2) + xLegend, yLegend + fontHeight);
-				yLegend += fontHeight;
+				g.drawStringA(data.getTitle(), (fontHeight * 2) + xLegend, yLegend);
+
+				yLegend += design.getSpace() + fontHeight;
 			}
 		}
 	}

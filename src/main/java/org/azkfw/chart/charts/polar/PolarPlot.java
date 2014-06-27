@@ -20,10 +20,10 @@ package org.azkfw.chart.charts.polar;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 import java.util.List;
 
 import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
@@ -83,7 +83,7 @@ public class PolarPlot extends AbstractPlot {
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
+	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		Size szChart = null;
 		Point ptChartMiddle = null;
 		szChart = new Size(aRect.getWidth(), aRect.getHeight());
@@ -191,8 +191,8 @@ public class PolarPlot extends AbstractPlot {
 			PolarSeries series = seriesList.get(index);
 
 			List<PolarSeriesPoint> points = series.getPoints();
-			int[] pxs = new int[points.size() + 1];
-			int[] pys = new int[points.size() + 1];
+			float[] pxs = new float[points.size() + 1];
+			float[] pys = new float[points.size() + 1];
 			for (int i = 0; i < points.size(); i++) {
 				PolarSeriesPoint point = points.get(i);
 				int x = (int) (ptChartMiddle.getX() + pixXPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
@@ -229,8 +229,7 @@ public class PolarPlot extends AbstractPlot {
 		}
 
 		// Draw axis scale
-		int fontSize = looks.getAxisFont().getSize();
-		FontMetrics fm = g.getFontMetrics();
+		FontMetrics fm = g.getFontMetrics(looks.getAxisFont());
 		g.setColor(looks.getAxisFontColor());
 		g.setFont(looks.getAxisFont());
 		g.setStroke(new BasicStroke(1.f));
@@ -240,7 +239,7 @@ public class PolarPlot extends AbstractPlot {
 
 			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
 			int strWidth = fm.stringWidth(str);
-			g.drawString(str, (int) (ptChartMiddle.getX() + rangeX - (strWidth / 2)), (int) (ptChartMiddle.getY() + 8.f + fontSize));
+			g.drawStringA(str, (int) (ptChartMiddle.getX() + rangeX - (strWidth / 2)), (int) (ptChartMiddle.getY() + 8.f));
 		}
 
 		// XXX: debug

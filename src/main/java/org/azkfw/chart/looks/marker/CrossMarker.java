@@ -19,9 +19,9 @@ package org.azkfw.chart.looks.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
@@ -53,7 +53,7 @@ public class CrossMarker extends AbstractMarker {
 	}
 
 	@Override
-	public void draw(final Graphics2D g, final float aX, final float aY) {
+	public void draw(final Graphics g, final float aX, final float aY) {
 		if (null != stroke && null != strokeColor) {
 			g.setColor(strokeColor);
 			g.setStroke(stroke);

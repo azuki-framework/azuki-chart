@@ -19,11 +19,12 @@ package org.azkfw.chart.plot;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 
 import org.azkfw.chart.looks.title.TitleDesign;
 import org.azkfw.chart.looks.title.TitleDesign.TitlePosition;
+import org.azkfw.core.lang.LoggingObject;
 import org.azkfw.core.util.StringUtility;
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Rect;
@@ -35,12 +36,36 @@ import org.azkfw.graphics.Rect;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public abstract class AbstractPlot implements Plot {
+public abstract class AbstractPlot extends LoggingObject implements Plot {
 
 	/** Margin */
 	private Margin margin;
 
+	/**
+	 * コンストラクタ
+	 */
 	public AbstractPlot() {
+		super(Plot.class);
+		margin = null;
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aClass クラス
+	 */
+	public AbstractPlot(final Class<?> aClass) {
+		super(aClass);
+		margin = null;
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aName 名前
+	 */
+	public AbstractPlot(final String aName) {
+		super(aName);
 		margin = null;
 	}
 
@@ -54,7 +79,7 @@ public abstract class AbstractPlot implements Plot {
 	}
 
 	@Override
-	public boolean draw(final Graphics2D g, final float x, final float y, final float width, final float height) {
+	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
 		boolean result = false;
 
 		Rect rtPlotArea = null;
@@ -70,7 +95,7 @@ public abstract class AbstractPlot implements Plot {
 		return result;
 	}
 
-	protected abstract boolean doDraw(final Graphics2D g, final Rect aRect);
+	protected abstract boolean doDraw(final Graphics g, final Rect aRect);
 
 	/**
 	 * タイトルのフィット処理を行なう。
@@ -84,7 +109,7 @@ public abstract class AbstractPlot implements Plot {
 	 * @param rtChart チャートRect（更新される）
 	 * @return タイトルRect
 	 */
-	protected Rect fitTitle(final Graphics2D g, final String aTitle, final TitleDesign aDesign, Rect rtChart) {
+	protected Rect fitTitle(final Graphics g, final String aTitle, final TitleDesign aDesign, Rect rtChart) {
 		Rect rtTitle = null;
 		if (null != aDesign && StringUtility.isNotEmpty(aTitle)) {
 			if (aDesign.isDisplay()) {
@@ -133,31 +158,56 @@ public abstract class AbstractPlot implements Plot {
 		return rtTitle;
 	}
 
-	protected void drawTitle(final Graphics2D g, final String aTitle, final TitleDesign aDesign, final Rect aRect) {
-
+	protected void drawTitle(final Graphics g, final String aTitle, final TitleDesign aDesign, final Rect aRect) {
 		Margin mgn = (null != aDesign.getMargin()) ? aDesign.getMargin() : new Margin();
 		// fill background
 		if (null != aDesign.getBackgroundColor()) {
 			g.setColor(aDesign.getBackgroundColor());
-			g.fillRect((int) (aRect.getX() + mgn.getLeft()), (int) (aRect.getY() + mgn.getTop()), (int) (aRect.getWidth() - mgn.getHorizontalSize()),
-					(int) (aRect.getHeight() - mgn.getVerticalSize()));
+			g.fillRect(aRect.getX() + mgn.getLeft(), aRect.getY() + mgn.getTop(), aRect.getWidth() - mgn.getHorizontalSize(),
+					aRect.getHeight() - mgn.getVerticalSize());
 		}
 		// draw stroke
 		if (null != aDesign.getStroke() && null != aDesign.getStrokeColor()) {
-			g.setStroke(aDesign.getStroke());
-			g.setColor(aDesign.getStrokeColor());
-			g.drawRect((int) (aRect.getX() + mgn.getLeft()), (int) (aRect.getY() + mgn.getTop()), (int) (aRect.getWidth() - mgn.getHorizontalSize()),
-					(int) (aRect.getHeight() - mgn.getVerticalSize()));
+			g.setStroke(aDesign.getStroke(), aDesign.getStrokeColor());
+			g.drawRect(aRect.getX() + mgn.getLeft(), aRect.getY() + mgn.getTop(), aRect.getWidth() - mgn.getHorizontalSize(),
+					aRect.getHeight() - mgn.getVerticalSize());
 		}
 
 		Padding padding = (null != aDesign.getPadding()) ? aDesign.getPadding() : new Padding();
 		Font font = aDesign.getFont();
-		g.setFont(font);
-		g.setColor(aDesign.getFontColor());
+		g.setFont(font, aDesign.getFontColor());
 
 		int xTitle = (int) (aRect.getX() + mgn.getLeft() + padding.getLeft());
-		int yTitle = (int) (aRect.getY() + mgn.getTop() + padding.getTop() + font.getSize());
-		g.drawString(aTitle, xTitle, yTitle);
+		int yTitle = (int) (aRect.getY() + mgn.getTop() + padding.getTop());
+		g.drawStringA(aTitle, xTitle, yTitle);
+	}
+
+	protected static class ScaleValue {
+		private double min;
+		private double max;
+		private double scale;
+
+		public ScaleValue(final double aMin, final double aMax, final double aScale) {
+			min = aMin;
+			max = aMax;
+			scale = aScale;
+		}
+
+		public double getMin() {
+			return min;
+		}
+
+		public double getMax() {
+			return max;
+		}
+
+		public double getScale() {
+			return scale;
+		}
+
+		public double getDiff() {
+			return max - min;
+		}
 	}
 
 }

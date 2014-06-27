@@ -70,4 +70,6 @@ public interface LegendDesign {
 
 	public Color getBackgroundColor();
 
+	public float getSpace();
+
 }

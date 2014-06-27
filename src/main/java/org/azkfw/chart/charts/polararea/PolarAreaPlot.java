@@ -20,10 +20,10 @@ package org.azkfw.chart.charts.polararea;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 import java.util.List;
 
 import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
@@ -68,7 +68,7 @@ public class PolarAreaPlot extends AbstractPlot {
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
+	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		Size szChart = null;
 		Point ptChartMiddle = null;
 		szChart = new Size(aRect.getWidth(), aRect.getHeight());
@@ -221,7 +221,7 @@ public class PolarAreaPlot extends AbstractPlot {
 
 		// Draw axis scale
 		int fontSize = looks.getAxisFont().getSize();
-		FontMetrics fm = g.getFontMetrics();
+		FontMetrics fm = g.getFontMetrics(looks.getAxisFont());
 		g.setColor(looks.getAxisFontColor());
 		g.setFont(looks.getAxisFont());
 		g.setStroke(new BasicStroke(1.f));
@@ -231,7 +231,7 @@ public class PolarAreaPlot extends AbstractPlot {
 
 			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
 			int strWidth = fm.stringWidth(str);
-			g.drawString(str, (int) (ptChartMiddle.getX() + rangeX - (strWidth / 2)), (int) (ptChartMiddle.getY() + 8.f + fontSize));
+			g.drawStringA(str, (int) (ptChartMiddle.getX() + rangeX - (strWidth / 2)), (int) (ptChartMiddle.getY() + 8.f));
 		}
 
 		// XXX: debug

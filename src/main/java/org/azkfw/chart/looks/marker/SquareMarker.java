@@ -19,9 +19,9 @@ package org.azkfw.chart.looks.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Stroke;
 
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
@@ -56,15 +56,15 @@ public class SquareMarker extends AbstractMarker {
 	}
 
 	@Override
-	public void draw(final Graphics2D g, final float aX, final float aY) {
+	public void draw(final Graphics g, final float aX, final float aY) {
 		if (null != fillColor) {
 			g.setColor(fillColor);
-			g.fillRect((int) (aX), (int) (aY), (int) (size), (int) (size));
+			g.fillRect(aX, aY, size, size);
 		}
 		if (null != stroke && null != strokeColor) {
 			g.setColor(strokeColor);
 			g.setStroke(stroke);
-			g.drawRect((int) (aX), (int) (aY), (int) (size), (int) (size));
+			g.drawRect(aX, aY, size, size);
 		}
 	}
 

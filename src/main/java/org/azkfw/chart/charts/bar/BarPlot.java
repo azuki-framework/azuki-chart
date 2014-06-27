@@ -18,10 +18,10 @@
 package org.azkfw.chart.charts.bar;
 
 import java.awt.FontMetrics;
-import java.awt.Graphics2D;
 
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
@@ -94,7 +94,7 @@ public class BarPlot extends AbstractPlot {
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics2D g, final Rect aRect) {
+	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		// データ最小値・最大値取得
 		Double dataMinValue = null;
 		Double dataMaxValue = null;
@@ -264,9 +264,9 @@ public class BarPlot extends AbstractPlot {
 			for (double value = minValue; value <= maxValue; value += scale) {
 				String str = df.toString(value);
 				float strWidth = fm.stringWidth(str);
-				int yLabel = (int) (y - ((value - minValue) * pixYPerValue) + (fontSize / 2));
+				int yLabel = (int) (y - ((value - minValue) * pixYPerValue) - (fontSize / 2));
 				int xLabel = (int) (x - strWidth);
-				g.drawString(str, xLabel, yLabel);
+				g.drawStringA(str, xLabel, yLabel);
 			}
 		}
 
@@ -276,7 +276,6 @@ public class BarPlot extends AbstractPlot {
 		g.drawLine((int) (x), (int) (y), (int) (x + width), (int) (y));
 		{
 			float dataWidth = width / dataPointSize;
-			int fontSize = looks.getXAxisFont().getSize();
 			FontMetrics fm = g.getFontMetrics(looks.getXAxisFont());
 			DisplayFormat df = axisX.getDisplayFormat();
 			g.setColor(looks.getXAxisFontColor());
@@ -284,9 +283,9 @@ public class BarPlot extends AbstractPlot {
 			for (int i = 0; i < dataPointSize; i++) {
 				String str = df.toString(i);
 				float strWidth = fm.stringWidth(str);
-				int yLabel = (int) (y + fontSize);
+				int yLabel = (int) (y);
 				int xLabel = (int) (x + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2));
-				g.drawString(str, xLabel, yLabel);
+				g.drawStringA(str, xLabel, yLabel);
 			}
 		}
 
