@@ -25,6 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.azkfw.chart.looks.AbstractLooks;
+import org.azkfw.chart.looks.legend.CustomLegendDesign;
+import org.azkfw.chart.looks.marker.CircleMarker;
+import org.azkfw.chart.looks.marker.DiaMarker;
+import org.azkfw.chart.looks.marker.Marker;
+import org.azkfw.chart.looks.marker.SquareMarker;
+import org.azkfw.chart.looks.marker.TriangleMarker;
+import org.azkfw.chart.looks.title.CustomTitleDesign;
 
 /**
  * このクラスは、レーダーチャートのルックス情報を保持するクラスです。
@@ -50,6 +57,11 @@ public class RadarLooks extends AbstractLooks {
 		COLORS.add(new Color(125, 96, 160, 255));
 		COLORS.add(new Color(70, 170, 197, 255));
 		COLORS.add(new Color(246, 146, 64, 255));
+	}
+
+	public RadarLooks() {
+		setTitleDesign(new CustomTitleDesign());
+		setLegendDesign(new CustomLegendDesign());
 	}
 
 	/**
@@ -165,5 +177,31 @@ public class RadarLooks extends AbstractLooks {
 		Color color = getSeriesStrokeColor(aIndex, aSeries);
 		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 64);
 		return color;
+	}
+
+	public Marker getSeriesMarker(final int aIndex, final RadarSeries aSeries) {
+		Marker marker = null;
+		switch (aIndex % 4) {
+		case 0:
+			marker = new CircleMarker(10, getSeriesStrokeColor(aIndex, aSeries));
+			break;
+		case 1:
+			marker = new SquareMarker(10, getSeriesStrokeColor(aIndex, aSeries));
+			break;
+		case 2:
+			marker = new TriangleMarker(10, getSeriesStrokeColor(aIndex, aSeries));
+			break;
+		case 3:
+			marker = new DiaMarker(10, getSeriesStrokeColor(aIndex, aSeries));
+			break;
+		default:
+			break;
+		}
+
+		return marker;
+	}
+
+	public Marker getSeriesPointMarker(final int aIndex, final RadarSeries aSeries, final int aNo, final RadarSeriesPoint aPoint) {
+		return null;
 	}
 }

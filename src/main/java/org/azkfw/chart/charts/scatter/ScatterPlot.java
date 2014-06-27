@@ -110,25 +110,25 @@ public class ScatterPlot extends AbstractPlot {
 		// 凡例適用
 		Rect rtLegend = fitLegend(g, rtChartPre);
 
-		float fontMargin = 8;
-
 		// スケール調整
 		ScaleValue[] svs = getXYScaleValue();
 		ScaleValue xScaleValue = svs[0];
 		ScaleValue yScaleValue = svs[1];
 
+		float fontMargin = 8.0f;
+
 		Margin margin = fitChart(g, rtChartPre, xScaleValue, yScaleValue, fontMargin);
+		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
 		// スケール計算
 		double xDifValue = xScaleValue.getDiff();
 		double yDifValue = yScaleValue.getDiff();
 		double pixXPerValue = (rtChartPre.getWidth() - margin.getHorizontalSize()) / xDifValue;
 		double pixYPerValue = (rtChartPre.getHeight() - margin.getVerticalSize()) / yDifValue;
-		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
 		Rect rtChart = new Rect();
 		rtChart.setX(rtChartPre.getX() + margin.getLeft());
-		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom());
+		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom()); // ★注意：Yは原点から
 		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
 
@@ -207,8 +207,8 @@ public class ScatterPlot extends AbstractPlot {
 
 		if (null != dataset) {
 			List<ScatterSeries> seriesList = dataset.getSeriesList();
-			for (int i = 0; i < seriesList.size(); i++) {
-				ScatterSeries series = seriesList.get(i);
+			for (int index = 0; index < seriesList.size(); index++) {
+				ScatterSeries series = seriesList.get(index);
 				List<ScatterSeriesPoint> points = series.getPoints();
 
 				g.setClip(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
@@ -227,7 +227,7 @@ public class ScatterPlot extends AbstractPlot {
 					xps[points.size() + 1] = (int) (rtChart.getX() + rtChart.getWidth());
 					yps[points.size() + 1] = (int) (rtChart.getY());
 
-					Color color = looks.getSeriesFillColor(i, series);
+					Color color = looks.getSeriesFillColor(index, series);
 					GradientPaint paint = new GradientPaint(0f, rtChart.getY() - rtChart.getHeight(), color, 0f, rtChart.getY(), new Color(
 							color.getRed(), color.getGreen(), color.getBlue(), 0));
 					g.setPaint(paint);
@@ -243,8 +243,8 @@ public class ScatterPlot extends AbstractPlot {
 						xps[j] = (int) (rtChart.getX() + ((point.getX() - xScaleValue.getMin()) * pixXPerValue));
 						yps[j] = (int) (rtChart.getY() - ((point.getY() - yScaleValue.getMin()) * pixYPerValue));
 					}
-					g.setColor(looks.getSeriesStrokeColor(i, series));
-					g.setStroke(looks.getSeriesStroke(i, series));
+					g.setColor(looks.getSeriesStrokeColor(index, series));
+					g.setStroke(looks.getSeriesStroke(index, series));
 					g.drawPolyline(xps, yps, points.size());
 				}
 
@@ -252,7 +252,7 @@ public class ScatterPlot extends AbstractPlot {
 
 				// Draw series marker
 				{
-					Marker seriesMarker = looks.getSeriesMarker(i, series);
+					Marker seriesMarker = looks.getSeriesMarker(index, series);
 					for (int j = 0; j < points.size(); j++) {
 						ScatterSeriesPoint point = points.get(j);
 
@@ -261,7 +261,7 @@ public class ScatterPlot extends AbstractPlot {
 							continue;
 						}
 
-						Marker pointMarker = looks.getSeriesPointMarker(i, series, j, point);
+						Marker pointMarker = looks.getSeriesPointMarker(index, series, j, point);
 						Marker marker = (null != pointMarker) ? pointMarker : seriesMarker;
 						if (null != marker) {
 							int xMarker = (int) (rtChart.getX() + ((point.getX() - xScaleValue.getMin()) * pixXPerValue));
@@ -308,10 +308,10 @@ public class ScatterPlot extends AbstractPlot {
 						yDataMinValue = point.getY();
 						yDataMaxValue = point.getY();
 					} else {
-						xDataMinValue = (xDataMinValue > point.getX()) ? point.getX() : xDataMinValue;
-						xDataMaxValue = (xDataMaxValue < point.getX()) ? point.getX() : xDataMaxValue;
-						yDataMinValue = (yDataMinValue > point.getY()) ? point.getY() : yDataMinValue;
-						yDataMaxValue = (yDataMaxValue < point.getY()) ? point.getY() : yDataMaxValue;
+						xDataMinValue = Math.min(xDataMinValue, point.getX());
+						xDataMaxValue = Math.max(xDataMaxValue, point.getX());
+						yDataMinValue = Math.min(yDataMinValue, point.getY());
+						yDataMaxValue = Math.max(yDataMaxValue, point.getY());
 					}
 				}
 			}
@@ -533,8 +533,8 @@ public class ScatterPlot extends AbstractPlot {
 			final float aFontMargin) {
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 
-		double xDifValue = aXScaleValue.getMax() - aXScaleValue.getMin();
-		double yDifValue = aYScaleValue.getMax() - aYScaleValue.getMin();
+		double xDifValue = aXScaleValue.getDiff();
+		double yDifValue = aYScaleValue.getDiff();
 
 		// スケール計算(プレ)
 		double pixXPerValue = (aRtChart.getWidth() - margin.getHorizontalSize()) / xDifValue;

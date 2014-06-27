@@ -36,18 +36,59 @@ import org.azkfw.chart.AzukiChart;
  */
 public class AzukiChartUtility {
 
+	/**
+	 * グラフを画像ファイル(BMP形式)に保存する。
+	 * 
+	 * @param aFile 画像ファイル
+	 * @param aChart グラフ情報
+	 * @param aWidth グラフサイズ（横幅）
+	 * @param aHeight グラフサイズ(縦幅)
+	 * @return 結果
+	 * @throws IOException IO操作に起因する問題が発生した場合
+	 */
 	public static boolean saveChartAsBMP(final File aFile, final AzukiChart aChart, final float aWidth, final float aHeight) throws IOException {
 		return saveChart(aFile, aChart, aWidth, aHeight, "bmp");
 	}
 
+	/**
+	 * グラフを画像ファイル(Jpeg形式)に保存する。
+	 * 
+	 * @param aFile 画像ファイル
+	 * @param aChart グラフ情報
+	 * @param aWidth グラフサイズ（横幅）
+	 * @param aHeight グラフサイズ(縦幅)
+	 * @return 結果
+	 * @throws IOException IO操作に起因する問題が発生した場合
+	 */
 	public static boolean saveChartAsJpeg(final File aFile, final AzukiChart aChart, final float aWidth, final float aHeight) throws IOException {
 		return saveChart(aFile, aChart, aWidth, aHeight, "jpeg");
 	}
 
+	/**
+	 * グラフを画像ファイル(PNG形式)に保存する。
+	 * 
+	 * @param aFile 画像ファイル
+	 * @param aChart グラフ情報
+	 * @param aWidth グラフサイズ（横幅）
+	 * @param aHeight グラフサイズ(縦幅)
+	 * @return 結果
+	 * @throws IOException IO操作に起因する問題が発生した場合
+	 */
 	public static boolean saveChartAsPNG(final File aFile, final AzukiChart aChart, final float aWidth, final float aHeight) throws IOException {
 		return saveChart(aFile, aChart, aWidth, aHeight, "png");
 	}
 
+	/**
+	 * グラフを画像ファイルに保存する。
+	 * 
+	 * @param aFile 画像ファイル
+	 * @param aChart グラフ情報
+	 * @param aWidth グラフサイズ（横幅）
+	 * @param aHeight グラフサイズ(縦幅)
+	 * @param aFormat 画像形式
+	 * @return 結果
+	 * @throws IOException IO操作に起因する問題が発生した場合
+	 */
 	private static boolean saveChart(final File aFile, final AzukiChart aChart, final float aWidth, final float aHeight, final String aFormat)
 			throws IOException {
 		boolean result = false;

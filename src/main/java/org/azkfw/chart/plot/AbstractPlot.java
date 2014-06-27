@@ -38,7 +38,7 @@ import org.azkfw.graphics.Rect;
  */
 public abstract class AbstractPlot extends LoggingObject implements Plot {
 
-	/** Margin */
+	/** マージン情報 */
 	private Margin margin;
 
 	/**
@@ -70,9 +70,9 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	}
 
 	/**
-	 * マージンを設定する。
+	 * マージン情報を設定する。
 	 * 
-	 * @param aMargin マージン
+	 * @param aMargin マージン情報
 	 */
 	public void setMargin(final Margin aMargin) {
 		margin = aMargin;
@@ -82,19 +82,24 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
 		boolean result = false;
 
-		Rect rtPlotArea = null;
-		// マージン適用
+		Rect rtPlot = null;
 		if (null != margin) {
-			rtPlotArea = new Rect(x + margin.getLeft(), y + margin.getTop(), width - margin.getHorizontalSize(), height - margin.getVerticalSize());
+			rtPlot = new Rect(x + margin.getLeft(), y + margin.getTop(), width - margin.getHorizontalSize(), height - margin.getVerticalSize());
 		} else {
-			rtPlotArea = new Rect(x, y, width, height);
+			rtPlot = new Rect(x, y, width, height);
 		}
-
-		result = doDraw(g, rtPlotArea);
+		result = doDraw(g, rtPlot);
 
 		return result;
 	}
 
+	/**
+	 * 描画を行う。
+	 * 
+	 * @param g Graphics
+	 * @param aRect 描画範囲
+	 * @return 結果
+	 */
 	protected abstract boolean doDraw(final Graphics g, final Rect aRect);
 
 	/**
@@ -158,6 +163,14 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 		return rtTitle;
 	}
 
+	/**
+	 * タイトルの描画を行う。
+	 * 
+	 * @param g Graphics
+	 * @param aTitle タイトル
+	 * @param aDesign デザイン情報
+	 * @param aRect 描画範囲
+	 */
 	protected void drawTitle(final Graphics g, final String aTitle, final TitleDesign aDesign, final Rect aRect) {
 		Margin mgn = (null != aDesign.getMargin()) ? aDesign.getMargin() : new Margin();
 		// fill background
@@ -174,15 +187,24 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 		}
 
 		Padding padding = (null != aDesign.getPadding()) ? aDesign.getPadding() : new Padding();
-		Font font = aDesign.getFont();
-		g.setFont(font, aDesign.getFontColor());
+		float x = aRect.getX() + mgn.getLeft() + padding.getLeft();
+		float y = aRect.getY() + mgn.getTop() + padding.getTop();
 
-		int xTitle = (int) (aRect.getX() + mgn.getLeft() + padding.getLeft());
-		int yTitle = (int) (aRect.getY() + mgn.getTop() + padding.getTop());
-		g.drawStringA(aTitle, xTitle, yTitle);
+		g.setFont(aDesign.getFont(), aDesign.getFontColor());
+		g.drawStringA(aTitle, x, y);
+	}
+
+	protected static float pixelLimit(final float aValue) {
+		if (aValue > 100000) {
+			return 100000;
+		} else if (aValue < -100000) {
+			return -100000;
+		}
+		return aValue;
 	}
 
 	protected static class ScaleValue {
+
 		private double min;
 		private double max;
 		private double scale;
