@@ -31,7 +31,7 @@ import org.azkfw.graphics.Padding;
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public interface LegendDesign {
+public interface LegendStyle {
 
 	public enum LegendPosition {
 		/** グラフ上部 */

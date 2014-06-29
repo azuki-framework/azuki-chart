@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart.charts.polar;
 
+import org.azkfw.chart.series.SeriesPoint;
+
 /**
  * このクラスは、
  * 
@@ -24,7 +26,7 @@ package org.azkfw.chart.charts.polar;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarSeriesPoint {
+public class PolarSeriesPoint implements SeriesPoint {
 
 	/**
 	 * 角度

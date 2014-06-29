@@ -15,41 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks;
+package org.azkfw.chart.dataset;
 
-import org.azkfw.chart.looks.legend.LegendDesign;
-import org.azkfw.chart.looks.title.TitleDesign;
+import java.util.List;
+
+import org.azkfw.chart.series.Series;
 
 /**
- * このクラスは、グラフルックス機能を実装するための基底クラスです。
+ * このインターフェースは、シリーズデータセット機能を表現したインターフェースです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public abstract class AbstractLooks {
+public interface SeriesDataset<T extends Series> extends Dataset {
 
-	private TitleDesign titleDesign;
-	private LegendDesign legendDesign;
+	/**
+	 * シリーズを追加する。
+	 * 
+	 * @param aSeries シリーズ
+	 */
+	public void addSeries(final T aSeries);
 
-	public AbstractLooks() {
-		titleDesign = null;
-		legendDesign = null;
-	}
-
-	public final void setTitleDesign(final TitleDesign aDesign) {
-		titleDesign = aDesign;
-	}
-
-	public final TitleDesign getTitleDesign() {
-		return titleDesign;
-	}
-
-	public final void setLegendDesign(final LegendDesign aDesign) {
-		legendDesign = aDesign;
-	}
-
-	public final LegendDesign getLegendDesign() {
-		return legendDesign;
-	}
+	/**
+	 * シリーズ一覧を取得する。
+	 * 
+	 * @return シリーズ一覧
+	 */
+	public List<T> getSeriesList();
 }

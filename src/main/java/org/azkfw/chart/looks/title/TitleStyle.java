@@ -31,7 +31,7 @@ import org.azkfw.graphics.Padding;
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public interface TitleDesign {
+public interface TitleStyle {
 
 	public enum TitlePosition {
 		/** グラフ上部 */
@@ -59,7 +59,7 @@ public interface TitleDesign {
 	public Color getFontColor();
 
 	public Font getFont();
-	
+
 	public Margin getMargin();
 
 	public Padding getPadding();

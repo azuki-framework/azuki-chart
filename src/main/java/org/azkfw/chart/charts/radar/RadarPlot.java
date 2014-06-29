@@ -19,18 +19,14 @@ package org.azkfw.chart.charts.radar;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Polygon;
 import java.util.List;
 
-import org.azkfw.chart.looks.legend.LegendDesign;
-import org.azkfw.chart.looks.legend.LegendDesign.LegendPosition;
 import org.azkfw.chart.looks.marker.Marker;
-import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
-import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
@@ -42,37 +38,18 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class RadarPlot extends AbstractPlot {
+public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartStyle> {
 
 	/** 軸情報 */
 	private RadarAxis axis;
-
-	/** データセット */
-	private RadarDataset dataset;
-
-	/** Looks */
-	private RadarLooks looks;
 
 	/**
 	 * コンストラクタ
 	 */
 	public RadarPlot() {
 		axis = new RadarAxis();
-		dataset = null;
-		looks = new RadarLooks();
-	}
 
-	public void setLooks(final RadarLooks aLooks) {
-		looks = aLooks;
-	}
-
-	/**
-	 * データセットを設定する。
-	 * 
-	 * @param aDataset データセット
-	 */
-	public void setDataset(final RadarDataset aDataset) {
-		dataset = aDataset;
+		setChartStyle(new RadarChartStyle());
 	}
 
 	/**
@@ -86,12 +63,15 @@ public class RadarPlot extends AbstractPlot {
 
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
+		RadarDataset dataset = getDataset();
+		RadarChartStyle style = getChartStyle();
+
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), looks.getTitleDesign(), rtChartPre);
+		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
 		// 凡例適用
-		Rect rtLegend = fitLegend(g, rtChartPre);
+		Rect rtLegend = fitLegend(g, style.getLegendDesign(), rtChartPre);
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
@@ -124,7 +104,7 @@ public class RadarPlot extends AbstractPlot {
 		debug(String.format("Data point size : %d", dataPointSize));
 
 		// Draw axis
-		g.setStroke(looks.getAxisLineStroke(), looks.getAxisLineColor());
+		g.setStroke(style.getAxisLineStroke(), style.getAxisLineColor());
 		for (int i = 0; i < dataPointSize; i++) {
 			double angle = (360.f / dataPointSize) * i + 90;
 			float x = (float) (ptChartMiddle.getX() + (pixXPerValue * scaleValue.getDiff() * Math.cos(RADIANS(angle))));
@@ -133,7 +113,7 @@ public class RadarPlot extends AbstractPlot {
 		}
 
 		// Draw circle
-		g.setStroke(looks.getAxisCircleStroke(), looks.getAxisCircleColor());
+		g.setStroke(style.getAxisCircleStroke(), style.getAxisCircleColor());
 		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 			float[] pxs = new float[dataPointSize + 1];
 			float[] pys = new float[dataPointSize + 1];
@@ -194,15 +174,15 @@ public class RadarPlot extends AbstractPlot {
 			g.setClip(polygon);
 
 			// Draw series fill
-			Color fillColor = looks.getSeriesFillColor(index, series);
+			Color fillColor = style.getSeriesFillColor(index, series);
 			if (null != fillColor) {
 				g.setColor(fillColor);
 				g.fillPolygon(pxs, pys, dataPointSize + 1);
 			}
 			// Draw series line
-			Color strokeColor = looks.getSeriesStrokeColor(index, series);
+			Color strokeColor = style.getSeriesStrokeColor(index, series);
 			if (null != strokeColor) {
-				g.setStroke(looks.getSeriesStroke(index, series), strokeColor);
+				g.setStroke(style.getSeriesStroke(index, series), strokeColor);
 				g.drawPolyline(pxs, pys, dataPointSize + 1);
 			}
 
@@ -210,7 +190,7 @@ public class RadarPlot extends AbstractPlot {
 
 			// Draw series marker
 			{
-				Marker seriesMarker = looks.getSeriesMarker(index, series);
+				Marker seriesMarker = style.getSeriesMarker(index, series);
 				for (int j = 0; j < points.size(); j++) {
 					RadarSeriesPoint point = points.get(j);
 
@@ -218,7 +198,7 @@ public class RadarPlot extends AbstractPlot {
 						continue;
 					}
 
-					Marker pointMarker = looks.getSeriesPointMarker(index, series, j, point);
+					Marker pointMarker = style.getSeriesPointMarker(index, series, j, point);
 					Marker marker = (null != pointMarker) ? pointMarker : seriesMarker;
 					if (null != marker) {
 						double angle = -1 * (360.f / dataPointSize) * j + 90;
@@ -242,10 +222,10 @@ public class RadarPlot extends AbstractPlot {
 		}
 
 		// Draw axis scale
-		int fontSize = looks.getAxisFont().getSize();
-		FontMetrics fm = g.getFontMetrics(looks.getAxisFont());
-		g.setColor(looks.getAxisFontColor());
-		g.setFont(looks.getAxisFont());
+		int fontSize = style.getAxisFont().getSize();
+		FontMetrics fm = g.getFontMetrics(style.getAxisFont());
+		g.setColor(style.getAxisFontColor());
+		g.setFont(style.getAxisFont());
 		g.setStroke(new BasicStroke(1.f));
 		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 			double rangeY = pixYPerValue * (value - scaleValue.getMin());
@@ -259,17 +239,19 @@ public class RadarPlot extends AbstractPlot {
 
 		// Draw Legend
 		if (null != rtLegend) {
-			drawLegend(g, rtLegend);
+			drawLegend(g, style.getLegendDesign(), rtLegend);
 		}
 		// Draw title
 		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), looks.getTitleDesign(), rtTitle);
+			drawTitle(g, dataset.getTitle(), rtTitle);
 		}
 
 		return true;
 	}
 
 	private ScaleValue getScaleValue() {
+		RadarDataset dataset = getDataset();
+
 		// データ最小値・最大値取得
 		Double dataMaxValue = null;
 		Double dataMinValue = null;
@@ -324,147 +306,9 @@ public class RadarPlot extends AbstractPlot {
 		return scaleValue;
 	}
 
-	private Rect fitLegend(final Graphics g, Rect rtChart) {
-		Rect rtLegend = null;
-		if (null != looks.getLegendDesign() && null != dataset && null != dataset.getSeriesList() && 0 < dataset.getSeriesList().size()) {
-			LegendDesign design = looks.getLegendDesign();
-			if (design.isDisplay()) {
-				rtLegend = new Rect();
-
-				Margin margin = design.getMargin();
-				Padding padding = design.getPadding();
-
-				Font font = design.getFont();
-				FontMetrics fm = g.getFontMetrics(font);
-				LegendPosition pos = design.getPosition();
-
-				// get size
-				if (LegendPosition.Top == pos || LegendPosition.Bottom == pos) {
-					for (int i = 0; i < dataset.getSeriesList().size(); i++) {
-						RadarSeries series = dataset.getSeriesList().get(i);
-
-						int strWidth = fm.stringWidth(series.getTitle());
-						rtLegend.setHeight(font.getSize());
-						rtLegend.addWidth((font.getSize() * 2) + strWidth);
-						if (0 < i) {
-							rtLegend.addWidth(design.getSpace());
-						}
-					}
-				} else if (LegendPosition.Left == pos || LegendPosition.Right == pos) {
-					for (int i = 0; i < dataset.getSeriesList().size(); i++) {
-						RadarSeries series = dataset.getSeriesList().get(i);
-
-						int strWidth = fm.stringWidth(series.getTitle());
-						rtLegend.addHeight(font.getSize());
-						rtLegend.setWidth(Math.max(rtLegend.getWidth(), (font.getSize() * 2) + strWidth));
-						if (0 < i) {
-							rtLegend.addHeight(design.getSpace());
-						}
-					}
-				}
-				if (null != margin) { // Add margin
-					rtLegend.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
-				}
-				if (null != padding) { // Add padding
-					rtLegend.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
-				}
-
-				// get point and resize chart
-				if (LegendPosition.Top == pos) {
-					rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY());
-
-					rtChart.addY(rtLegend.getHeight());
-					rtChart.subtractHeight(rtLegend.getHeight());
-				} else if (LegendPosition.Bottom == pos) {
-					rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY() + rtChart.getHeight()
-							- rtLegend.getHeight());
-
-					rtChart.subtractHeight(rtLegend.getHeight());
-				} else if (LegendPosition.Left == pos) {
-					rtLegend.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
-
-					rtChart.addX(rtLegend.getWidth());
-					rtChart.subtractWidth(rtLegend.getWidth());
-				} else if (LegendPosition.Right == pos) {
-					rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
-							rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
-
-					rtChart.subtractWidth(rtLegend.getWidth());
-				}
-			}
-		}
-		return rtLegend;
-	}
-
-	private void drawLegend(final Graphics g, final Rect aRect) {
-		LegendDesign design = looks.getLegendDesign();
-
-		Margin mgn = (null != design.getMargin()) ? design.getMargin() : new Margin();
-		// fill background
-		if (null != design.getBackgroundColor()) {
-			g.setColor(design.getBackgroundColor());
-			g.fillRect((int) (aRect.getX() + mgn.getLeft()), (int) (aRect.getY() + mgn.getTop()), (int) (aRect.getWidth() - mgn.getHorizontalSize()),
-					(int) (aRect.getHeight() - mgn.getVerticalSize()));
-		}
-		// draw stroke
-		if (null != design.getStroke() && null != design.getStrokeColor()) {
-			g.setStroke(design.getStroke());
-			g.setColor(design.getStrokeColor());
-			g.drawRect((int) (aRect.getX() + mgn.getLeft()), (int) (aRect.getY() + mgn.getTop()), (int) (aRect.getWidth() - mgn.getHorizontalSize()),
-					(int) (aRect.getHeight() - mgn.getVerticalSize()));
-		}
-
-		Padding padding = (null != design.getPadding()) ? design.getPadding() : new Padding();
-		Font font = design.getFont();
-		FontMetrics fm = g.getFontMetrics(font);
-		int fontHeight = font.getSize();
-		if (design.getPosition() == LegendPosition.Top || design.getPosition() == LegendPosition.Bottom) {
-			List<RadarSeries> seriesList = dataset.getSeriesList();
-			int xLegend = (int) (aRect.getX() + mgn.getLeft() + padding.getLeft());
-			int yLegend = (int) (aRect.getY() + mgn.getTop() + padding.getTop());
-			for (int i = 0; i < seriesList.size(); i++) {
-				RadarSeries series = seriesList.get(i);
-				// draw line
-				g.setStroke(looks.getSeriesStroke(i, series), looks.getSeriesStrokeColor(i, series));
-				g.drawLine(xLegend + 3, yLegend + (fontHeight / 2), xLegend + (fontHeight * 2) - 3, yLegend + (fontHeight / 2));
-				// draw marker
-				Marker marker = looks.getSeriesMarker(i, series);
-				if (null != marker) {
-					marker.draw(g, xLegend + (fontHeight * 2 - marker.getSize().getWidth()) / 2, yLegend
-							+ (fontHeight - marker.getSize().getHeight()) / 2);
-				}
-				// draw title
-				int strWidth = fm.stringWidth(series.getTitle());
-				g.setFont(font, design.getFontColor());
-				g.drawStringA(series.getTitle(), (fontHeight * 2) + xLegend, yLegend);
-
-				xLegend += design.getSpace() + (fontHeight * 2) + strWidth;
-			}
-		} else if (design.getPosition() == LegendPosition.Left || design.getPosition() == LegendPosition.Right) {
-			List<RadarSeries> seriesList = dataset.getSeriesList();
-			int xLegend = (int) (aRect.getX() + mgn.getLeft() + padding.getLeft());
-			int yLegend = (int) (aRect.getY() + mgn.getTop() + padding.getTop());
-			for (int i = 0; i < seriesList.size(); i++) {
-				RadarSeries series = seriesList.get(i);
-				// draw line
-				g.setStroke(looks.getSeriesStroke(i, series), looks.getSeriesStrokeColor(i, series));
-				g.drawLine(xLegend + 3, yLegend + (fontHeight / 2), xLegend + (fontHeight * 2) - 3, yLegend + (fontHeight / 2));
-				// draw marker
-				Marker marker = looks.getSeriesMarker(i, series);
-				if (null != marker) {
-					marker.draw(g, xLegend + (fontHeight * 2 - marker.getSize().getWidth()) / 2, yLegend
-							+ (fontHeight - marker.getSize().getHeight()) / 2);
-				}
-				// draw title
-				g.setFont(font, design.getFontColor());
-				g.drawStringA(series.getTitle(), (fontHeight * 2) + xLegend, yLegend);
-
-				yLegend += design.getSpace() + fontHeight;
-			}
-		}
-	}
-
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
+		RadarChartStyle style = getChartStyle();
+
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 
 		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
@@ -477,8 +321,8 @@ public class RadarPlot extends AbstractPlot {
 		float minY = aRtChart.getY();
 
 		// Draw axis scale
-		int fontSize = looks.getAxisFont().getSize();
-		g.setFont(looks.getAxisFont());
+		int fontSize = style.getAxisFont().getSize();
+		g.setFont(style.getAxisFont());
 		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
 			double rangeY = pixPerValue * (value - aScaleValue.getMin());
 

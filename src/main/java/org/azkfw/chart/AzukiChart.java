@@ -143,16 +143,35 @@ public final class AzukiChart {
 			return;
 		}
 
-		// createScatterChart(new File(args[0]));
-		// createPieChart(new File(args[0]));
-		// createRadarChart(new File(args[0]));
-
-		 createPolarChart(new File(args[0]));
-		
-		// createPolarAreaChart(new File(args[0]));
 		// createBarChart(new File(args[0]));
+		// createScatterChart(new File(args[0]));		
+		// createPieChart(new File(args[0]));
+		
+		// createRadarChart(new File(args[0]));
+		// createPolarChart(new File(args[0]));
+		createPolarAreaChart(new File(args[0]));
 	}
 
+	public static void createBarChart(final File aFile) {
+		AzukiChart chart = AzukiChartFactory.createBarChart();
+		chart.setBackgoundColor(Color.WHITE);
+
+		BarPlot plot = (BarPlot) chart.getPlot();
+		//plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
+
+		BarYAxis yAxis = plot.getYAxis();
+		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
+
+		BarDataset dataset = new BarDataset("SmpaleChart (Bar)");
+		plot.setDataset(dataset);
+		
+		try {
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	public static void createScatterChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createScatterChart();
 		chart.setBackgoundColor(Color.WHITE);
@@ -296,39 +315,20 @@ public final class AzukiChart {
 			ex.printStackTrace();
 		}
 	}
-
-	public static void createBarChart(final File aFile) {
-		AzukiChart chart = AzukiChartFactory.createBarChart();
-		chart.setBackgoundColor(Color.WHITE);
-
-		BarPlot plot = (BarPlot) chart.getPlot();
-		plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
-
-		BarYAxis yAxis = plot.getYAxis();
-		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
-
-		BarDataset dataset = new BarDataset();
-
-		plot.setDataset(dataset);
-		try {
-			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-
+	
 	public static void createPolarAreaChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createPolarAreaChart();
 		chart.setBackgoundColor(Color.WHITE);
 
 		PolarAreaPlot plot = (PolarAreaPlot) chart.getPlot();
+		//plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
 
 		PolarAreaAxis axis = plot.getAxis();
 		axis.setDisplayFormat(new NumericDisplayFormat(2));
 
-		PolarAreaDataset dataset = new PolarAreaDataset();
+		PolarAreaDataset dataset = new PolarAreaDataset("SmpaleChart (PolarArea)");
 
-		PolarAreaSeries series1 = new PolarAreaSeries();
+		PolarAreaSeries series1 = new PolarAreaSeries("AAA");
 		series1.add(1.6);
 		series1.add(0.1);
 		series1.add(0.5);
@@ -337,13 +337,13 @@ public final class AzukiChart {
 		series1.add(0.3);
 		dataset.addSeries(series1);
 
-		PolarAreaSeries series2 = new PolarAreaSeries();
+		PolarAreaSeries series2 = new PolarAreaSeries("BBB");
 		for (int i = 0; i < 6; i++) {
 			series2.add(i * 0.1);
 		}
 		dataset.addSeries(series2);
 
-		PolarAreaSeries series3 = new PolarAreaSeries();
+		PolarAreaSeries series3 = new PolarAreaSeries("CCC");
 		for (int i = 0; i < 6; i++) {
 			series3.add(0.85);
 		}

@@ -20,8 +20,10 @@ package org.azkfw.chart.plot;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-import org.azkfw.chart.looks.title.TitleDesign;
-import org.azkfw.chart.looks.title.TitleDesign.TitlePosition;
+import org.azkfw.chart.dataset.Dataset;
+import org.azkfw.chart.looks.title.TitleStyle;
+import org.azkfw.chart.looks.title.TitleStyle.TitlePosition;
+import org.azkfw.chart.style.ChartStyle;
 import org.azkfw.core.lang.LoggingObject;
 import org.azkfw.core.util.StringUtility;
 import org.azkfw.graphics.Graphics;
@@ -36,10 +38,16 @@ import org.azkfw.graphics.Rect;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public abstract class AbstractPlot extends LoggingObject implements Plot {
+public abstract class AbstractPlot<D extends Dataset, S extends ChartStyle> extends LoggingObject implements Plot {
 
 	/** マージン情報 */
 	private Margin margin;
+
+	/** データセット */
+	private D dataset;
+
+	/** スタイル */
+	private S style;
 
 	/**
 	 * コンストラクタ
@@ -47,6 +55,8 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	public AbstractPlot() {
 		super(Plot.class);
 		margin = null;
+		dataset = null;
+		style = null;
 	}
 
 	/**
@@ -57,6 +67,8 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	public AbstractPlot(final Class<?> aClass) {
 		super(aClass);
 		margin = null;
+		dataset = null;
+		style = null;
 	}
 
 	/**
@@ -67,6 +79,8 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	public AbstractPlot(final String aName) {
 		super(aName);
 		margin = null;
+		dataset = null;
+		style = null;
 	}
 
 	/**
@@ -74,12 +88,48 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	 * 
 	 * @param aMargin マージン情報
 	 */
-	public void setMargin(final Margin aMargin) {
+	public final void setMargin(final Margin aMargin) {
 		margin = aMargin;
 	}
 
+	/**
+	 * データセットを設定する。
+	 * 
+	 * @param aDataset データセット
+	 */
+	public final void setDataset(final D aDataset) {
+		dataset = aDataset;
+	}
+
+	/**
+	 * データセットを取得する。
+	 * 
+	 * @return データセット
+	 */
+	protected final D getDataset() {
+		return dataset;
+	}
+
+	/**
+	 * グラフスタイルを設定する。
+	 * 
+	 * @param aStyle スタイル
+	 */
+	public final void setChartStyle(final S aStyle) {
+		style = aStyle;
+	}
+
+	/**
+	 * グラフスタイルを取得する。
+	 * 
+	 * @return スタイル
+	 */
+	protected final S getChartStyle() {
+		return style;
+	}
+
 	@Override
-	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
+	public final boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
 		boolean result = false;
 
 		Rect rtPlot = null;
@@ -110,22 +160,24 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	 * 
 	 * @param g Graphics
 	 * @param aTitle タイトル
-	 * @param aDesign デザイン
 	 * @param rtChart チャートRect（更新される）
 	 * @return タイトルRect
 	 */
-	protected Rect fitTitle(final Graphics g, final String aTitle, final TitleDesign aDesign, Rect rtChart) {
+	protected final Rect fitTitle(final Graphics g, final String aTitle, Rect rtChart) {
+		ChartStyle styleChart = getChartStyle();
+		TitleStyle styleTitle = styleChart.getTitleDesign();
+
 		Rect rtTitle = null;
-		if (null != aDesign && StringUtility.isNotEmpty(aTitle)) {
-			if (aDesign.isDisplay()) {
+		if (null != styleTitle && StringUtility.isNotEmpty(aTitle)) {
+			if (styleTitle.isDisplay()) {
 				rtTitle = new Rect();
 
-				Margin margin = aDesign.getMargin();
-				Padding padding = aDesign.getPadding();
+				Margin margin = styleTitle.getMargin();
+				Padding padding = styleTitle.getPadding();
 
-				Font font = aDesign.getFont();
+				Font font = styleTitle.getFont();
 				FontMetrics fm = g.getFontMetrics(font);
-				TitlePosition pos = aDesign.getPosition();
+				TitlePosition pos = styleTitle.getPosition();
 
 				// get size
 				rtTitle.setSize(fm.stringWidth(aTitle), font.getSize());
@@ -171,26 +223,29 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	 * @param aDesign デザイン情報
 	 * @param aRect 描画範囲
 	 */
-	protected void drawTitle(final Graphics g, final String aTitle, final TitleDesign aDesign, final Rect aRect) {
-		Margin mgn = (null != aDesign.getMargin()) ? aDesign.getMargin() : new Margin();
+	protected final void drawTitle(final Graphics g, final String aTitle, final Rect aRect) {
+		ChartStyle styleChart = getChartStyle();
+		TitleStyle styleTitle = styleChart.getTitleDesign();
+
+		Margin mgn = (null != styleTitle.getMargin()) ? styleTitle.getMargin() : new Margin();
 		// fill background
-		if (null != aDesign.getBackgroundColor()) {
-			g.setColor(aDesign.getBackgroundColor());
+		if (null != styleTitle.getBackgroundColor()) {
+			g.setColor(styleTitle.getBackgroundColor());
 			g.fillRect(aRect.getX() + mgn.getLeft(), aRect.getY() + mgn.getTop(), aRect.getWidth() - mgn.getHorizontalSize(),
 					aRect.getHeight() - mgn.getVerticalSize());
 		}
 		// draw stroke
-		if (null != aDesign.getStroke() && null != aDesign.getStrokeColor()) {
-			g.setStroke(aDesign.getStroke(), aDesign.getStrokeColor());
+		if (null != styleTitle.getStroke() && null != styleTitle.getStrokeColor()) {
+			g.setStroke(styleTitle.getStroke(), styleTitle.getStrokeColor());
 			g.drawRect(aRect.getX() + mgn.getLeft(), aRect.getY() + mgn.getTop(), aRect.getWidth() - mgn.getHorizontalSize(),
 					aRect.getHeight() - mgn.getVerticalSize());
 		}
 
-		Padding padding = (null != aDesign.getPadding()) ? aDesign.getPadding() : new Padding();
+		Padding padding = (null != styleTitle.getPadding()) ? styleTitle.getPadding() : new Padding();
 		float x = aRect.getX() + mgn.getLeft() + padding.getLeft();
 		float y = aRect.getY() + mgn.getTop() + padding.getTop();
 
-		g.setFont(aDesign.getFont(), aDesign.getFontColor());
+		g.setFont(styleTitle.getFont(), styleTitle.getFontColor());
 		g.drawStringA(aTitle, x, y);
 	}
 

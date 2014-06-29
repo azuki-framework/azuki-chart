@@ -22,11 +22,11 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.util.List;
 
-import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
+import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
-import org.azkfw.graphics.Size;
 
 /**
  * このクラスは、鶏頭図グラフのプロット情報を保持するクラスです。
@@ -35,44 +35,164 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarAreaPlot extends AbstractPlot {
+public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAreaChartStyle> {
 
-	/** X軸 */
+	/** 軸情報 */
 	private PolarAreaAxis axis;
-
-	/** データセット */
-	private PolarAreaDataset dataset;
-
-	/** Looks */
-	private PolarAreaLooks looks;
 
 	/**
 	 * コンストラクタ
 	 */
 	public PolarAreaPlot() {
 		axis = new PolarAreaAxis();
-		dataset = null;
-		looks = new PolarAreaLooks();
+
+		setChartStyle(new PolarAreaChartStyle());
 	}
 
-	public void setLooks(final PolarAreaLooks aLooks) {
-		looks = aLooks;
-	}
-
-	public void setDataset(final PolarAreaDataset aDataset) {
-		dataset = aDataset;
-	}
-
+	/**
+	 * 軸情報を取得する。
+	 * 
+	 * @return 軸情報
+	 */
 	public PolarAreaAxis getAxis() {
 		return axis;
 	}
 
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
-		Size szChart = null;
-		Point ptChartMiddle = null;
-		szChart = new Size(aRect.getWidth(), aRect.getHeight());
-		ptChartMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
+		PolarAreaDataset dataset = getDataset();
+		PolarAreaChartStyle style = getChartStyle();
+
+		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
+
+		// タイトル適用
+		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
+		// 凡例適用
+		Rect rtLegend = fitLegend(g, style.getLegendDesign(), rtChartPre);
+
+		// スケール調整
+		ScaleValue scaleValue = getScaleValue();
+
+		float fontMargin = 8.0f;
+
+		Margin margin = fitChart(g, rtChartPre, scaleValue, fontMargin);
+		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
+
+		// スケール計算
+		double difValue = scaleValue.getDiff();
+		double pixXPerValue = ((rtChartPre.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
+		double pixYPerValue = ((rtChartPre.getHeight() - margin.getVerticalSize()) / 2.f) / difValue;
+
+		Rect rtChart = new Rect();
+		rtChart.setX(rtChartPre.getX() + margin.getLeft());
+		rtChart.setY(rtChartPre.getY() + margin.getTop());
+		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
+		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
+
+		Point ptChartMiddle = new Point(rtChart.getX() + (rtChart.getWidth() / 2.f), rtChart.getY() + (rtChart.getHeight() / 2.f));
+
+		// Draw assist axis
+		if (axis.isAssistAxis()) {
+			g.setColor(style.getAssistAxisLineColor());
+			g.setStroke(style.getAssistAxisLineStroke());
+			for (double angle = 0.0; angle < 360.f; angle += axis.getAssistAxisAngle()) {
+				if (0.0 == angle || 90.0 == angle || 180.0 == angle || 270.0 == angle) {
+					// TODO: 主軸がある時のみ描画しない処理を追加
+					continue;
+				}
+				float x = (float) (ptChartMiddle.getX() + (pixXPerValue * scaleValue.getMax() * Math.cos(RADIANS(angle))));
+				float y = (float) (ptChartMiddle.getY() - (pixYPerValue * scaleValue.getMax() * Math.sin(RADIANS(angle))));
+				g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), x, y);
+			}
+		}
+
+		// Draw axis
+		g.setStroke(style.getAxisLineStroke(), style.getAxisLineColor());
+		g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX() - (rtChart.getWidth() / 2.f), ptChartMiddle.getY());
+		g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX() + (rtChart.getWidth() / 2.f), ptChartMiddle.getY());
+		g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX(), ptChartMiddle.getY() - (rtChart.getHeight() / 2.f));
+		g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX(), ptChartMiddle.getY() + (rtChart.getHeight() / 2.f));
+
+		// Draw circle
+		g.setStroke(style.getAxisCircleStroke(), style.getAxisCircleColor());
+		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+			float rangeX = (float) (pixXPerValue * (value - scaleValue.getMin()));
+			float rangeY = (float) (pixYPerValue * (value - scaleValue.getMin()));
+
+			g.drawArc(ptChartMiddle.getX() - rangeX, ptChartMiddle.getY() - rangeY, rangeX * 2.f, rangeY * 2.f, 0, 360);
+		}
+
+		// Draw axis scale
+		g.setStroke(style.getAxisLineStroke(), style.getAxisLineColor());
+		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+			float range = (float) (pixXPerValue * (value - scaleValue.getMin()));
+
+			g.drawLine(ptChartMiddle.getX() + range, ptChartMiddle.getY(), ptChartMiddle.getX() + range, ptChartMiddle.getY() + fontMargin);
+		}
+
+		// Draw series
+		List<PolarAreaSeries> seriesList = dataset.getSeriesList();
+		for (int index = 0; index < seriesList.size(); index++) {
+			PolarAreaSeries series = seriesList.get(index);
+
+			List<PolarAreaSeriesPoint> points = series.getPoints();
+			int angle = 360 / points.size();
+			for (int i = 0; i < points.size(); i++) {
+				PolarAreaSeriesPoint point = points.get(i);
+
+				double value = point.getRange();
+				if (0 == value) {
+					continue;
+				}
+
+				float sWidth = (float) (pixXPerValue * value);
+				float sHeight = (float) (pixYPerValue * value);
+				sWidth = pixelLimit(sWidth);
+				sHeight = pixelLimit(sHeight);
+
+				// Draw series fill
+				Color fillColor = style.getSeriesFillColor(index, series);
+				if (null != fillColor) {
+					g.setColor(fillColor);
+					g.fillArc(ptChartMiddle.getX() - sWidth + 1, ptChartMiddle.getY() - sHeight + 1, sWidth * 2.f, sHeight * 2, i * angle, angle);
+				}
+				// Draw series line
+				Color strokeColor = style.getSeriesStrokeColor(index, series);
+				if (null != strokeColor) {
+					g.setStroke(style.getSeriesStroke(index, series));
+					g.setColor(strokeColor);
+					g.drawArc(ptChartMiddle.getX() - sWidth + 1, ptChartMiddle.getY() - sHeight + 1, sWidth * 2.f, sHeight * 2, i * angle, angle);
+				}
+			}
+		}
+
+		// Draw axis scale
+		FontMetrics fm = g.getFontMetrics(style.getAxisFont());
+		g.setColor(style.getAxisFontColor());
+		g.setFont(style.getAxisFont());
+		g.setStroke(new BasicStroke(1.f));
+		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+			float range = (float) (pixXPerValue * (value - scaleValue.getMin()));
+
+			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
+			int strWidth = fm.stringWidth(str);
+			g.drawStringA(str, ptChartMiddle.getX() + range - (strWidth / 2), ptChartMiddle.getY() + fontMargin);
+		}
+
+		// Draw Legend
+		if (null != rtLegend) {
+			drawLegend(g, style.getLegendDesign(), rtLegend);
+		}
+		// Draw title
+		if (null != rtTitle) {
+			drawTitle(g, dataset.getTitle(), rtTitle);
+		}
+
+		return true;
+	}
+
+	private ScaleValue getScaleValue() {
+		PolarAreaDataset dataset = getDataset();
 
 		// データ最小値・最大値取得
 		Double dataMaxValue = null;
@@ -81,17 +201,17 @@ public class PolarAreaPlot extends AbstractPlot {
 			for (PolarAreaSeries series : dataset.getSeriesList()) {
 				for (PolarAreaSeriesPoint point : series.getPoints()) {
 					if (null == dataMaxValue) {
-						dataMaxValue = point.getRange();
 						dataMinValue = point.getRange();
+						dataMaxValue = point.getRange();
 					} else {
-						dataMaxValue = (dataMaxValue < point.getRange()) ? point.getRange() : dataMaxValue;
-						dataMinValue = (dataMinValue > point.getRange()) ? point.getRange() : dataMinValue;
+						dataMinValue = Math.min(dataMinValue, point.getRange());
+						dataMaxValue = Math.max(dataMaxValue, point.getRange());
 					}
 				}
 			}
 		}
-		System.out.println(String.format("Data minimum value : %f", dataMinValue));
-		System.out.println(String.format("Data maximum value : %f", dataMaxValue));
+		debug(String.format("Data minimum value : %f", dataMinValue));
+		debug(String.format("Data maximum value : %f", dataMaxValue));
 
 		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
@@ -109,139 +229,61 @@ public class PolarAreaPlot extends AbstractPlot {
 			}
 		}
 		if (axis.isScaleAutoFit()) {
-			double diff = maxValue - minValue;
-			int s = (int) (Math.log10(diff));
-			scale = Math.pow(10, s);
-		}
-		System.out.println(String.format("Axis minimum value : %f", minValue));
-		System.out.println(String.format("Axis maximum value : %f", maxValue));
-		System.out.println(String.format("Axis scale value : %f", scale));
-
-		// スケール計算
-		double difValue = maxValue - minValue;
-		double pixXPerValue = (szChart.getWidth() / 2.f) / difValue;
-		double pixYPerValue = (szChart.getHeight() / 2.f) / difValue;
-
-		// Draw assist axis
-		if (axis.isAssistAxis()) {
-			g.setColor(looks.getAssistAxisLineColor());
-			g.setStroke(looks.getAssistAxisLineStroke());
-			for (double angle = 0.0; angle < 360.f; angle += axis.getAssistAxisAngle()) {
-				if (0.0 == angle || 90.0 == angle || 180.0 == angle || 270.0 == angle) {
-					// TODO: 主軸がある時のみ描画しない処理を追加
-					continue;
-				}
-				int x = (int) (ptChartMiddle.getX() + (pixXPerValue * maxValue * Math.cos(RADIANS(angle))));
-				int y = (int) (ptChartMiddle.getY() - (pixYPerValue * maxValue * Math.sin(RADIANS(angle))));
-				g.drawLine((int) (ptChartMiddle.getX()), (int) (ptChartMiddle.getY()), (int) (x), (int) (y));
+			double dif = maxValue - minValue;
+			int logDif = (int) (Math.log10(dif));
+			double scaleDif = Math.pow(10, logDif);
+			if (dif >= scaleDif * 5) {
+				scale = scaleDif;
+			} else if (dif >= scaleDif * 2) {
+				scale = scaleDif / 2;
+			} else {
+				scale = scaleDif / 10;
 			}
 		}
+		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
+		debug(String.format("Axis minimum value : %f", minValue));
+		debug(String.format("Axis maximum value : %f", maxValue));
+		debug(String.format("Axis scale value : %f", scale));
 
-		// Draw axis
-		g.setColor(looks.getAxisLineColor());
-		g.setStroke(looks.getAxisLineStroke());
-		g.drawLine((int) (ptChartMiddle.getX()), (int) (ptChartMiddle.getY()), (int) (ptChartMiddle.getX() - (szChart.getWidth() / 2.f)),
-				(int) (ptChartMiddle.getY()));
-		g.drawLine((int) (ptChartMiddle.getX()), (int) (ptChartMiddle.getY()), (int) (ptChartMiddle.getX() + (szChart.getWidth() / 2.f)),
-				(int) (ptChartMiddle.getY()));
-		g.drawLine((int) (ptChartMiddle.getX()), (int) (ptChartMiddle.getY()), (int) (ptChartMiddle.getX()),
-				(int) (ptChartMiddle.getY() - (szChart.getHeight() / 2.f)));
-		g.drawLine((int) (ptChartMiddle.getX()), (int) (ptChartMiddle.getY()), (int) (ptChartMiddle.getX()),
-				(int) (ptChartMiddle.getY() + (szChart.getHeight() / 2.f)));
+		return scaleValue;
+	}
 
-		// Draw circle
-		g.setColor(looks.getAxisCircleColor());
-		g.setStroke(looks.getAxisCircleStroke());
-		for (double value = minValue; value <= maxValue; value += scale) {
-			double rangeX = pixXPerValue * (value - minValue);
-			double rangeY = pixYPerValue * (value - minValue);
-			g.drawArc((int) (ptChartMiddle.getX() - rangeX), (int) (ptChartMiddle.getY() - rangeY), (int) (rangeX * 2.f), (int) (rangeY * 2.f), 0,
-					360);
-		}
+	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
+		PolarAreaChartStyle style = getChartStyle();
 
-		// Draw axis scale
-		g.setColor(looks.getAxisLineColor());
-		g.setStroke(new BasicStroke(1.f));
-		for (double value = minValue; value <= maxValue; value += scale) {
-			double rangeX = pixXPerValue * (value - minValue);
-			// double rangeY = pixYPerValue * (value - minValue);
+		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 
-			g.drawLine((int) (ptChartMiddle.getX() + rangeX), (int) (ptChartMiddle.getY()), (int) (ptChartMiddle.getX() + rangeX),
-					(int) (ptChartMiddle.getY() + 8.f));
-		}
+		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
 
-		// Draw series
-		List<PolarAreaSeries> seriesList = dataset.getSeriesList();
-		for (int index = 0; index < seriesList.size(); index++) {
-			PolarAreaSeries series = seriesList.get(index);
+		double difValue = aScaleValue.getDiff();
 
-			List<PolarAreaSeriesPoint> points = series.getPoints();
+		// スケール計算(プレ)
+		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
 
-			int angle = 360 / points.size();
-
-			for (int i = 0; i < points.size(); i++) {
-				PolarAreaSeriesPoint point = points.get(i);
-
-				double value = point.getRange();
-				if (0 == value) {
-					continue;
-				}
-
-				double sWidth = pixXPerValue * value;
-				double sHeight = pixXPerValue * value;
-				// TODO: 定数化
-				if (sWidth > 100000) {
-					sWidth = 100000;
-				} else if (sWidth < -100000) {
-					sWidth = -100000;
-				}
-				if (sHeight > 100000) {
-					sHeight = 100000;
-				} else if (sHeight < -100000) {
-					sHeight = -100000;
-				}
-
-				Color fillColor = looks.getSeriesFillColor(index, series);
-				if (null != fillColor) {
-					g.setColor(fillColor);
-					g.fillArc((int) (ptChartMiddle.getX() - sWidth) + 1, (int) (ptChartMiddle.getY() - sHeight) + 1, (int) (sWidth * 2.f),
-							(int) (sHeight * 2), i * angle, angle);
-				}
-
-				Color strokeColor = looks.getSeriesStrokeColor(index, series);
-				if (null != strokeColor) {
-					g.setStroke(looks.getSeriesStroke(index, series));
-					g.setColor(strokeColor);
-					g.drawArc((int) (ptChartMiddle.getX() - sWidth) + 1, (int) (ptChartMiddle.getY() - sHeight) + 1, (int) (sWidth * 2.f),
-							(int) (sHeight * 2), i * angle, angle);
-				}
-
-			}
-		}
+		float maxX = aRtChart.getX() + aRtChart.getWidth();
 
 		// Draw axis scale
-		int fontSize = looks.getAxisFont().getSize();
-		FontMetrics fm = g.getFontMetrics(looks.getAxisFont());
-		g.setColor(looks.getAxisFontColor());
-		g.setFont(looks.getAxisFont());
-		g.setStroke(new BasicStroke(1.f));
-		for (double value = minValue; value <= maxValue; value += scale) {
-			double rangeX = pixXPerValue * (value - minValue);
-			// double rangeY = pixYPerValue * (value - minValue);
+		FontMetrics fm = g.getFontMetrics(style.getAxisFont());
+		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
+			float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
 
 			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
 			int strWidth = fm.stringWidth(str);
-			g.drawStringA(str, (int) (ptChartMiddle.getX() + rangeX - (strWidth / 2)), (int) (ptChartMiddle.getY() + 8.f));
+
+			float x = ptChartMiddle.getX() + range + (strWidth / 2);
+
+			maxX = Math.max(maxX, x);
 		}
 
-		// XXX: debug
-		//g.setStroke(new BasicStroke(1.f));
-		//g.setColor(Color.RED);
-		//g.drawRect((int) aX, (int) aY, (int) (aWidth - 1), (int) (aHeight - 1));
-		return true;
+		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
+			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
+		}
+
+		return margin;
 	}
 
 	protected static double RADIANS(double aAngle) {
 		return aAngle * Math.PI / 180.0;
 	}
+
 }

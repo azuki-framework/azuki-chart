@@ -31,7 +31,7 @@ import org.azkfw.graphics.Padding;
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class CustomTitleDesign implements TitleDesign {
+public class CustomTitleStyle implements TitleStyle {
 
 	private boolean display;
 
@@ -51,7 +51,10 @@ public class CustomTitleDesign implements TitleDesign {
 
 	private Color backgroundColor;
 
-	public CustomTitleDesign() {
+	/**
+	 * コンストラクタ
+	 */
+	public CustomTitleStyle() {
 		display = true;
 		position = TitlePosition.Top;
 		fontColor = new Color(0, 0, 0, 255);

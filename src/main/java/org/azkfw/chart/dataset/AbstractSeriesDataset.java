@@ -15,25 +15,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.area;
+package org.azkfw.chart.dataset;
 
-import org.azkfw.chart.plot.AbstractPlot;
-import org.azkfw.graphics.Graphics;
-import org.azkfw.graphics.Rect;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.azkfw.chart.series.Series;
 
 /**
- * このクラスは、エリアグラフのプロットクラスです。
+ * このクラスは、データセット機能の実装を行うための基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class AreaPlot extends AbstractPlot {
+public abstract class AbstractSeriesDataset<T extends Series> extends AbstractDataset implements SeriesDataset<T> {
 
-	@Override
-	protected boolean doDraw(final Graphics g, final Rect aRect) {
+	/** シリーズ一覧 */
+	private List<T> seriesList;
 
-		return false;
+	/**
+	 * コンストラクタ
+	 */
+	public AbstractSeriesDataset() {
+		super();
+		seriesList = new ArrayList<T>();
 	}
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 */
+	public AbstractSeriesDataset(final String aTitle) {
+		super(aTitle);
+		seriesList = new ArrayList<T>();
+	}
+
+	@Override
+	public void addSeries(final T aSeries) {
+		seriesList.add(aSeries);
+	}
+
+	@Override
+	public List<T> getSeriesList() {
+		return seriesList;
+	}
 }

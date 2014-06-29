@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart.charts.scatter;
 
+import org.azkfw.chart.series.SeriesPoint;
+
 /**
  * このクラスは、散布図のポイント情報を保持したクラスです。
  * 
@@ -24,7 +26,7 @@ package org.azkfw.chart.charts.scatter;
  * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class ScatterSeriesPoint {
+public class ScatterSeriesPoint implements SeriesPoint {
 
 	/**
 	 * x値

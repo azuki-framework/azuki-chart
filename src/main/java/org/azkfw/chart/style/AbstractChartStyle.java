@@ -15,30 +15,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.style;
 
+import org.azkfw.chart.looks.legend.LegendStyle;
+import org.azkfw.chart.looks.title.TitleStyle;
 
 /**
- * このインターフェースは、データセット機能を表現したインターフェースです。
+ * このクラスは、グラフデザイン機能を実装するための基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public interface Dataset {
+public abstract class AbstractChartStyle implements ChartStyle {
 
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public void setTitle(final String aTitle);
+	private TitleStyle titleDesign;
 
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public String getTitle();
+	private LegendStyle legendDesign;
 
+	public AbstractChartStyle() {
+		titleDesign = null;
+		legendDesign = null;
+	}
+
+	@Override
+	public final void setTitleDesign(final TitleStyle aDesign) {
+		titleDesign = aDesign;
+	}
+
+	@Override
+	public final TitleStyle getTitleDesign() {
+		return titleDesign;
+	}
+
+	@Override
+	public final void setLegendDesign(final LegendStyle aDesign) {
+		legendDesign = aDesign;
+	}
+
+	@Override
+	public final LegendStyle getLegendDesign() {
+		return legendDesign;
+	}
 }

@@ -20,6 +20,8 @@ package org.azkfw.chart.charts.scatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.azkfw.chart.series.AbstractSeries;
+
 /**
  * このクラスは、散布図のシリーズ情報を保持したクラスです。
  * 
@@ -27,12 +29,7 @@ import java.util.List;
  * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class ScatterSeries {
-
-	/**
-	 * タイトル
-	 */
-	private String title;
+public class ScatterSeries extends AbstractSeries {
 
 	/**
 	 * ポイント
@@ -43,7 +40,7 @@ public class ScatterSeries {
 	 * コンストラクタ
 	 */
 	public ScatterSeries() {
-		title = null;
+		super();
 		points = new ArrayList<ScatterSeriesPoint>();
 	}
 
@@ -53,7 +50,7 @@ public class ScatterSeries {
 	 * @param aTitle タイトル
 	 */
 	public ScatterSeries(final String aTitle) {
-		title = aTitle;
+		super(aTitle);
 		points = new ArrayList<ScatterSeriesPoint>();
 	}
 
@@ -64,26 +61,8 @@ public class ScatterSeries {
 	 * @param aPoints ポイント
 	 */
 	public ScatterSeries(final String aTitle, final List<ScatterSeriesPoint> aPoints) {
-		title = aTitle;
+		super(aTitle);
 		points = new ArrayList<>(aPoints);
-	}
-
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public void setTitle(final String aTitle) {
-		title = aTitle;
-	}
-
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public String getTitle() {
-		return title;
 	}
 
 	/**

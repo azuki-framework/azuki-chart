@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart.charts.polararea;
 
+import org.azkfw.chart.series.SeriesPoint;
+
 /**
  * このクラスは、鶏頭図のポイントクラスです。
  * 
@@ -24,7 +26,7 @@ package org.azkfw.chart.charts.polararea;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarAreaSeriesPoint {
+public class PolarAreaSeriesPoint implements SeriesPoint {
 
 	/**
 	 * 値

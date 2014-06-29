@@ -17,10 +17,7 @@
  */
 package org.azkfw.chart.charts.polar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.dataset.AbstractDataset;
+import org.azkfw.chart.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、極座標グラフのデータセット情報を保持するクラスです。
@@ -29,17 +26,13 @@ import org.azkfw.chart.dataset.AbstractDataset;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarDataset extends AbstractDataset {
-
-	/** シリーズリスト */
-	private List<PolarSeries> seriesList;
+public class PolarDataset extends AbstractSeriesDataset<PolarSeries> {
 
 	/**
 	 * コンストラクタ
 	 */
 	public PolarDataset() {
 		super();
-		seriesList = new ArrayList<PolarSeries>();
 	}
 
 	/**
@@ -49,24 +42,5 @@ public class PolarDataset extends AbstractDataset {
 	 */
 	public PolarDataset(final String aTitle) {
 		super(aTitle);
-		seriesList = new ArrayList<PolarSeries>();
-	}
-
-	/**
-	 * シリーズを追加する。
-	 * 
-	 * @param aSeries シリーズ
-	 */
-	public void addSeries(final PolarSeries aSeries) {
-		seriesList.add(aSeries);
-	}
-
-	/**
-	 * シリーズリストを取得する。
-	 * 
-	 * @return シリーズリスト
-	 */
-	public List<PolarSeries> getSeriesList() {
-		return seriesList;
 	}
 }

@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart.charts.bar;
 
+import org.azkfw.chart.series.SeriesPoint;
+
 /**
  * このクラスは、棒グラフのポイント情報を保持したクラスです。
  * 
@@ -24,7 +26,7 @@ package org.azkfw.chart.charts.bar;
  * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class BarSeriesPoint {
+public class BarSeriesPoint implements SeriesPoint {
 
 	/**
 	 * 値

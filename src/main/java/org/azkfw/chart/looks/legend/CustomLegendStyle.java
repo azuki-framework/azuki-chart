@@ -31,7 +31,7 @@ import org.azkfw.graphics.Padding;
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class CustomLegendDesign implements LegendDesign {
+public class CustomLegendStyle implements LegendStyle {
 
 	private boolean display;
 
@@ -50,10 +50,13 @@ public class CustomLegendDesign implements LegendDesign {
 	private Color strokeColor;
 
 	private Color backgroundColor;
-	
+
 	private float space;
 
-	public CustomLegendDesign() {
+	/**
+	 * コンストラクタ
+	 */
+	public CustomLegendStyle() {
 		display = true;
 		position = LegendPosition.Right;
 		fontColor = new Color(64, 64, 64, 255);
@@ -66,7 +69,7 @@ public class CustomLegendDesign implements LegendDesign {
 		strokeColor = null;
 
 		backgroundColor = null;
-		
+
 		space = 4.f;
 	}
 
@@ -146,7 +149,7 @@ public class CustomLegendDesign implements LegendDesign {
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}
-	
+
 	public float getSpace() {
 		return space;
 	}

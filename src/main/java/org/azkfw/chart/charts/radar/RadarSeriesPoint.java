@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart.charts.radar;
 
+import org.azkfw.chart.series.SeriesPoint;
+
 /**
  * このクラスは、レーダーチャートのポイントクラスです。
  * 
@@ -24,7 +26,7 @@ package org.azkfw.chart.charts.radar;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class RadarSeriesPoint {
+public class RadarSeriesPoint implements SeriesPoint {
 
 	/**
 	 * 値

@@ -15,25 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.bar;
+package org.azkfw.chart.style;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.looks.AbstractLooks;
+import org.azkfw.chart.looks.marker.CircleMarker;
+import org.azkfw.chart.looks.marker.DiaMarker;
+import org.azkfw.chart.looks.marker.Marker;
+import org.azkfw.chart.looks.marker.SquareMarker;
+import org.azkfw.chart.looks.marker.TriangleMarker;
+import org.azkfw.chart.series.Series;
+import org.azkfw.chart.series.SeriesPoint;
 
 /**
- * このクラスは、棒グラフのルックス情報を保持するクラスです。
+ * このクラスは、シリーズグラフデザイン機能を実装するための基底クラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/25
+ * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class BarLooks extends AbstractLooks {
+public abstract class AbstractSeriesChartStyle<S extends Series, P extends SeriesPoint> extends AbstractChartStyle implements SeriesChartStyle<S, P> {
 
 	private static List<Color> COLORS = new ArrayList<Color>();
 	static {
@@ -52,76 +57,7 @@ public class BarLooks extends AbstractLooks {
 		COLORS.add(new Color(246, 146, 64, 255));
 	}
 
-	/**
-	 * X軸のフォントを取得する。
-	 * 
-	 * @return フォント
-	 */
-	public Font getXAxisFont() {
-		return new Font("Arial", Font.BOLD, 16);
-	}
-
-	/**
-	 * X軸のフォントカラーを取得する。
-	 * 
-	 * @return カラー
-	 */
-	public Color getXAxisFontColor() {
-		return Color.BLACK;
-	}
-
-	/**
-	 * X軸のカラーを取得する。
-	 * 
-	 * @return カラー
-	 */
-	public Color getXAxisLineColor() {
-		return Color.BLACK;
-	}
-
-	/**
-	 * X軸のストロークを取得する。
-	 * 
-	 * @return ストローク
-	 */
-	public Stroke getXAxisLineStroke() {
-		return new BasicStroke(1.f);
-	}
-
-	/**
-	 * Y軸のフォントを取得する。
-	 * 
-	 * @return フォント
-	 */
-	public Font getYAxisFont() {
-		return new Font("Arial", Font.BOLD, 16);
-	}
-
-	/**
-	 * Y軸のフォントカラーを取得する。
-	 * 
-	 * @return カラー
-	 */
-	public Color getYAxisFontColor() {
-		return Color.BLACK;
-	}
-
-	/**
-	 * Y軸のカラーを取得する。
-	 * 
-	 * @return カラー
-	 */
-	public Color getYAxisLineColor() {
-		return Color.BLACK;
-	}
-
-	/**
-	 * Y軸のストロークを取得する。
-	 * 
-	 * @return ストローク
-	 */
-	public Stroke getYAxisLineStroke() {
-		return new BasicStroke(1.f);
+	public AbstractSeriesChartStyle() {
 	}
 
 	/**
@@ -131,7 +67,7 @@ public class BarLooks extends AbstractLooks {
 	 * @param aSeries シリーズデータ
 	 * @return ストローク
 	 */
-	public Stroke getSeriesStroke(final int aIndex, final BarSeries aSeries) {
+	public Stroke getSeriesStroke(final int aIndex, final S aSeries) {
 		return new BasicStroke(2.f);
 	}
 
@@ -142,7 +78,7 @@ public class BarLooks extends AbstractLooks {
 	 * @param aSeries シリーズデータ
 	 * @return カラー
 	 */
-	public Color getSeriesStrokeColor(final int aIndex, final BarSeries aSeries) {
+	public Color getSeriesStrokeColor(final int aIndex, final S aSeries) {
 		Color color = null;
 		if (aIndex < COLORS.size()) {
 			color = COLORS.get(aIndex);
@@ -159,9 +95,35 @@ public class BarLooks extends AbstractLooks {
 	 * @param aSeries シリーズデータ
 	 * @return カラー
 	 */
-	public Color getSeriesFillColor(final int aIndex, final BarSeries aSeries) {
+	public Color getSeriesFillColor(final int aIndex, final S aSeries) {
 		Color color = getSeriesStrokeColor(aIndex, aSeries);
 		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 64);
 		return color;
+	}
+
+	public Marker getSeriesMarker(final int aIndex, final S aSeries) {
+		Marker marker = null;
+		switch (aIndex % 4) {
+		case 0:
+			marker = new CircleMarker(10, getSeriesStrokeColor(aIndex, aSeries));
+			break;
+		case 1:
+			marker = new SquareMarker(10, getSeriesStrokeColor(aIndex, aSeries));
+			break;
+		case 2:
+			marker = new TriangleMarker(10, getSeriesStrokeColor(aIndex, aSeries));
+			break;
+		case 3:
+			marker = new DiaMarker(10, getSeriesStrokeColor(aIndex, aSeries));
+			break;
+		default:
+			break;
+		}
+
+		return marker;
+	}
+
+	public Marker getSeriesPointMarker(final int aIndex, final S aSeries, final int aNo, final P aPoint) {
+		return null;
 	}
 }

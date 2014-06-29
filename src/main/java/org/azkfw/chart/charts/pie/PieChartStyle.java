@@ -21,16 +21,16 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.looks.AbstractLooks;
-import org.azkfw.chart.looks.legend.CustomLegendDesign;
-import org.azkfw.chart.looks.title.CustomTitleDesign;
+import org.azkfw.chart.looks.legend.CustomLegendStyle;
+import org.azkfw.chart.looks.title.CustomTitleStyle;
+import org.azkfw.chart.style.AbstractChartStyle;
 
 /**
  * @since 1.0.0
  * @version 1.0.0 2014/06/22
  * @author Kawakicchi
  */
-public class PieLooks extends AbstractLooks {
+public class PieChartStyle extends AbstractChartStyle {
 
 	private static List<Color> COLORS = new ArrayList<Color>();
 	static {
@@ -49,9 +49,9 @@ public class PieLooks extends AbstractLooks {
 		COLORS.add(new Color(246, 146, 64, 255));
 	}
 	
-	public PieLooks() {
-		setTitleDesign(new CustomTitleDesign());
-		setLegendDesign(new CustomLegendDesign());
+	public PieChartStyle() {
+		setTitleDesign(new CustomTitleStyle());
+		setLegendDesign(new CustomLegendStyle());
 	}
 
 	/**

@@ -17,7 +17,6 @@
  */
 package org.azkfw.chart;
 
-import org.azkfw.chart.charts.area.AreaPlot;
 import org.azkfw.chart.charts.bar.BarPlot;
 import org.azkfw.chart.charts.line.LinePlot;
 import org.azkfw.chart.charts.pie.PiePlot;
@@ -64,17 +63,6 @@ public class AzukiChartFactory {
 	 */
 	public static AzukiChart createScatterChart() {
 		ScatterPlot plot = new ScatterPlot();
-		AzukiChart chart = new AzukiChart(plot);
-		return chart;
-	}
-
-	/**
-	 * エリアグラフのインスタンスを生成する。
-	 * 
-	 * @return エリアグラフ
-	 */
-	public static AzukiChart createAreaChart() {
-		AreaPlot plot = new AreaPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}

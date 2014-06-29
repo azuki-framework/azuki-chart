@@ -20,12 +20,10 @@ package org.azkfw.chart.charts.bar;
 import java.awt.FontMetrics;
 
 import org.azkfw.chart.displayformat.DisplayFormat;
-import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
-import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
-import org.azkfw.graphics.Size;
 
 /**
  * このクラスは、棒グラフのプロットクラスです。
@@ -34,18 +32,12 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class BarPlot extends AbstractPlot {
+public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartStyle> {
 
 	/** X軸情報 */
 	private BarXAxis axisX;
 	/** Y軸情報 */
 	private BarYAxis axisY;
-
-	/** データセット */
-	private BarDataset dataset;
-
-	/** Looks */
-	private BarLooks looks;
 
 	/**
 	 * コンストラクタ
@@ -53,26 +45,8 @@ public class BarPlot extends AbstractPlot {
 	public BarPlot() {
 		axisX = new BarXAxis();
 		axisY = new BarYAxis();
-		dataset = null;
-		looks = new BarLooks();
-	}
 
-	/**
-	 * ルックス情報を設定する。
-	 * 
-	 * @param aLooks ルックス情報
-	 */
-	public void setLooks(final BarLooks aLooks) {
-		looks = aLooks;
-	}
-
-	/**
-	 * データセットを設定する。
-	 * 
-	 * @param aDataset データセット
-	 */
-	public void setDataset(final BarDataset aDataset) {
-		dataset = aDataset;
+		setChartStyle(new BarChartStyle());
 	}
 
 	/**
@@ -95,6 +69,97 @@ public class BarPlot extends AbstractPlot {
 
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
+		BarDataset dataset = getDataset();
+		BarChartStyle style = getChartStyle();
+
+		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
+
+		// タイトル適用
+		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
+		// 凡例適用
+		Rect rtLegend = fitLegend(g, getChartStyle().getLegendDesign(), rtChartPre);
+
+		// スケール調整
+		ScaleValue scaleValue = getScaleValue();
+
+		float fontMargin = 8.0f;
+
+		// データポイント数取得
+		int dataPointSize = 5;
+		if (null != dataset) {
+			if (0 < dataset.getSeriesList().size()) {
+				dataPointSize = dataset.getSeriesList().get(0).getPoints().size();
+			}
+		}
+		debug(String.format("Data point size : %d", dataPointSize));
+
+		Margin margin = fitChart(g, rtChartPre, scaleValue, fontMargin);
+		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
+
+		// スケール計算
+		double difValue = scaleValue.getDiff();
+		double pixPerValue = (rtChartPre.getHeight() - margin.getVerticalSize()) / difValue;
+
+		Rect rtChart = new Rect();
+		rtChart.setX(rtChartPre.getX() + margin.getLeft());
+		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom());
+		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
+		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
+
+		// Draw Y axis
+		g.setColor(style.getYAxisLineColor());
+		g.setStroke(style.getYAxisLineStroke());
+		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
+		{
+			int fontSize = style.getYAxisFont().getSize();
+			FontMetrics fm = g.getFontMetrics(style.getYAxisFont());
+			DisplayFormat df = axisY.getDisplayFormat();
+			g.setColor(style.getYAxisFontColor());
+			g.setFont(style.getYAxisFont());
+			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+				String str = df.toString(value);
+				float strWidth = fm.stringWidth(str);
+				int yLabel = (int) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
+				int xLabel = (int) (rtChart.getX() - strWidth);
+				g.drawStringA(str, xLabel, yLabel);
+			}
+		}
+
+		// Draw X axis
+		g.setColor(style.getXAxisLineColor());
+		g.setStroke(style.getXAxisLineStroke());
+		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
+		{
+			float dataWidth = rtChart.getWidth() / dataPointSize;
+			FontMetrics fm = g.getFontMetrics(style.getXAxisFont());
+			DisplayFormat df = axisX.getDisplayFormat();
+			g.setColor(style.getXAxisFontColor());
+			g.setFont(style.getXAxisFont());
+			for (int i = 0; i < dataPointSize; i++) {
+				String str = df.toString(i);
+				float strWidth = fm.stringWidth(str);
+				float y = rtChart.getY();
+				float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
+				g.drawStringA(str, x, y);
+			}
+		}
+		
+
+		// Draw Legend
+		if (null != rtLegend) {
+			drawLegend(g, getChartStyle().getLegendDesign(), rtLegend);
+		}
+		// Draw title
+		if (null != rtTitle) {
+			drawTitle(g, dataset.getTitle(), rtTitle);
+		}
+
+		return true;
+	}
+
+	private ScaleValue getScaleValue() {
+		BarDataset dataset = getDataset();
+
 		// データ最小値・最大値取得
 		Double dataMinValue = null;
 		Double dataMaxValue = null;
@@ -105,23 +170,14 @@ public class BarPlot extends AbstractPlot {
 						dataMinValue = point.getValue();
 						dataMaxValue = point.getValue();
 					} else {
-						dataMinValue = (dataMinValue > point.getValue()) ? point.getValue() : dataMaxValue;
-						dataMaxValue = (dataMaxValue < point.getValue()) ? point.getValue() : dataMaxValue;
+						dataMinValue = Math.min(dataMinValue, point.getValue());
+						dataMaxValue = Math.max(dataMaxValue, point.getValue());
 					}
 				}
 			}
 		}
-		System.out.println(String.format("Data minimum value : %f", dataMinValue));
-		System.out.println(String.format("Data maximum value : %f", dataMaxValue));
-
-		// データポイント数取得
-		int dataPointSize = 5;
-		if (null != dataset) {
-			if (0 < dataset.getSeriesList().size()) {
-				dataPointSize = dataset.getSeriesList().get(0).getPoints().size();
-			}
-		}
-		System.out.println(String.format("Data point size : %d", dataPointSize));
+		debug(String.format("Data minimum value : %f", dataMinValue));
+		debug(String.format("Data maximum value : %f", dataMaxValue));
 
 		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
@@ -139,64 +195,77 @@ public class BarPlot extends AbstractPlot {
 			}
 		}
 		if (axisY.isScaleAutoFit()) {
-			double diff = maxValue - minValue;
-			int logMin = (int) (Math.log10(minValue));
-			int logMax = (int) (Math.log10(maxValue));
-			if (logMin == logMax) {
-				if (Math.pow(10, logMax) < diff) {
-					scale = Math.pow(10, logMax);
-				} else {
-					scale = Math.pow(10, logMax - 1);
-				}
+			double dif = maxValue - minValue;
+			int logDif = (int) (Math.log10(dif));
+			double scaleDif = Math.pow(10, logDif);
+			if (dif >= scaleDif * 5) {
+				scale = scaleDif;
+			} else if (dif >= scaleDif * 2) {
+				scale = scaleDif / 2;
 			} else {
-				scale = Math.pow(10, logMax - 1);
+				scale = scaleDif / 10;
 			}
 		}
-		System.out.println(String.format("Y axis minimum value : %f", minValue));
-		System.out.println(String.format("Y axis maximum value : %f", maxValue));
-		System.out.println(String.format("Y axis scale value : %f", scale));
+		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
+		debug(String.format("Y axis minimum value : %f", minValue));
+		debug(String.format("Y axis maximum value : %f", maxValue));
+		debug(String.format("Y axis scale value : %f", scale));
 
-		Size szChart = null;
-		Point ptChart = null;
-		szChart = new Size(aRect.getWidth(), aRect.getHeight());
-		ptChart = new Point(aRect.getX(), aRect.getY());
+		return scaleValue;
+	}
+
+	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
+		BarDataset dataset = getDataset();
+		BarChartStyle style = getChartStyle();
+
+		// データポイント数取得
+		int dataPointSize = 5;
+		if (null != dataset) {
+			if (0 < dataset.getSeriesList().size()) {
+				dataPointSize = dataset.getSeriesList().get(0).getPoints().size();
+			}
+		}
 
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 
-		double difValue = maxValue - minValue;
+		double difValue = aScaleValue.getDiff();
+
 		// スケール計算(プレ)
-		double pixYPerValue = (szChart.getHeight() - (margin.getTop() + margin.getBottom())) / difValue;
+		double pixPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / difValue;
 		{
 			{
 				float maxYLabelWidth = 0.0f;
-				FontMetrics fm = g.getFontMetrics(looks.getYAxisFont());
+				FontMetrics fm = g.getFontMetrics(style.getYAxisFont());
 				DisplayFormat df = axisY.getDisplayFormat();
-				for (double value = minValue; value <= maxValue; value += scale) {
+				for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
 					String str = df.toString(value);
 					int width = fm.stringWidth(str);
 					if (maxYLabelWidth < width) {
 						maxYLabelWidth = width;
 					}
 				}
-				System.out.println(String.format("Max y axis label width : %f", maxYLabelWidth));
+				if (0 < maxYLabelWidth) {
+					maxYLabelWidth += aFontMargin;
+				}
+				debug(String.format("Max y axis label width : %f", maxYLabelWidth));
 				margin.setLeft(maxYLabelWidth);
 			}
 
 			// スケール計算(プレ)
-			pixYPerValue = (szChart.getHeight() - (margin.getTop() + margin.getBottom())) / difValue;
+			pixPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / difValue;
 
 			{
-				float chartWidth = szChart.getWidth() - margin.getLeft();
+				float chartWidth = aRtChart.getWidth() - margin.getLeft();
 				float dataWidth = chartWidth / (float) dataPointSize;
-				FontMetrics fm = g.getFontMetrics(looks.getXAxisFont());
+				FontMetrics fm = g.getFontMetrics(style.getXAxisFont());
 				DisplayFormat df = axisX.getDisplayFormat();
 				float minLeft = 0.f;
-				float maxRight = szChart.getWidth();
+				float maxRight = aRtChart.getWidth();
 				for (int i = 0; i < dataPointSize; i++) {
 					String str = df.toString(i);
 					int width = fm.stringWidth(str);
 					if (0 < width) {
-						margin.setBottom(looks.getXAxisFont().getSize());
+						margin.setBottom(style.getXAxisFont().getSize());
 
 						float x = margin.getLeft() + (i * dataWidth) + (dataWidth / 2);
 						float left = x - (width / 2);
@@ -212,20 +281,20 @@ public class BarPlot extends AbstractPlot {
 				if (0 > minLeft) {
 					margin.setLeft(margin.getLeft() - minLeft);
 				}
-				if (0 < maxRight - szChart.getWidth()) {
-					margin.setRight(maxRight - szChart.getWidth());
+				if (0 < maxRight - aRtChart.getWidth()) {
+					margin.setRight(maxRight - aRtChart.getWidth());
 				}
 			}
 
 			// スケール計算(プレ)
-			pixYPerValue = (szChart.getHeight() - (margin.getTop() + margin.getBottom())) / difValue;
+			pixPerValue = (aRtChart.getHeight() - (margin.getTop() + margin.getBottom())) / difValue;
 
 			{
-				int fontHeight = looks.getYAxisFont().getSize();
+				int fontHeight = style.getYAxisFont().getSize();
 				DisplayFormat df = axisY.getDisplayFormat();
 				float minTop = 0.f;
-				for (double value = minValue; value <= maxValue; value += scale) {
-					float y = (float) (szChart.getHeight() - margin.getBottom() - pixYPerValue * (value - minValue));
+				for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
+					float y = (float) (aRtChart.getHeight() - margin.getBottom() - pixPerValue * (value - aScaleValue.getMin()));
 					String str = df.toString(value);
 					if (0 < str.length()) {
 						y -= fontHeight / 2;
@@ -240,56 +309,12 @@ public class BarPlot extends AbstractPlot {
 			}
 
 			// スケール計算(Fix)
-			pixYPerValue = (szChart.getHeight() - (margin.getTop() + margin.getBottom())) / difValue;
+			pixPerValue = (aRtChart.getHeight() - (margin.getTop() + margin.getBottom())) / difValue;
 
-			System.out.println(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(),
+			debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(),
 					margin.getBottom()));
 		}
 
-		float x = ptChart.getX() + margin.getLeft();
-		float y = ptChart.getY() + szChart.getHeight() - margin.getBottom();
-		float width = szChart.getWidth() - (margin.getLeft() + margin.getRight());
-		float height = szChart.getHeight() - (margin.getTop() + margin.getBottom());
-
-		// Draw Y axis
-		g.setColor(looks.getYAxisLineColor());
-		g.setStroke(looks.getYAxisLineStroke());
-		g.drawLine((int) (x), (int) (y), (int) (x), (int) (y - height));
-		{
-			int fontSize = looks.getYAxisFont().getSize();
-			FontMetrics fm = g.getFontMetrics(looks.getYAxisFont());
-			DisplayFormat df = axisY.getDisplayFormat();
-			g.setColor(looks.getYAxisFontColor());
-			g.setFont(looks.getYAxisFont());
-			for (double value = minValue; value <= maxValue; value += scale) {
-				String str = df.toString(value);
-				float strWidth = fm.stringWidth(str);
-				int yLabel = (int) (y - ((value - minValue) * pixYPerValue) - (fontSize / 2));
-				int xLabel = (int) (x - strWidth);
-				g.drawStringA(str, xLabel, yLabel);
-			}
-		}
-
-		// Draw X axis
-		g.setColor(looks.getXAxisLineColor());
-		g.setStroke(looks.getXAxisLineStroke());
-		g.drawLine((int) (x), (int) (y), (int) (x + width), (int) (y));
-		{
-			float dataWidth = width / dataPointSize;
-			FontMetrics fm = g.getFontMetrics(looks.getXAxisFont());
-			DisplayFormat df = axisX.getDisplayFormat();
-			g.setColor(looks.getXAxisFontColor());
-			g.setFont(looks.getXAxisFont());
-			for (int i = 0; i < dataPointSize; i++) {
-				String str = df.toString(i);
-				float strWidth = fm.stringWidth(str);
-				int yLabel = (int) (y);
-				int xLabel = (int) (x + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2));
-				g.drawStringA(str, xLabel, yLabel);
-			}
-		}
-
-		return true;
+		return margin;
 	}
-
 }

@@ -17,10 +17,7 @@
  */
 package org.azkfw.chart.charts.bar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.dataset.AbstractDataset;
+import org.azkfw.chart.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、棒グラフのデータセット情報を保持するクラスです。
@@ -29,17 +26,13 @@ import org.azkfw.chart.dataset.AbstractDataset;
  * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class BarDataset extends AbstractDataset {
-
-	/** シリーズリスト */
-	private List<BarSeries> seriesList;
+public class BarDataset extends AbstractSeriesDataset<BarSeries> {
 
 	/**
 	 * コンストラクタ
 	 */
 	public BarDataset() {
 		super();
-		seriesList = new ArrayList<BarSeries>();
 	}
 
 	/**
@@ -49,24 +42,5 @@ public class BarDataset extends AbstractDataset {
 	 */
 	public BarDataset(final String aTitle) {
 		super(aTitle);
-		seriesList = new ArrayList<BarSeries>();
-	}
-
-	/**
-	 * シリーズを追加する。
-	 * 
-	 * @param aSeries シリーズ
-	 */
-	public void addSeries(final BarSeries aSeries) {
-		seriesList.add(aSeries);
-	}
-
-	/**
-	 * シリーズリストを取得する。
-	 * 
-	 * @return シリーズリスト
-	 */
-	public List<BarSeries> getSeriesList() {
-		return seriesList;
 	}
 }

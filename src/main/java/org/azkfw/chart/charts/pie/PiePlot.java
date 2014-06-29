@@ -22,8 +22,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.util.List;
 
-import org.azkfw.chart.looks.legend.LegendDesign;
-import org.azkfw.chart.looks.legend.LegendDesign.LegendPosition;
+import org.azkfw.chart.looks.legend.LegendStyle;
+import org.azkfw.chart.looks.legend.LegendStyle.LegendPosition;
 import org.azkfw.chart.plot.AbstractPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -39,29 +39,15 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PiePlot extends AbstractPlot {
+public class PiePlot extends AbstractPlot<PieDataset, PieChartStyle> {
 
 	/** 軸情報 */
 	private PieAxis axis;
 
-	/** データセット */
-	private PieDataset dataset;
-
-	/** Looks */
-	private PieLooks looks;
-
 	public PiePlot() {
 		axis = new PieAxis();
-		dataset = null;
-		looks = new PieLooks();
-	}
 
-	public void setLooks(final PieLooks aLooks) {
-		looks = aLooks;
-	}
-
-	public void setDataset(final PieDataset aDataset) {
-		dataset = aDataset;
+		setChartStyle(new PieChartStyle());
 	}
 
 	/**
@@ -75,13 +61,16 @@ public class PiePlot extends AbstractPlot {
 
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
+		PieDataset dataset = getDataset();
+		PieChartStyle style = getChartStyle();
+
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), looks.getTitleDesign(), rtChartPre);
+		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
 		// 凡例適用
 		Rect rtLegend = fitLegend(g, rtChartPre);
-
+		
 		float pieSize = Math.min(rtChartPre.getWidth(), rtChartPre.getHeight());
 		Size szChart = new Size(pieSize, pieSize);
 		Point ptChartMiddle = new Point(rtChartPre.getX() + (rtChartPre.getWidth() / 2.f), rtChartPre.getY() + (rtChartPre.getHeight() / 2.f));
@@ -96,7 +85,7 @@ public class PiePlot extends AbstractPlot {
 		int angle = 90;
 		for (int index = 0; index < dataList.size(); index++) {
 			PieData data = dataList.get(index);
-			Color fillColor = looks.getDataFillColor(index);
+			Color fillColor = style.getDataFillColor(index);
 			int size = (int) (-1 * 360.f * data.getValue() / totalValue);
 			g.setColor(fillColor);
 			g.fillArc(ptChartMiddle.getX() - (szChart.getWidth() / 2.f), ptChartMiddle.getY() - (szChart.getHeight() / 2.f), szChart.getWidth(),
@@ -106,7 +95,7 @@ public class PiePlot extends AbstractPlot {
 		angle = 90;
 		for (int index = 0; index < dataList.size(); index++) {
 			PieData data = dataList.get(index);
-			Color strokeColor = looks.getDataStrokeColor(index);
+			Color strokeColor = style.getDataStrokeColor(index);
 			int size = (int) (-1 * 360.f * data.getValue() / totalValue);
 			g.setColor(strokeColor);
 			g.drawArc((int) (ptChartMiddle.getX() - (szChart.getWidth() / 2.f)), (int) (ptChartMiddle.getY() - (szChart.getHeight() / 2.f)),
@@ -120,16 +109,19 @@ public class PiePlot extends AbstractPlot {
 		}
 		// Draw title
 		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), looks.getTitleDesign(), rtTitle);
+			drawTitle(g, dataset.getTitle(), rtTitle);
 		}
 
 		return true;
 	}
 
 	private Rect fitLegend(final Graphics g, Rect rtChart) {
+		PieDataset dataset = getDataset();
+		PieChartStyle style = getChartStyle();
+
 		Rect rtLegend = null;
-		if (null != looks.getLegendDesign() && null != dataset && null != dataset.getDataList() && 0 < dataset.getDataList().size()) {
-			LegendDesign design = looks.getLegendDesign();
+		if (null != style.getLegendDesign() && null != dataset && null != dataset.getDataList() && 0 < dataset.getDataList().size()) {
+			LegendStyle design = style.getLegendDesign();
 			if (design.isDisplay()) {
 				rtLegend = new Rect();
 
@@ -199,7 +191,9 @@ public class PiePlot extends AbstractPlot {
 	}
 
 	private void drawLegend(final Graphics g, final Rect aRect) {
-		LegendDesign design = looks.getLegendDesign();
+		PieDataset dataset = getDataset();
+		PieChartStyle style = getChartStyle();
+		LegendStyle design = style.getLegendDesign();
 
 		Margin mgn = (null != design.getMargin()) ? design.getMargin() : new Margin();
 		// fill background
@@ -227,9 +221,9 @@ public class PiePlot extends AbstractPlot {
 			for (int i = 0; i < dataList.size(); i++) {
 				PieData data = dataList.get(i);
 				// draw color
-				g.setColor(looks.getDataFillColor(i));
+				g.setColor(style.getDataFillColor(i));
 				g.fillRect(xLegend + (fontHeight / 2), yLegend, fontHeight, fontHeight);
-				g.setColor(looks.getDataStrokeColor(i));
+				g.setColor(style.getDataStrokeColor(i));
 				g.drawRect(xLegend + (fontHeight / 2), yLegend, fontHeight, fontHeight);
 				// draw title
 				int strWidth = fm.stringWidth(data.getTitle());
@@ -246,9 +240,9 @@ public class PiePlot extends AbstractPlot {
 			for (int i = 0; i < dataList.size(); i++) {
 				PieData data = dataList.get(i);
 				// draw color
-				g.setColor(looks.getDataFillColor(i));
+				g.setColor(style.getDataFillColor(i));
 				g.fillRect(xLegend + (fontHeight / 2), yLegend, fontHeight, fontHeight);
-				g.setColor(looks.getDataStrokeColor(i));
+				g.setColor(style.getDataStrokeColor(i));
 				g.drawRect(xLegend + (fontHeight / 2), yLegend, fontHeight, fontHeight);
 				// draw title
 				g.setFont(font);
