@@ -22,11 +22,12 @@ import java.awt.FontMetrics;
 import java.util.List;
 
 import org.azkfw.chart.dataset.SeriesDataset;
-import org.azkfw.chart.looks.legend.LegendStyle;
-import org.azkfw.chart.looks.legend.LegendStyle.LegendPosition;
+import org.azkfw.chart.design.SeriesChartDesign;
+import org.azkfw.chart.design.chart.SeriesChartStyle;
+import org.azkfw.chart.design.legend.LegendStyle;
+import org.azkfw.chart.design.legend.LegendStyle.LegendPosition;
 import org.azkfw.chart.looks.marker.Marker;
 import org.azkfw.chart.series.Series;
-import org.azkfw.chart.style.SeriesChartStyle;
 import org.azkfw.core.util.ListUtility;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -41,7 +42,8 @@ import org.azkfw.graphics.Rect;
  * @author Kawakicchi
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractSeriesPlot<D extends SeriesDataset, S extends SeriesChartStyle> extends AbstractPlot<D, S> implements Plot {
+public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN extends SeriesChartDesign> extends AbstractPlot<DATASET, DESIGN>
+		implements Plot {
 
 	/**
 	 * コンストラクタ
@@ -71,13 +73,15 @@ public abstract class AbstractSeriesPlot<D extends SeriesDataset, S extends Seri
 	protected Rect fitLegend(final Graphics g, final LegendStyle aStyle, Rect rtChart) {
 		Rect rtLegend = null;
 
+		DATASET dataset = getDataset();
+
 		if (null == aStyle) {
 			return rtLegend;
 		}
-		if (null == getDataset()) {
+		if (null == dataset) {
 			return rtLegend;
 		}
-		if (ListUtility.isEmpty(getDataset().getSeriesList())) {
+		if (ListUtility.isEmpty(dataset.getSeriesList())) {
 			return rtLegend;
 		}
 
@@ -91,7 +95,7 @@ public abstract class AbstractSeriesPlot<D extends SeriesDataset, S extends Seri
 			FontMetrics fm = g.getFontMetrics(font);
 			LegendPosition pos = aStyle.getPosition();
 
-			List<? extends Series> seriesList = getDataset().getSeriesList();
+			List<? extends Series> seriesList = dataset.getSeriesList();
 
 			// get size
 			if (LegendPosition.Top == pos || LegendPosition.Bottom == pos) {
@@ -152,71 +156,75 @@ public abstract class AbstractSeriesPlot<D extends SeriesDataset, S extends Seri
 	}
 
 	protected void drawLegend(final Graphics g, final LegendStyle aStyle, final Rect aRect) {
-		S style = getChartStyle();
+		DATASET dataset = getDataset();
+		DESIGN design = getChartDesign();
+		SeriesChartStyle style = (SeriesChartStyle) design.getChartStyle();
 
-		Margin margin = (Margin) getNotNullObject(aStyle.getMargin(), new Margin());
+		if (null != design) {
+			Margin margin = (Margin) getNotNullObject(aStyle.getMargin(), new Margin());
 
-		Rect rtBox = new Rect(aRect.getX() + margin.getLeft(), aRect.getY() + margin.getTop(), aRect.getWidth() - margin.getHorizontalSize(),
-				aRect.getHeight() - margin.getVerticalSize());
-		// fill background
-		if (null != aStyle.getBackgroundColor()) {
-			g.setColor(aStyle.getBackgroundColor());
-			g.fillRect(rtBox);
-		}
-		// draw stroke
-		if (null != aStyle.getStroke() && null != aStyle.getStrokeColor()) {
-			g.setStroke(aStyle.getStroke(), aStyle.getStrokeColor());
-			g.drawRect(rtBox);
-		}
-
-		Padding padding = (Padding) getNotNullObject(aStyle.getPadding(), new Padding());
-
-		Font font = aStyle.getFont();
-		FontMetrics fm = g.getFontMetrics(font);
-		int fontHeight = font.getSize();
-
-		List<? extends Series> seriesList = getDataset().getSeriesList();
-
-		if (aStyle.getPosition() == LegendPosition.Top || aStyle.getPosition() == LegendPosition.Bottom) {
-			float x = aRect.getX() + margin.getLeft() + padding.getLeft();
-			float y = aRect.getY() + margin.getTop() + padding.getTop();
-
-			for (int i = 0; i < seriesList.size(); i++) {
-				Series series = seriesList.get(i);
-				// draw line
-				g.setStroke(style.getSeriesStroke(i, series), style.getSeriesStrokeColor(i, series));
-				g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
-				// draw marker
-				Marker marker = style.getSeriesMarker(i, series);
-				if (null != marker) {
-					marker.draw(g, x + (fontHeight * 2 - marker.getSize().getWidth()) / 2, y + (fontHeight - marker.getSize().getHeight()) / 2);
-				}
-				// draw title
-				int strWidth = fm.stringWidth(series.getTitle());
-				g.setFont(font, aStyle.getFontColor());
-				g.drawStringA(series.getTitle(), (fontHeight * 2) + x, y);
-
-				x += aStyle.getSpace() + (fontHeight * 2) + strWidth;
+			Rect rtBox = new Rect(aRect.getX() + margin.getLeft(), aRect.getY() + margin.getTop(), aRect.getWidth() - margin.getHorizontalSize(),
+					aRect.getHeight() - margin.getVerticalSize());
+			// fill background
+			if (null != aStyle.getBackgroundColor()) {
+				g.setColor(aStyle.getBackgroundColor());
+				g.fillRect(rtBox);
 			}
-		} else if (aStyle.getPosition() == LegendPosition.Left || aStyle.getPosition() == LegendPosition.Right) {
-			float x = aRect.getX() + margin.getLeft() + padding.getLeft();
-			float y = aRect.getY() + margin.getTop() + padding.getTop();
+			// draw stroke
+			if (null != aStyle.getStroke() && null != aStyle.getStrokeColor()) {
+				g.setStroke(aStyle.getStroke(), aStyle.getStrokeColor());
+				g.drawRect(rtBox);
+			}
 
-			for (int i = 0; i < seriesList.size(); i++) {
-				Series series = seriesList.get(i);
-				// draw line
-				g.setStroke(style.getSeriesStroke(i, series), style.getSeriesStrokeColor(i, series));
-				g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
-				// draw marker
-				Marker marker = style.getSeriesMarker(i, series);
-				if (null != marker) {
-					marker.draw(g, x + (fontHeight * 2 - marker.getSize().getWidth()) / 2, y + (fontHeight - marker.getSize().getHeight()) / 2);
+			Padding padding = (Padding) getNotNullObject(aStyle.getPadding(), new Padding());
+
+			Font font = aStyle.getFont();
+			FontMetrics fm = g.getFontMetrics(font);
+			int fontHeight = font.getSize();
+
+			List<? extends Series> seriesList = dataset.getSeriesList();
+
+			if (aStyle.getPosition() == LegendPosition.Top || aStyle.getPosition() == LegendPosition.Bottom) {
+				float x = aRect.getX() + margin.getLeft() + padding.getLeft();
+				float y = aRect.getY() + margin.getTop() + padding.getTop();
+
+				for (int i = 0; i < seriesList.size(); i++) {
+					Series series = seriesList.get(i);
+					// draw line
+					g.setStroke(style.getSeriesStroke(i, series), style.getSeriesStrokeColor(i, series));
+					g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
+					// draw marker
+					Marker marker = style.getSeriesMarker(i, series);
+					if (null != marker) {
+						marker.draw(g, x + (fontHeight * 2 - marker.getSize().getWidth()) / 2, y + (fontHeight - marker.getSize().getHeight()) / 2);
+					}
+					// draw title
+					int strWidth = fm.stringWidth(series.getTitle());
+					g.setFont(font, aStyle.getFontColor());
+					g.drawStringA(series.getTitle(), (fontHeight * 2) + x, y);
+
+					x += aStyle.getSpace() + (fontHeight * 2) + strWidth;
 				}
-				// draw title
-				g.setFont(font, aStyle.getFontColor());
-				g.drawStringA(series.getTitle(), (fontHeight * 2) + x, y);
+			} else if (aStyle.getPosition() == LegendPosition.Left || aStyle.getPosition() == LegendPosition.Right) {
+				float x = aRect.getX() + margin.getLeft() + padding.getLeft();
+				float y = aRect.getY() + margin.getTop() + padding.getTop();
 
-				y += aStyle.getSpace() + fontHeight;
+				for (int i = 0; i < seriesList.size(); i++) {
+					Series series = seriesList.get(i);
+					// draw line
+					g.setStroke(style.getSeriesStroke(i, series), style.getSeriesStrokeColor(i, series));
+					g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
+					// draw marker
+					Marker marker = style.getSeriesMarker(i, series);
+					if (null != marker) {
+						marker.draw(g, x + (fontHeight * 2 - marker.getSize().getWidth()) / 2, y + (fontHeight - marker.getSize().getHeight()) / 2);
+					}
+					// draw title
+					g.setFont(font, aStyle.getFontColor());
+					g.drawStringA(series.getTitle(), (fontHeight * 2) + x, y);
+
+					y += aStyle.getSpace() + fontHeight;
+				}
 			}
 		}
 	}

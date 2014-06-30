@@ -15,25 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.style;
+package org.azkfw.chart.design;
 
-import org.azkfw.chart.looks.legend.LegendStyle;
-import org.azkfw.chart.looks.title.TitleStyle;
+import org.azkfw.chart.design.chart.SeriesChartStyle;
+import org.azkfw.chart.series.Series;
+import org.azkfw.chart.series.SeriesPoint;
 
 /**
- * このインターフェースは、グラフスタイルを定義する為のインターフェースです。
+ * このインターフェースは、シリーズグラフデザインを定義する為のインターフェースです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/28
  * @author Kawakicchi
  */
-public interface ChartStyle {
+@SuppressWarnings("rawtypes")
+public interface SeriesChartDesign<STYLE extends SeriesChartStyle, SERIES extends Series, POINT extends SeriesPoint> extends ChartDesign<STYLE> {
 
-	public void setTitleDesign(final TitleStyle aDesign);
-
-	public TitleStyle getTitleDesign();
-
-	public void setLegendDesign(final LegendStyle aDesign);
-
-	public LegendStyle getLegendDesign();
 }

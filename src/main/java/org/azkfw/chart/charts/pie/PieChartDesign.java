@@ -21,16 +21,20 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.looks.legend.CustomLegendStyle;
-import org.azkfw.chart.looks.title.CustomTitleStyle;
-import org.azkfw.chart.style.AbstractChartStyle;
+import org.azkfw.chart.charts.pie.PieChartDesign.PieChartStyle;
+import org.azkfw.chart.design.AbstractChartDesign;
+import org.azkfw.chart.design.chart.AbstractChartStyle;
+import org.azkfw.chart.design.legend.CustomLegendStyle;
+import org.azkfw.chart.design.title.CustomTitleStyle;
 
 /**
+ * このクラスは、円グラフのデザイン情報を保持するクラスです。
+ * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/22
  * @author Kawakicchi
  */
-public class PieChartStyle extends AbstractChartStyle {
+public class PieChartDesign extends AbstractChartDesign<PieChartStyle> {
 
 	private static List<Color> COLORS = new ArrayList<Color>();
 	static {
@@ -48,37 +52,55 @@ public class PieChartStyle extends AbstractChartStyle {
 		COLORS.add(new Color(70, 170, 197, 255));
 		COLORS.add(new Color(246, 146, 64, 255));
 	}
-	
-	public PieChartStyle() {
-		setTitleDesign(new CustomTitleStyle());
-		setLegendDesign(new CustomLegendStyle());
+
+	/**
+	 * コンストラクタ
+	 */
+	public PieChartDesign() {
+		setChartStyle(new PieChartStyle());
+		setTitleStyle(new CustomTitleStyle());
+		setLegendStyle(new CustomLegendStyle());
 	}
 
 	/**
-	 * データのストロークカラーを取得する。
+	 * このクラスは、円グラフのスタイルを定義するクラスです。
 	 * 
-	 * @param aIndex データインデックス
-	 * @return カラー
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
 	 */
-	public Color getDataStrokeColor(final int aIndex) {
-		Color color = null;
-		if (aIndex < COLORS.size()) {
-			color = COLORS.get(aIndex);
-		} else {
-			color = new Color(0, 0, 0, 255);
+	public static class PieChartStyle extends AbstractChartStyle {
+
+		public PieChartStyle() {
+			setBackgroundColor(Color.pink);
 		}
-		return color;
-	}
 
-	/**
-	 * データの塗りつぶしカラーを取得する。
-	 * 
-	 * @param aIndex データインデックス
-	 * @return カラー
-	 */
-	public Color getDataFillColor(final int aIndex) {
-		Color color = getDataStrokeColor(aIndex);
-		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 64);
-		return color;
+		/**
+		 * データのストロークカラーを取得する。
+		 * 
+		 * @param aIndex データインデックス
+		 * @return カラー
+		 */
+		public Color getDataStrokeColor(final int aIndex) {
+			Color color = null;
+			if (aIndex < COLORS.size()) {
+				color = COLORS.get(aIndex);
+			} else {
+				color = new Color(0, 0, 0, 255);
+			}
+			return color;
+		}
+
+		/**
+		 * データの塗りつぶしカラーを取得する。
+		 * 
+		 * @param aIndex データインデックス
+		 * @return カラー
+		 */
+		public Color getDataFillColor(final int aIndex) {
+			Color color = getDataStrokeColor(aIndex);
+			color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 64);
+			return color;
+		}
 	}
 }

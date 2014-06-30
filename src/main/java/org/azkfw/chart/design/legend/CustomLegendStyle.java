@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.title;
+package org.azkfw.chart.design.legend;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -25,17 +25,17 @@ import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 
 /**
- * このクラスは、タイトルデザインをカスタマイズするクラスです。
+ * このクラスは、凡例デザインをカスタマイズするクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class CustomTitleStyle implements TitleStyle {
+public class CustomLegendStyle implements LegendStyle {
 
 	private boolean display;
 
-	private TitlePosition position;
+	private LegendPosition position;
 
 	private Color fontColor;
 
@@ -51,29 +51,33 @@ public class CustomTitleStyle implements TitleStyle {
 
 	private Color backgroundColor;
 
+	private float space;
+
 	/**
 	 * コンストラクタ
 	 */
-	public CustomTitleStyle() {
+	public CustomLegendStyle() {
 		display = true;
-		position = TitlePosition.Top;
-		fontColor = new Color(0, 0, 0, 255);
-		font = new Font("Arial", Font.BOLD, 26);
+		position = LegendPosition.Right;
+		fontColor = new Color(64, 64, 64, 255);
+		font = new Font("Arial", Font.BOLD, 16);
 
 		margin = new Margin(4.f, 4.f, 4.f, 4.f);
-		padding = new Padding(8.f, 8.f, 8.f, 8.f);
+		padding = new Padding(6.f, 6.f, 6.f, 6.f);
 
 		stroke = null;
 		strokeColor = null;
 
 		backgroundColor = null;
+
+		space = 4.f;
 	}
 
 	public void setDisplay(final boolean aDisplay) {
 		display = aDisplay;
 	}
 
-	public void setPosition(final TitlePosition aPosition) {
+	public void setPosition(final LegendPosition aPosition) {
 		position = aPosition;
 	}
 
@@ -114,7 +118,7 @@ public class CustomTitleStyle implements TitleStyle {
 		return display;
 	}
 
-	public TitlePosition getPosition() {
+	public LegendPosition getPosition() {
 		return position;
 	}
 
@@ -144,5 +148,9 @@ public class CustomTitleStyle implements TitleStyle {
 
 	public Color getBackgroundColor() {
 		return backgroundColor;
+	}
+
+	public float getSpace() {
+		return space;
 	}
 }

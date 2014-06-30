@@ -23,6 +23,7 @@ import java.awt.GradientPaint;
 import java.awt.Polygon;
 import java.util.List;
 
+import org.azkfw.chart.charts.scatter.ScatterChartDesign.ScatterChartStyle;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.looks.marker.Marker;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
@@ -38,7 +39,7 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChartStyle> {
+public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChartDesign> {
 
 	/** X軸情報 */
 	private ScatterXAxis axisX;
@@ -52,7 +53,7 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 		axisX = new ScatterXAxis();
 		axisY = new ScatterYAxis();
 
-		setChartStyle(new ScatterChartStyle());
+		setChartStyle(new ScatterChartDesign());
 	}
 
 	/**
@@ -76,14 +77,15 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		ScatterDataset dataset = getDataset();
-		ScatterChartStyle style = getChartStyle();
+		ScatterChartDesign design = getChartDesign();
+		ScatterChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
+		Rect rtTitle = fitTitle(g, rtChartPre);
 		// 凡例適用
-		Rect rtLegend = fitLegend(g, getChartStyle().getLegendDesign(), rtChartPre);
+		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
 
 		// スケール調整
 		ScaleValue[] svs = getXYScaleValue();
@@ -118,66 +120,67 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 			int fontSize = style.getYAxisFont().getSize();
 			FontMetrics fm = g.getFontMetrics(style.getYAxisFont());
 			DisplayFormat df = axisY.getDisplayFormat();
-			g.setColor(style.getYAxisFontColor());
-			g.setFont(style.getYAxisFont());
+
+			g.setFont(style.getYAxisFont(), style.getYAxisFontColor());
 			for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
 				String str = df.toString(value);
 				float strWidth = fm.stringWidth(str);
-				float yLabel = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
-				float xLabel = (float) (rtChart.getX() - strWidth - fontMargin);
-				g.drawStringA(str, xLabel, yLabel - (fontSize / 2));
+
+				float x = (float) (rtChart.getX() - strWidth - fontMargin);
+				float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
+				g.drawStringA(str, x, y - (fontSize / 2));
 			}
-			g.setColor(style.getYAxisScaleColor());
-			g.setStroke(style.getYAxisScaleStroke());
+
+			g.setStroke(style.getYAxisScaleStroke(), style.getYAxisScaleColor());
 			for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
-				float yLine = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
-				float xLine = (float) (rtChart.getX());
-				g.drawLine(xLine, yLine, xLine + rtChart.getWidth(), yLine);
+				float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
+				float x = (float) (rtChart.getX());
+				g.drawLine(x, y, x + rtChart.getWidth(), y);
 			}
-			g.setColor(style.getYAxisLineColor());
-			g.setStroke(style.getYAxisLineStroke());
+
+			g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
 			for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
-				float yLine = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
-				float xLine = (float) (rtChart.getX());
-				g.drawLine(xLine, yLine, xLine + 6, yLine);
+				float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
+				float x = (float) (rtChart.getX());
+				g.drawLine(x, y, x + 6, y);
 			}
 		}
 		// Draw X axis scale
 		{
 			FontMetrics fm = g.getFontMetrics(style.getXAxisFont());
 			DisplayFormat df = axisX.getDisplayFormat();
-			g.setColor(style.getXAxisFontColor());
-			g.setFont(style.getXAxisFont());
+
+			g.setFont(style.getXAxisFont(), style.getXAxisFontColor());
 			for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
 				String str = df.toString(value);
 				float strWidth = fm.stringWidth(str);
-				float yLabel = (float) (rtChart.getY() + fontMargin);
-				float xLabel = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue) - (strWidth / 2));
-				g.drawStringA(str, xLabel, yLabel);
+
+				float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue) - (strWidth / 2));
+				float y = (float) (rtChart.getY() + fontMargin);
+				g.drawStringA(str, x, y);
 			}
-			g.setColor(style.getXAxisScaleColor());
-			g.setStroke(style.getXAxisScaleStroke());
+
+			g.setStroke(style.getXAxisScaleStroke(), style.getXAxisScaleColor());
 			for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
-				float yLine = (float) (rtChart.getY());
-				float xLine = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
-				g.drawLine(xLine, yLine, xLine, yLine - rtChart.getHeight());
+				float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
+				float y = (float) (rtChart.getY());
+				g.drawLine(x, y, x, y - rtChart.getHeight());
 			}
-			g.setColor(style.getXAxisLineColor());
-			g.setStroke(style.getXAxisLineStroke());
+
+			g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
 			for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
-				float yLine = (float) (rtChart.getY());
-				float xLine = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
-				g.drawLine(xLine, yLine, xLine, yLine - 6);
+				float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
+				float y = (float) (rtChart.getY());
+				g.drawLine(x, y, x, y - 6);
 			}
 		}
 
 		// Draw Y axis
-		g.setColor(style.getYAxisLineColor());
-		g.setStroke(style.getYAxisLineStroke());
+		g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
 		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
+
 		// Draw X axis
-		g.setColor(style.getXAxisLineColor());
-		g.setStroke(style.getXAxisLineStroke());
+		g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
 		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
 
 		if (null != dataset) {
@@ -218,8 +221,7 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 						xps[j] = (int) (rtChart.getX() + ((point.getX() - xScaleValue.getMin()) * pixXPerValue));
 						yps[j] = (int) (rtChart.getY() - ((point.getY() - yScaleValue.getMin()) * pixYPerValue));
 					}
-					g.setColor(style.getSeriesStrokeColor(index, series));
-					g.setStroke(style.getSeriesStroke(index, series));
+					g.setStroke(style.getSeriesStroke(index, series), style.getSeriesStrokeColor(index, series));
 					g.drawPolyline(xps, yps, points.size());
 				}
 
@@ -239,8 +241,8 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 						Marker pointMarker = style.getSeriesPointMarker(index, series, j, point);
 						Marker marker = (null != pointMarker) ? pointMarker : seriesMarker;
 						if (null != marker) {
-							int xMarker = (int) (rtChart.getX() + ((point.getX() - xScaleValue.getMin()) * pixXPerValue));
-							int yMarker = (int) (rtChart.getY() - ((point.getY() - yScaleValue.getMin()) * pixYPerValue));
+							float xMarker = (float) (rtChart.getX() + ((point.getX() - xScaleValue.getMin()) * pixXPerValue));
+							float yMarker = (float) (rtChart.getY() - ((point.getY() - yScaleValue.getMin()) * pixYPerValue));
 							Size size = marker.getSize();
 
 							int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
@@ -258,11 +260,11 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 
 		// Draw Legend
 		if (null != rtLegend) {
-			drawLegend(g, getChartStyle().getLegendDesign(), rtLegend);
+			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
 		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), rtTitle);
+			drawTitle(g, rtTitle);
 		}
 
 		return true;
@@ -368,7 +370,8 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aXScaleValue, final ScaleValue aYScaleValue,
 			final float aFontMargin) {
-		ScatterChartStyle style = getChartStyle();
+		ScatterChartDesign design = getChartDesign();
+		ScatterChartStyle style = design.getChartStyle();
 
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 

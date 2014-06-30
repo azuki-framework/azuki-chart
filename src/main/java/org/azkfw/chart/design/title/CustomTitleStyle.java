@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.legend;
+package org.azkfw.chart.design.title;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -25,17 +25,17 @@ import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 
 /**
- * このクラスは、凡例デザインをカスタマイズするクラスです。
+ * このクラスは、タイトルデザインをカスタマイズするクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class CustomLegendStyle implements LegendStyle {
+public class CustomTitleStyle implements TitleStyle {
 
 	private boolean display;
 
-	private LegendPosition position;
+	private TitlePosition position;
 
 	private Color fontColor;
 
@@ -51,33 +51,29 @@ public class CustomLegendStyle implements LegendStyle {
 
 	private Color backgroundColor;
 
-	private float space;
-
 	/**
 	 * コンストラクタ
 	 */
-	public CustomLegendStyle() {
+	public CustomTitleStyle() {
 		display = true;
-		position = LegendPosition.Right;
-		fontColor = new Color(64, 64, 64, 255);
-		font = new Font("Arial", Font.BOLD, 16);
+		position = TitlePosition.Top;
+		fontColor = new Color(0, 0, 0, 255);
+		font = new Font("Arial", Font.BOLD, 26);
 
 		margin = new Margin(4.f, 4.f, 4.f, 4.f);
-		padding = new Padding(6.f, 6.f, 6.f, 6.f);
+		padding = new Padding(8.f, 8.f, 8.f, 8.f);
 
 		stroke = null;
 		strokeColor = null;
 
 		backgroundColor = null;
-
-		space = 4.f;
 	}
 
 	public void setDisplay(final boolean aDisplay) {
 		display = aDisplay;
 	}
 
-	public void setPosition(final LegendPosition aPosition) {
+	public void setPosition(final TitlePosition aPosition) {
 		position = aPosition;
 	}
 
@@ -118,7 +114,7 @@ public class CustomLegendStyle implements LegendStyle {
 		return display;
 	}
 
-	public LegendPosition getPosition() {
+	public TitlePosition getPosition() {
 		return position;
 	}
 
@@ -148,9 +144,5 @@ public class CustomLegendStyle implements LegendStyle {
 
 	public Color getBackgroundColor() {
 		return backgroundColor;
-	}
-
-	public float getSpace() {
-		return space;
 	}
 }

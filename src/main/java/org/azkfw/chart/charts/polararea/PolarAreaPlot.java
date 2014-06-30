@@ -20,8 +20,10 @@ package org.azkfw.chart.charts.polararea;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.geom.Ellipse2D;
 import java.util.List;
 
+import org.azkfw.chart.charts.polararea.PolarAreaChartDesign.PolarAreaChartStyle;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -35,7 +37,7 @@ import org.azkfw.graphics.Rect;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAreaChartStyle> {
+public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAreaChartDesign> {
 
 	/** 軸情報 */
 	private PolarAreaAxis axis;
@@ -46,7 +48,7 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 	public PolarAreaPlot() {
 		axis = new PolarAreaAxis();
 
-		setChartStyle(new PolarAreaChartStyle());
+		setChartStyle(new PolarAreaChartDesign());
 	}
 
 	/**
@@ -61,14 +63,15 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		PolarAreaDataset dataset = getDataset();
-		PolarAreaChartStyle style = getChartStyle();
+		PolarAreaChartDesign design = getChartDesign();
+		PolarAreaChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
+		Rect rtTitle = fitTitle(g, rtChartPre);
 		// 凡例適用
-		Rect rtLegend = fitLegend(g, style.getLegendDesign(), rtChartPre);
+		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
@@ -90,6 +93,12 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
 
 		Point ptChartMiddle = new Point(rtChart.getX() + (rtChart.getWidth() / 2.f), rtChart.getY() + (rtChart.getHeight() / 2.f));
+
+		// fill background
+		if (null != style.getBackgroundColor()) {
+			g.setColor(style.getBackgroundColor());
+			g.fillArc(rtChart.getX(), rtChart.getY(), rtChart.getWidth(), rtChart.getHeight(), 0, 360);
+		}
 
 		// Draw assist axis
 		if (axis.isAssistAxis()) {
@@ -130,6 +139,12 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 			g.drawLine(ptChartMiddle.getX() + range, ptChartMiddle.getY(), ptChartMiddle.getX() + range, ptChartMiddle.getY() + fontMargin);
 		}
 
+		Ellipse2D ellipse = null;
+		if (!style.isOverflow()) {
+			ellipse = new Ellipse2D.Double(rtChart.getX(), rtChart.getY(), rtChart.getWidth(), rtChart.getHeight());
+			g.setClip(ellipse);
+		}
+
 		// Draw series
 		List<PolarAreaSeries> seriesList = dataset.getSeriesList();
 		for (int index = 0; index < seriesList.size(); index++) {
@@ -166,6 +181,10 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 			}
 		}
 
+		if (!style.isOverflow()) {
+			g.clearClip();
+		}
+
 		// Draw axis scale
 		FontMetrics fm = g.getFontMetrics(style.getAxisFont());
 		g.setColor(style.getAxisFontColor());
@@ -181,11 +200,11 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 
 		// Draw Legend
 		if (null != rtLegend) {
-			drawLegend(g, style.getLegendDesign(), rtLegend);
+			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
 		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), rtTitle);
+			drawTitle(g, rtTitle);
 		}
 
 		return true;
@@ -249,7 +268,8 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 	}
 
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
-		PolarAreaChartStyle style = getChartStyle();
+		PolarAreaChartDesign design = getChartDesign();
+		PolarAreaChartStyle style = design.getChartStyle();
 
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 

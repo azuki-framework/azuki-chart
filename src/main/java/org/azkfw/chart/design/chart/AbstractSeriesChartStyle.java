@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.style;
+package org.azkfw.chart.design.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -32,13 +32,14 @@ import org.azkfw.chart.series.Series;
 import org.azkfw.chart.series.SeriesPoint;
 
 /**
- * このクラスは、シリーズグラフデザイン機能を実装するための基底クラスです。
+ * このクラスは、シリーズチャートスタイルを定義するための基底クラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public abstract class AbstractSeriesChartStyle<S extends Series, P extends SeriesPoint> extends AbstractChartStyle implements SeriesChartStyle<S, P> {
+public abstract class AbstractSeriesChartStyle<SERIES extends Series, POINT extends SeriesPoint> extends AbstractChartStyle implements
+		SeriesChartStyle<SERIES, POINT> {
 
 	private static List<Color> COLORS = new ArrayList<Color>();
 	static {
@@ -57,6 +58,9 @@ public abstract class AbstractSeriesChartStyle<S extends Series, P extends Serie
 		COLORS.add(new Color(246, 146, 64, 255));
 	}
 
+	/**
+	 * コンストラクタ
+	 */
 	public AbstractSeriesChartStyle() {
 	}
 
@@ -67,7 +71,7 @@ public abstract class AbstractSeriesChartStyle<S extends Series, P extends Serie
 	 * @param aSeries シリーズデータ
 	 * @return ストローク
 	 */
-	public Stroke getSeriesStroke(final int aIndex, final S aSeries) {
+	public Stroke getSeriesStroke(final int aIndex, final SERIES aSeries) {
 		return new BasicStroke(2.f);
 	}
 
@@ -78,7 +82,7 @@ public abstract class AbstractSeriesChartStyle<S extends Series, P extends Serie
 	 * @param aSeries シリーズデータ
 	 * @return カラー
 	 */
-	public Color getSeriesStrokeColor(final int aIndex, final S aSeries) {
+	public Color getSeriesStrokeColor(final int aIndex, final SERIES aSeries) {
 		Color color = null;
 		if (aIndex < COLORS.size()) {
 			color = COLORS.get(aIndex);
@@ -95,13 +99,13 @@ public abstract class AbstractSeriesChartStyle<S extends Series, P extends Serie
 	 * @param aSeries シリーズデータ
 	 * @return カラー
 	 */
-	public Color getSeriesFillColor(final int aIndex, final S aSeries) {
+	public Color getSeriesFillColor(final int aIndex, final SERIES aSeries) {
 		Color color = getSeriesStrokeColor(aIndex, aSeries);
 		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 64);
 		return color;
 	}
 
-	public Marker getSeriesMarker(final int aIndex, final S aSeries) {
+	public Marker getSeriesMarker(final int aIndex, final SERIES aSeries) {
 		Marker marker = null;
 		switch (aIndex % 4) {
 		case 0:
@@ -123,7 +127,7 @@ public abstract class AbstractSeriesChartStyle<S extends Series, P extends Serie
 		return marker;
 	}
 
-	public Marker getSeriesPointMarker(final int aIndex, final S aSeries, final int aNo, final P aPoint) {
+	public Marker getSeriesPointMarker(final int aIndex, final SERIES aSeries, final int aNo, final POINT aPoint) {
 		return null;
 	}
 }

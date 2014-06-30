@@ -23,6 +23,7 @@ import java.awt.FontMetrics;
 import java.awt.Polygon;
 import java.util.List;
 
+import org.azkfw.chart.charts.radar.RadarChartDesign.RadarChartStyle;
 import org.azkfw.chart.looks.marker.Marker;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
@@ -38,7 +39,7 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartStyle> {
+public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign> {
 
 	/** 軸情報 */
 	private RadarAxis axis;
@@ -49,7 +50,7 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartStyle>
 	public RadarPlot() {
 		axis = new RadarAxis();
 
-		setChartStyle(new RadarChartStyle());
+		setChartStyle(new RadarChartDesign());
 	}
 
 	/**
@@ -64,14 +65,15 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartStyle>
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		RadarDataset dataset = getDataset();
-		RadarChartStyle style = getChartStyle();
+		RadarChartDesign design = getChartDesign();
+		RadarChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
+		Rect rtTitle = fitTitle(g, rtChartPre);
 		// 凡例適用
-		Rect rtLegend = fitLegend(g, style.getLegendDesign(), rtChartPre);
+		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
@@ -103,6 +105,31 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartStyle>
 		}
 		debug(String.format("Data point size : %d", dataPointSize));
 
+		Polygon polygon = null;
+		{
+			int[] pxs = new int[dataPointSize + 1];
+			int[] pys = new int[dataPointSize + 1];
+			for (int i = 0; i < dataPointSize; i++) {
+				double angle = -1 * (360.f / dataPointSize) * i + 90;
+				double value = scaleValue.getMax();
+
+				float x = (float) (ptChartMiddle.getX() + (pixXPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
+				float y = (float) (ptChartMiddle.getY() - (pixYPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
+				pxs[i] = (int) pixelLimit(x);
+				pys[i] = (int) pixelLimit(y);
+			}
+			pxs[dataPointSize] = pxs[0];
+			pys[dataPointSize] = pys[0];
+
+			polygon = new Polygon(pxs, pys, dataPointSize + 1);
+		}
+
+		// fill background
+		if (null != style.getBackgroundColor()) {
+			g.setColor(style.getBackgroundColor());
+			g.fillPolygon(polygon);
+		}
+
 		// Draw axis
 		g.setStroke(style.getAxisLineStroke(), style.getAxisLineColor());
 		for (int i = 0; i < dataPointSize; i++) {
@@ -127,25 +154,6 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartStyle>
 			pxs[dataPointSize] = pxs[0];
 			pys[dataPointSize] = pys[0];
 			g.drawPolyline(pxs, pys, dataPointSize + 1);
-		}
-
-		Polygon polygon = null;
-		{
-			int[] pxs = new int[dataPointSize + 1];
-			int[] pys = new int[dataPointSize + 1];
-			for (int i = 0; i < dataPointSize; i++) {
-				double angle = -1 * (360.f / dataPointSize) * i + 90;
-				double value = scaleValue.getMax();
-
-				float x = (float) (ptChartMiddle.getX() + (pixXPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
-				float y = (float) (ptChartMiddle.getY() - (pixYPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
-				pxs[i] = (int) pixelLimit(x);
-				pys[i] = (int) pixelLimit(y);
-			}
-			pxs[dataPointSize] = pxs[0];
-			pys[dataPointSize] = pys[0];
-
-			polygon = new Polygon(pxs, pys, dataPointSize + 1);
 		}
 
 		// Draw series
@@ -239,11 +247,11 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartStyle>
 
 		// Draw Legend
 		if (null != rtLegend) {
-			drawLegend(g, style.getLegendDesign(), rtLegend);
+			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
 		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), rtTitle);
+			drawTitle(g, rtTitle);
 		}
 
 		return true;
@@ -307,7 +315,8 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartStyle>
 	}
 
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
-		RadarChartStyle style = getChartStyle();
+		RadarChartDesign design = getChartDesign();
+		RadarChartStyle style = design.getChartStyle();
 
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 

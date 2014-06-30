@@ -15,46 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.style;
+package org.azkfw.chart.design;
 
-import org.azkfw.chart.looks.legend.LegendStyle;
-import org.azkfw.chart.looks.title.TitleStyle;
+import org.azkfw.chart.design.chart.SeriesChartStyle;
+import org.azkfw.chart.series.Series;
+import org.azkfw.chart.series.SeriesPoint;
 
 /**
- * このクラスは、グラフデザイン機能を実装するための基底クラスです。
+ * このクラスは、シリーズグラフデザインを定義する為の基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public abstract class AbstractChartStyle implements ChartStyle {
+@SuppressWarnings("rawtypes")
+public abstract class AbstractSeriesChartDesign<STYLE extends SeriesChartStyle, SERIES extends Series, POINT extends SeriesPoint> extends
+		AbstractChartDesign<STYLE> implements SeriesChartDesign<STYLE, SERIES, POINT> {
 
-	private TitleStyle titleDesign;
-
-	private LegendStyle legendDesign;
-
-	public AbstractChartStyle() {
-		titleDesign = null;
-		legendDesign = null;
-	}
-
-	@Override
-	public final void setTitleDesign(final TitleStyle aDesign) {
-		titleDesign = aDesign;
-	}
-
-	@Override
-	public final TitleStyle getTitleDesign() {
-		return titleDesign;
-	}
-
-	@Override
-	public final void setLegendDesign(final LegendStyle aDesign) {
-		legendDesign = aDesign;
-	}
-
-	@Override
-	public final LegendStyle getLegendDesign() {
-		return legendDesign;
-	}
 }

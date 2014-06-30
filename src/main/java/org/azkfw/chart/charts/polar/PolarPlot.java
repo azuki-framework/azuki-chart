@@ -20,8 +20,10 @@ package org.azkfw.chart.charts.polar;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.geom.Ellipse2D;
 import java.util.List;
 
+import org.azkfw.chart.charts.polar.PolarChartDesign.PolarChartStyle;
 import org.azkfw.chart.looks.marker.Marker;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
@@ -37,7 +39,7 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle> {
+public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign> {
 
 	/** 軸情報 */
 	private PolarAxis axis;
@@ -48,7 +50,7 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle>
 	public PolarPlot() {
 		axis = new PolarAxis();
 
-		setChartStyle(new PolarChartStyle());
+		setChartStyle(new PolarChartDesign());
 	}
 
 	/**
@@ -63,14 +65,15 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle>
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		PolarDataset dataset = getDataset();
-		PolarChartStyle style = getChartStyle();
+		PolarChartDesign design = getChartDesign();
+		PolarChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
+		Rect rtTitle = fitTitle(g, rtChartPre);
 		// 凡例適用
-		Rect rtLegend = fitLegend(g, style.getLegendDesign(), rtChartPre);
+		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
@@ -92,6 +95,12 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle>
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
 
 		Point ptChartMiddle = new Point(rtChart.getX() + (rtChart.getWidth() / 2.f), rtChart.getY() + (rtChart.getHeight() / 2.f));
+
+		// fill background
+		if (null != style.getBackgroundColor()) {
+			g.setColor(style.getBackgroundColor());
+			g.fillArc(rtChart.getX(), rtChart.getY(), rtChart.getWidth(), rtChart.getHeight(), 0, 360);
+		}
 
 		// Draw assist axis
 		if (axis.isAssistAxis()) {
@@ -131,6 +140,11 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle>
 			g.drawLine(ptChartMiddle.getX() + range, ptChartMiddle.getY(), ptChartMiddle.getX() + range, ptChartMiddle.getY() + fontMargin);
 		}
 
+		Ellipse2D ellipse = null;
+		if (!style.isOverflow()) {
+			ellipse = new Ellipse2D.Double(rtChart.getX(), rtChart.getY(), rtChart.getWidth(), rtChart.getHeight());
+		}
+
 		// Draw series
 		List<PolarSeries> seriesList = dataset.getSeriesList();
 		for (int index = 0; index < seriesList.size(); index++) {
@@ -150,6 +164,10 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle>
 			pxs[points.size()] = pxs[0];
 			pys[points.size()] = pys[0];
 
+			if (!style.isOverflow()) {
+				g.setClip(ellipse);
+			}
+
 			// Draw series fill
 			Color fillColor = style.getSeriesFillColor(index, series);
 			if (null != fillColor) {
@@ -161,6 +179,10 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle>
 			if (null != strokeColor) {
 				g.setStroke(style.getSeriesStroke(index, series), strokeColor);
 				g.drawPolygon(pxs, pys, points.size() + 1);
+			}
+
+			if (!style.isOverflow()) {
+				g.clearClip();
 			}
 
 			// Draw series marker
@@ -208,11 +230,11 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle>
 
 		// Draw Legend
 		if (null != rtLegend) {
-			drawLegend(g, style.getLegendDesign(), rtLegend);
+			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
 		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), rtTitle);
+			drawTitle(g, rtTitle);
 		}
 
 		return true;
@@ -276,7 +298,8 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartStyle>
 	}
 
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
-		PolarChartStyle style = getChartStyle();
+		PolarChartDesign design = getChartDesign();
+		PolarChartStyle style = design.getChartStyle();
 
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 

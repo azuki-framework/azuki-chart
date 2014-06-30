@@ -19,6 +19,7 @@ package org.azkfw.chart.charts.bar;
 
 import java.awt.FontMetrics;
 
+import org.azkfw.chart.charts.bar.BarChartDesign.BarChartStyle;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
@@ -32,7 +33,7 @@ import org.azkfw.graphics.Rect;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartStyle> {
+public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 
 	/** X軸情報 */
 	private BarXAxis axisX;
@@ -46,7 +47,7 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartStyle> {
 		axisX = new BarXAxis();
 		axisY = new BarYAxis();
 
-		setChartStyle(new BarChartStyle());
+		setChartStyle(new BarChartDesign());
 	}
 
 	/**
@@ -70,14 +71,15 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartStyle> {
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
 		BarDataset dataset = getDataset();
-		BarChartStyle style = getChartStyle();
+		BarChartDesign design = getChartDesign();
+		BarChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), rtChartPre);
+		Rect rtTitle = fitTitle(g, rtChartPre);
 		// 凡例適用
-		Rect rtLegend = fitLegend(g, getChartStyle().getLegendDesign(), rtChartPre);
+		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
@@ -106,52 +108,57 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartStyle> {
 		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
 
+		// fill background
+		if (null != style.getBackgroundColor()) {
+			g.setColor(style.getBackgroundColor());
+			g.fillRect(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
+		}
+		
 		// Draw Y axis
-		g.setColor(style.getYAxisLineColor());
-		g.setStroke(style.getYAxisLineStroke());
+		g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
 		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
 		{
 			int fontSize = style.getYAxisFont().getSize();
 			FontMetrics fm = g.getFontMetrics(style.getYAxisFont());
 			DisplayFormat df = axisY.getDisplayFormat();
-			g.setColor(style.getYAxisFontColor());
-			g.setFont(style.getYAxisFont());
+
+			g.setFont(style.getYAxisFont(), style.getYAxisFontColor());
 			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 				String str = df.toString(value);
 				float strWidth = fm.stringWidth(str);
-				int yLabel = (int) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
-				int xLabel = (int) (rtChart.getX() - strWidth);
-				g.drawStringA(str, xLabel, yLabel);
+
+				float x = (float) (rtChart.getX() - strWidth);
+				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
+				g.drawStringA(str, x, y);
 			}
 		}
 
 		// Draw X axis
-		g.setColor(style.getXAxisLineColor());
-		g.setStroke(style.getXAxisLineStroke());
+		g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
 		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
 		{
 			float dataWidth = rtChart.getWidth() / dataPointSize;
 			FontMetrics fm = g.getFontMetrics(style.getXAxisFont());
 			DisplayFormat df = axisX.getDisplayFormat();
-			g.setColor(style.getXAxisFontColor());
-			g.setFont(style.getXAxisFont());
+
+			g.setFont(style.getXAxisFont(), style.getXAxisFontColor());
 			for (int i = 0; i < dataPointSize; i++) {
 				String str = df.toString(i);
 				float strWidth = fm.stringWidth(str);
+
 				float y = rtChart.getY();
 				float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
 				g.drawStringA(str, x, y);
 			}
 		}
-		
 
 		// Draw Legend
 		if (null != rtLegend) {
-			drawLegend(g, getChartStyle().getLegendDesign(), rtLegend);
+			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
 		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), rtTitle);
+			drawTitle(g, rtTitle);
 		}
 
 		return true;
@@ -216,7 +223,8 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartStyle> {
 
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
 		BarDataset dataset = getDataset();
-		BarChartStyle style = getChartStyle();
+		BarChartDesign design = getChartDesign();
+		BarChartStyle style = design.getChartStyle();
 
 		// データポイント数取得
 		int dataPointSize = 5;

@@ -15,59 +15,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.title;
+package org.azkfw.chart.design.chart;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Stroke;
-
-import org.azkfw.graphics.Margin;
-import org.azkfw.graphics.Padding;
 
 /**
- * このインターフェースは、タイトルデザインを表現するインターフェースです。
+ * このインターフェースは、チャートスタイルを定義するインターフェースです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/26
+ * @version 1.0.0 2014/06/30
  * @author Kawakicchi
  */
-public interface TitleStyle {
-
-	public enum TitlePosition {
-		/** グラフ上部 */
-		Top(),
-		/** グラフ下部 */
-		Bottom(),
-		/** グラフ左部 */
-		Left(),
-		/** グラフ右部 */
-		Right();
-
-		private TitlePosition() {
-		}
-	}
+public interface ChartStyle {
 
 	/**
-	 * 表示を行うか判定する。
+	 * 背景色を設定する。
 	 * 
-	 * @return 判定結果
+	 * @param aColor 背景色
 	 */
-	public boolean isDisplay();
+	public void setBackgroundColor(final Color aColor);
 
-	public TitlePosition getPosition();
-
-	public Color getFontColor();
-
-	public Font getFont();
-
-	public Margin getMargin();
-
-	public Padding getPadding();
-
-	public Stroke getStroke();
-
-	public Color getStrokeColor();
-
+	/**
+	 * 背景色を取得する。
+	 * 
+	 * @return 背景色
+	 */
 	public Color getBackgroundColor();
 
+	/**
+	 * オーバーフローを設定する。
+	 * 
+	 * @param aOverflow オーバーフロー
+	 */
+	public void setOverflow(final boolean aOverflow);
+
+	/**
+	 * オーバーフローを取得する。
+	 * 
+	 * @return 判断結果
+	 */
+	public boolean isOverflow();
 }

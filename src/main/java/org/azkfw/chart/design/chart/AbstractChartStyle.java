@@ -15,61 +15,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.legend;
+package org.azkfw.chart.design.chart;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Stroke;
-
-import org.azkfw.graphics.Margin;
-import org.azkfw.graphics.Padding;
 
 /**
- * このインターフェースは、凡例デザインを表現するインターフェースです。
+ * このクラスは、チャートスタイルを定義するための基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public interface LegendStyle {
+public abstract class AbstractChartStyle implements ChartStyle {
 
-	public enum LegendPosition {
-		/** グラフ上部 */
-		Top(),
-		/** グラフ下部 */
-		Bottom(),
-		/** グラフ左部 */
-		Left(),
-		/** グラフ右部 */
-		Right();
-
-		private LegendPosition() {
-		}
-	}
+	private Color backgroundColor;
+	private boolean overflow;
 
 	/**
-	 * 表示を行うか判定する。
-	 * 
-	 * @return 判定結果
+	 * コンストラクタ
 	 */
-	public boolean isDisplay();
+	public AbstractChartStyle() {
+		backgroundColor = Color.WHITE;
+		overflow = false;
+	}
 
-	public LegendPosition getPosition();
+	@Override
+	public void setBackgroundColor(final Color aColor) {
+		backgroundColor = aColor;
+	}
 
-	public Color getFontColor();
+	@Override
+	public Color getBackgroundColor() {
+		return backgroundColor;
+	}
 
-	public Font getFont();
+	@Override
+	public void setOverflow(final boolean aOverflow) {
+		overflow = aOverflow;
+	}
 
-	public Margin getMargin();
-
-	public Padding getPadding();
-
-	public Stroke getStroke();
-
-	public Color getStrokeColor();
-
-	public Color getBackgroundColor();
-
-	public float getSpace();
+	@Override
+	public boolean isOverflow() {
+		return overflow;
+	}
 
 }

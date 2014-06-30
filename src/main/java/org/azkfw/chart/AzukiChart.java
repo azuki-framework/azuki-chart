@@ -50,7 +50,6 @@ import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
 import org.azkfw.graphics.AzukiGraphics2D;
 import org.azkfw.graphics.Graphics;
-import org.azkfw.graphics.Margin;
 
 /**
  * このクラスは、チャートクラスです。
@@ -144,9 +143,9 @@ public final class AzukiChart {
 		}
 
 		// createBarChart(new File(args[0]));
-		// createScatterChart(new File(args[0]));		
+		// createScatterChart(new File(args[0]));
 		// createPieChart(new File(args[0]));
-		
+
 		// createRadarChart(new File(args[0]));
 		// createPolarChart(new File(args[0]));
 		createPolarAreaChart(new File(args[0]));
@@ -164,14 +163,14 @@ public final class AzukiChart {
 
 		BarDataset dataset = new BarDataset("SmpaleChart (Bar)");
 		plot.setDataset(dataset);
-		
+
 		try {
 			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void createScatterChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createScatterChart();
 		chart.setBackgoundColor(Color.WHITE);
@@ -276,7 +275,7 @@ public final class AzukiChart {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void createPolarChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createPolarChart();
 		chart.setBackgoundColor(Color.WHITE);
@@ -315,7 +314,7 @@ public final class AzukiChart {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void createPolarAreaChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createPolarAreaChart();
 		chart.setBackgoundColor(Color.WHITE);
@@ -324,6 +323,8 @@ public final class AzukiChart {
 		//plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
 
 		PolarAreaAxis axis = plot.getAxis();
+		//axis.setMaximumValueAutoFit(false);
+		//axis.setMaximumValue(1.5);
 		axis.setDisplayFormat(new NumericDisplayFormat(2));
 
 		PolarAreaDataset dataset = new PolarAreaDataset("SmpaleChart (PolarArea)");
