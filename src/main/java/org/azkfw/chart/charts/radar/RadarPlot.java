@@ -85,11 +85,6 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 		Margin margin = fitChart(g, rtChartPre, scaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
-		// スケール計算
-		double difValue = scaleValue.getDiff();
-		double pixXPerValue = ((rtChartPre.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
-		double pixYPerValue = ((rtChartPre.getHeight() - margin.getVerticalSize()) / 2.f) / difValue;
-
 		Rect rtChart = new Rect();
 		rtChart.setX(rtChartPre.getX() + margin.getLeft());
 		rtChart.setY(rtChartPre.getY() + margin.getTop());
@@ -97,6 +92,18 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
 
 		Point ptChartMiddle = new Point(rtChart.getX() + (rtChart.getWidth() / 2.f), rtChart.getY() + (rtChart.getHeight() / 2.f));
+
+		// 正多角形調整
+		float minRange = Math.min(rtChart.getWidth(), rtChartPre.getHeight());
+		rtChart.setX(ptChartMiddle.getX() - (minRange / 2));
+		rtChart.setY(ptChartMiddle.getY() - (minRange / 2));
+		rtChart.setWidth(minRange);
+		rtChart.setHeight(minRange);
+
+		// スケール計算
+		double difValue = scaleValue.getDiff();
+		double pixXPerValue = (rtChart.getWidth() / 2.f) / difValue;
+		double pixYPerValue = (rtChart.getHeight() / 2.f) / difValue;
 
 		// データポイント数取得
 		int dataPointSize = 5;

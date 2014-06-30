@@ -100,15 +100,15 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 		Margin margin = fitChart(g, rtChartPre, scaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
-		// スケール計算
-		double difValue = scaleValue.getDiff();
-		double pixPerValue = (rtChartPre.getHeight() - margin.getVerticalSize()) / difValue;
-
 		Rect rtChart = new Rect();
 		rtChart.setX(rtChartPre.getX() + margin.getLeft());
 		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom());
 		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
+
+		// スケール計算
+		double difValue = scaleValue.getDiff();
+		double pixPerValue = rtChart.getHeight() / difValue;
 
 		// fill background
 		if (null != style.getBackgroundColor()) {

@@ -35,15 +35,17 @@ public class CustomTitleStyle implements TitleStyle {
 
 	private boolean display;
 
-	private TitlePosition position;
+	private TitleDisplayPosition position;
+
+	private Margin margin;
+
+	private Padding padding;
 
 	private Color fontColor;
 
 	private Font font;
 
-	private Margin margin;
-
-	private Padding padding;
+	private boolean fontShadow;
 
 	private Stroke stroke;
 
@@ -56,12 +58,14 @@ public class CustomTitleStyle implements TitleStyle {
 	 */
 	public CustomTitleStyle() {
 		display = true;
-		position = TitlePosition.Top;
-		fontColor = new Color(0, 0, 0, 255);
-		font = new Font("Arial", Font.BOLD, 26);
+		position = TitleDisplayPosition.Top;
 
 		margin = new Margin(4.f, 4.f, 4.f, 4.f);
 		padding = new Padding(8.f, 8.f, 8.f, 8.f);
+
+		fontColor = new Color(0, 0, 0, 255);
+		font = new Font("Arial", Font.BOLD, 26);
+		fontShadow = false;
 
 		stroke = null;
 		strokeColor = null;
@@ -73,8 +77,16 @@ public class CustomTitleStyle implements TitleStyle {
 		display = aDisplay;
 	}
 
-	public void setPosition(final TitlePosition aPosition) {
+	public void setPosition(final TitleDisplayPosition aPosition) {
 		position = aPosition;
+	}
+
+	public void setMargin(final Margin aMargin) {
+		margin = aMargin;
+	}
+
+	public void setPadding(final Padding aPadding) {
+		padding = aPadding;
 	}
 
 	public void setFontColor(final Color aColor) {
@@ -85,17 +97,13 @@ public class CustomTitleStyle implements TitleStyle {
 		font = aFont;
 	}
 
+	public void setFontShadow(final boolean aShadow) {
+		fontShadow = aShadow;
+	}
+
 	public void setFont(final Font aFont, final Color aColor) {
 		font = aFont;
 		fontColor = aColor;
-	}
-
-	public void setMargin(final Margin aMargin) {
-		margin = aMargin;
-	}
-
-	public void setPadding(final Padding aPadding) {
-		padding = aPadding;
 	}
 
 	public void setStroke(final Stroke aStroke) {
@@ -114,8 +122,16 @@ public class CustomTitleStyle implements TitleStyle {
 		return display;
 	}
 
-	public TitlePosition getPosition() {
+	public TitleDisplayPosition getPosition() {
 		return position;
+	}
+
+	public Margin getMargin() {
+		return margin;
+	}
+
+	public Padding getPadding() {
+		return padding;
 	}
 
 	public Color getFontColor() {
@@ -126,12 +142,8 @@ public class CustomTitleStyle implements TitleStyle {
 		return font;
 	}
 
-	public Margin getMargin() {
-		return margin;
-	}
-
-	public Padding getPadding() {
-		return padding;
+	public boolean isFontShadow() {
+		return fontShadow;
 	}
 
 	public Stroke getStroke() {

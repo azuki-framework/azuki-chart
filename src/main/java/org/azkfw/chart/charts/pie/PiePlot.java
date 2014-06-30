@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.azkfw.chart.charts.pie.PieChartDesign.PieChartStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
-import org.azkfw.chart.design.legend.LegendStyle.LegendPosition;
+import org.azkfw.chart.design.legend.LegendStyle.LegendDisplayPosition;
 import org.azkfw.chart.plot.AbstractPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -137,10 +137,10 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 
 				Font font = style.getFont();
 				FontMetrics fm = g.getFontMetrics(font);
-				LegendPosition pos = style.getPosition();
+				LegendDisplayPosition pos = style.getPosition();
 
 				// get size
-				if (LegendPosition.Top == pos || LegendPosition.Bottom == pos) {
+				if (LegendDisplayPosition.Top == pos || LegendDisplayPosition.Bottom == pos) {
 					for (int i = 0; i < dataset.getDataList().size(); i++) {
 						PieData data = dataset.getDataList().get(i);
 
@@ -151,7 +151,7 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 							rtLegend.addWidth(style.getSpace());
 						}
 					}
-				} else if (LegendPosition.Left == pos || LegendPosition.Right == pos) {
+				} else if (LegendDisplayPosition.Left == pos || LegendDisplayPosition.Right == pos) {
 					for (int i = 0; i < dataset.getDataList().size(); i++) {
 						PieData data = dataset.getDataList().get(i);
 
@@ -171,22 +171,22 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 				}
 
 				// get point and resize chart
-				if (LegendPosition.Top == pos) {
+				if (LegendDisplayPosition.Top == pos) {
 					rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY());
 
 					rtChart.addY(rtLegend.getHeight());
 					rtChart.subtractHeight(rtLegend.getHeight());
-				} else if (LegendPosition.Bottom == pos) {
+				} else if (LegendDisplayPosition.Bottom == pos) {
 					rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY() + rtChart.getHeight()
 							- rtLegend.getHeight());
 
 					rtChart.subtractHeight(rtLegend.getHeight());
-				} else if (LegendPosition.Left == pos) {
+				} else if (LegendDisplayPosition.Left == pos) {
 					rtLegend.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
 
 					rtChart.addX(rtLegend.getWidth());
 					rtChart.subtractWidth(rtLegend.getWidth());
-				} else if (LegendPosition.Right == pos) {
+				} else if (LegendDisplayPosition.Right == pos) {
 					rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
 							rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
 
@@ -222,7 +222,7 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 		Font font = styleLegend.getFont();
 		FontMetrics fm = g.getFontMetrics(font);
 		int fontHeight = font.getSize();
-		if (styleLegend.getPosition() == LegendPosition.Top || styleLegend.getPosition() == LegendPosition.Bottom) {
+		if (styleLegend.getPosition() == LegendDisplayPosition.Top || styleLegend.getPosition() == LegendDisplayPosition.Bottom) {
 			List<PieData> dataList = dataset.getDataList();
 			float x = aRect.getX() + mgn.getLeft() + padding.getLeft();
 			float y = aRect.getY() + mgn.getTop() + padding.getTop();
@@ -241,7 +241,7 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 
 				x += styleLegend.getSpace() + (fontHeight * 2) + strWidth;
 			}
-		} else if (styleLegend.getPosition() == LegendPosition.Left || styleLegend.getPosition() == LegendPosition.Right) {
+		} else if (styleLegend.getPosition() == LegendDisplayPosition.Left || styleLegend.getPosition() == LegendDisplayPosition.Right) {
 			List<PieData> dataList = dataset.getDataList();
 			float x = aRect.getX() + mgn.getLeft() + padding.getLeft();
 			float y = aRect.getY() + mgn.getTop() + padding.getTop();

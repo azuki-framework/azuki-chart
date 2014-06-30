@@ -25,7 +25,7 @@ import org.azkfw.chart.dataset.SeriesDataset;
 import org.azkfw.chart.design.SeriesChartDesign;
 import org.azkfw.chart.design.chart.SeriesChartStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
-import org.azkfw.chart.design.legend.LegendStyle.LegendPosition;
+import org.azkfw.chart.design.legend.LegendStyle.LegendDisplayPosition;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.series.Series;
 import org.azkfw.core.util.ListUtility;
@@ -70,6 +70,17 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 		super(aName);
 	}
 
+	/**
+	 * 凡例のフィット処理を行なう。
+	 * <p>
+	 * チャートRectで適切な位置に凡例を配置するように設定する。
+	 * </p>
+	 * 
+	 * @param g Graphics
+	 * @param aStyle 凡例スタイル
+	 * @param rtChart チャートRect（更新される）
+	 * @return 凡例Rect
+	 */
 	protected Rect fitLegend(final Graphics g, final LegendStyle aStyle, Rect rtChart) {
 		Rect rtLegend = null;
 
@@ -93,12 +104,12 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 
 			Font font = aStyle.getFont();
 			FontMetrics fm = g.getFontMetrics(font);
-			LegendPosition pos = aStyle.getPosition();
+			LegendDisplayPosition pos = aStyle.getPosition();
 
 			List<? extends Series> seriesList = dataset.getSeriesList();
 
 			// get size
-			if (LegendPosition.Top == pos || LegendPosition.Bottom == pos) {
+			if (isHorizontalLegend(pos)) {
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
 
@@ -109,7 +120,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 						rtLegend.addWidth(aStyle.getSpace());
 					}
 				}
-			} else if (LegendPosition.Left == pos || LegendPosition.Right == pos) {
+			} else if (isVerticalLegend(pos)) {
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
 
@@ -129,32 +140,58 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 			}
 
 			// get point and resize chart
-			if (LegendPosition.Top == pos) {
+			if (LegendDisplayPosition.Top == pos) {
 				rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY());
 
 				rtChart.addY(rtLegend.getHeight());
 				rtChart.subtractHeight(rtLegend.getHeight());
-			} else if (LegendPosition.Bottom == pos) {
+			} else if (LegendDisplayPosition.Bottom == pos) {
 				rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2,
 						rtChart.getY() + rtChart.getHeight() - rtLegend.getHeight());
 
 				rtChart.subtractHeight(rtLegend.getHeight());
-			} else if (LegendPosition.Left == pos) {
+			} else if (LegendDisplayPosition.Left == pos) {
 				rtLegend.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
 
 				rtChart.addX(rtLegend.getWidth());
 				rtChart.subtractWidth(rtLegend.getWidth());
-			} else if (LegendPosition.Right == pos) {
+			} else if (LegendDisplayPosition.Right == pos) {
 				rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
 						rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
 
 				rtChart.subtractWidth(rtLegend.getWidth());
+			} else if (LegendDisplayPosition.InnerTopLeft == pos) {
+				rtLegend.setPosition(rtChart.getX(), rtChart.getY());
+			} else if (LegendDisplayPosition.InnerTop == pos) {
+				rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY());
+			} else if (LegendDisplayPosition.InnerTopRight == pos) {
+				rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(), rtChart.getY());
+			} else if (LegendDisplayPosition.InnerLeft == pos) {
+				rtLegend.setPosition(rtChart.getX(), rtChart.getY() + (rtChart.getHeight() - rtLegend.getHeight()) / 2);
+			} else if (LegendDisplayPosition.InnerRight == pos) {
+				rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
+						rtChart.getY() + (rtChart.getHeight() - rtLegend.getHeight()) / 2);
+			} else if (LegendDisplayPosition.InnerBottomLeft == pos) {
+				rtLegend.setPosition(rtChart.getX(), rtChart.getY() + rtChart.getHeight() - rtLegend.getHeight());
+			} else if (LegendDisplayPosition.InnerBottom == pos) {
+				rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2,
+						rtChart.getY() + rtChart.getHeight() - rtLegend.getHeight());
+			} else if (LegendDisplayPosition.InnerBottomRight == pos) {
+				rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
+						rtChart.getY() + rtChart.getHeight() - rtLegend.getHeight());
 			}
 		}
 
 		return rtLegend;
 	}
 
+	/**
+	 * タイトルの描画を行う。
+	 * 
+	 * @param g Graphics
+	 * @param aStyle 凡例スタイル
+	 * @param aRect 描画範囲
+	 */
 	protected void drawLegend(final Graphics g, final LegendStyle aStyle, final Rect aRect) {
 		DATASET dataset = getDataset();
 		DESIGN design = getChartDesign();
@@ -180,11 +217,12 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 
 			Font font = aStyle.getFont();
 			FontMetrics fm = g.getFontMetrics(font);
+			LegendDisplayPosition pos = aStyle.getPosition();
 			int fontHeight = font.getSize();
 
 			List<? extends Series> seriesList = dataset.getSeriesList();
 
-			if (aStyle.getPosition() == LegendPosition.Top || aStyle.getPosition() == LegendPosition.Bottom) {
+			if (isHorizontalLegend(pos)) {
 				float x = aRect.getX() + margin.getLeft() + padding.getLeft();
 				float y = aRect.getY() + margin.getTop() + padding.getTop();
 
@@ -205,7 +243,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 
 					x += aStyle.getSpace() + (fontHeight * 2) + strWidth;
 				}
-			} else if (aStyle.getPosition() == LegendPosition.Left || aStyle.getPosition() == LegendPosition.Right) {
+			} else if (isVerticalLegend(pos)) {
 				float x = aRect.getX() + margin.getLeft() + padding.getLeft();
 				float y = aRect.getY() + margin.getTop() + padding.getTop();
 
@@ -229,12 +267,47 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 		}
 	}
 
-	public static Object getNotNullObject(Object... objs) {
-		for (Object obj : objs) {
-			if (null != obj) {
-				return obj;
-			}
-		}
-		return null;
+	/**
+	 * シリーズを横に並べる凡例か判断する。
+	 * 
+	 * @param aPosition
+	 * @return
+	 */
+	private boolean isHorizontalLegend(final LegendDisplayPosition aPosition) {
+		if (LegendDisplayPosition.Top == aPosition)
+			return true;
+		if (LegendDisplayPosition.Bottom == aPosition)
+			return true;
+		if (LegendDisplayPosition.InnerTop == aPosition)
+			return true;
+		if (LegendDisplayPosition.InnerBottom == aPosition)
+			return true;
+		return false;
+	}
+
+	/**
+	 * シリーズを縦に並べる凡例か判断する。
+	 * 
+	 * @param aPosition
+	 * @return
+	 */
+	private boolean isVerticalLegend(final LegendDisplayPosition aPosition) {
+		if (LegendDisplayPosition.Left == aPosition)
+			return true;
+		if (LegendDisplayPosition.Right == aPosition)
+			return true;
+		if (LegendDisplayPosition.InnerTopLeft == aPosition)
+			return true;
+		if (LegendDisplayPosition.InnerTopRight == aPosition)
+			return true;
+		if (LegendDisplayPosition.InnerLeft == aPosition)
+			return true;
+		if (LegendDisplayPosition.InnerRight == aPosition)
+			return true;
+		if (LegendDisplayPosition.InnerBottomLeft == aPosition)
+			return true;
+		if (LegendDisplayPosition.InnerBottomRight == aPosition)
+			return true;
+		return false;
 	}
 }

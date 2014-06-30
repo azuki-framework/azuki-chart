@@ -99,17 +99,17 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 		Margin margin = fitChart(g, rtChartPre, xScaleValue, yScaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
-		// スケール計算
-		double xDifValue = xScaleValue.getDiff();
-		double yDifValue = yScaleValue.getDiff();
-		double pixXPerValue = (rtChartPre.getWidth() - margin.getHorizontalSize()) / xDifValue;
-		double pixYPerValue = (rtChartPre.getHeight() - margin.getVerticalSize()) / yDifValue;
-
 		Rect rtChart = new Rect();
 		rtChart.setX(rtChartPre.getX() + margin.getLeft());
 		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom()); // ★注意：Yは原点から
 		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
+
+		// スケール計算
+		double xDifValue = xScaleValue.getDiff();
+		double yDifValue = yScaleValue.getDiff();
+		double pixXPerValue = (rtChart.getWidth()) / xDifValue;
+		double pixYPerValue = (rtChart.getHeight()) / yDifValue;
 
 		// fill background
 		if (null != style.getBackgroundColor()) {

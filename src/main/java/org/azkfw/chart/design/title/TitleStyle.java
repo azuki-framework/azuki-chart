@@ -33,7 +33,14 @@ import org.azkfw.graphics.Padding;
  */
 public interface TitleStyle {
 
-	public enum TitlePosition {
+	/**
+	 * タイトルの表示位置を定義
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/26
+	 * @author Kawakicchi
+	 */
+	public enum TitleDisplayPosition {
 		/** グラフ上部 */
 		Top(),
 		/** グラフ下部 */
@@ -43,7 +50,7 @@ public interface TitleStyle {
 		/** グラフ右部 */
 		Right();
 
-		private TitlePosition() {
+		private TitleDisplayPosition() {
 		}
 	}
 
@@ -54,20 +61,67 @@ public interface TitleStyle {
 	 */
 	public boolean isDisplay();
 
-	public TitlePosition getPosition();
+	/**
+	 * タイトル表示位置を取得する。
+	 * 
+	 * @return 表示位置
+	 */
+	public TitleDisplayPosition getPosition();
 
-	public Color getFontColor();
-
-	public Font getFont();
-
+	/**
+	 * マージンを取得する。
+	 * 
+	 * @return マージン
+	 */
 	public Margin getMargin();
 
+	/**
+	 * パディングを取得する。
+	 * 
+	 * @return パディング
+	 */
 	public Padding getPadding();
 
+	/**
+	 * フォントカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
+	public Color getFontColor();
+
+	/**
+	 * フォントを取得する。
+	 * 
+	 * @return フォント
+	 */
+	public Font getFont();
+
+	/**
+	 * フォント影を取得する。
+	 * 
+	 * @return 影
+	 */
+	public boolean isFontShadow();
+
+	/**
+	 * ストロークを取得する。
+	 * 
+	 * @return ストローク
+	 */
 	public Stroke getStroke();
 
+	/**
+	 * ストロークカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
 	public Color getStrokeColor();
 
+	/**
+	 * 背景色を取得する。
+	 * 
+	 * @return 背景色
+	 */
 	public Color getBackgroundColor();
 
 }

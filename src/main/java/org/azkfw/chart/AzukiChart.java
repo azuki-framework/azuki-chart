@@ -145,12 +145,12 @@ public final class AzukiChart {
 		}
 
 		// createBarChart(new File(args[0]));
-		createScatterChart(new File(args[0]));
+		// createScatterChart(new File(args[0]));
 		// createPieChart(new File(args[0]));
 
-		// createRadarChart(new File(args[0]));
+		createRadarChart(new File(args[0]));
 		// createPolarChart(new File(args[0]));
-		// createPolarAreaChart(new File(args[0]));
+		//createPolarAreaChart(new File(args[0]));
 	}
 
 	public static void createBarChart(final File aFile) {
@@ -206,6 +206,7 @@ public final class AzukiChart {
 
 		try {
 			AzukiChartUtility.saveChartAsPNG(aFile, chart, 1200, 800);
+			// AzukiChartUtility.saveChartAsPNG(aFile, chart, 480, 320);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -287,6 +288,8 @@ public final class AzukiChart {
 		//plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
 
 		PolarAxis axis = plot.getAxis();
+		axis.setMaximumValueAutoFit(false);
+		axis.setMaximumValue(0.6);
 		axis.setDisplayFormat(new NumericDisplayFormat(2));
 
 		PolarDataset dataset = new PolarDataset("SmpaleChart (Polar)");
@@ -312,7 +315,7 @@ public final class AzukiChart {
 
 		plot.setDataset(dataset);
 		try {
-			AzukiChartUtility.saveChartAsPNG(aFile, chart, 800, 800);
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 600, 600);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -332,7 +335,7 @@ public final class AzukiChart {
 
 		PolarAreaDataset dataset = new PolarAreaDataset("SmpaleChart (PolarArea)");
 
-		PolarAreaSeries series1 = new PolarAreaSeries("AAA");
+		PolarAreaSeries series1 = new PolarAreaSeries("=AAAAAAAA=");
 		series1.add(1.6);
 		series1.add(0.1);
 		series1.add(0.5);
@@ -355,7 +358,7 @@ public final class AzukiChart {
 
 		plot.setDataset(dataset);
 		try {
-			AzukiChartUtility.saveChartAsPNG(aFile, chart, 800, 800);
+			AzukiChartUtility.saveChartAsPNG(aFile, chart, 600, 600);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

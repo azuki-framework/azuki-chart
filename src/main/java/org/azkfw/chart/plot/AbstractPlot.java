@@ -24,7 +24,7 @@ import java.awt.FontMetrics;
 import org.azkfw.chart.dataset.Dataset;
 import org.azkfw.chart.design.ChartDesign;
 import org.azkfw.chart.design.title.TitleStyle;
-import org.azkfw.chart.design.title.TitleStyle.TitlePosition;
+import org.azkfw.chart.design.title.TitleStyle.TitleDisplayPosition;
 import org.azkfw.core.lang.LoggingObject;
 import org.azkfw.core.util.StringUtility;
 import org.azkfw.graphics.Graphics;
@@ -170,7 +170,6 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	 * </p>
 	 * 
 	 * @param g Graphics
-	 * @param aTitle タイトル
 	 * @param rtChart チャートRect（更新される）
 	 * @return タイトルRect
 	 */
@@ -193,7 +192,7 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 
 				Font font = styleTitle.getFont();
 				FontMetrics fm = g.getFontMetrics(font);
-				TitlePosition pos = styleTitle.getPosition();
+				TitleDisplayPosition pos = styleTitle.getPosition();
 
 				// get size
 				rtTitle.setSize(fm.stringWidth(title), font.getSize());
@@ -205,22 +204,22 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 				}
 
 				// get point and resize chart
-				if (TitlePosition.Top == pos) {
+				if (TitleDisplayPosition.Top == pos) {
 					rtTitle.setPosition(rtChart.getX() + ((rtChart.getWidth() - rtTitle.getWidth()) / 2), rtChart.getY());
 
 					rtChart.addY(rtTitle.getHeight());
 					rtChart.subtractHeight(rtTitle.getHeight());
-				} else if (TitlePosition.Bottom == pos) {
+				} else if (TitleDisplayPosition.Bottom == pos) {
 					rtTitle.setPosition(rtChart.getX() + ((rtChart.getWidth() - rtTitle.getWidth()) / 2), rtChart.getY() + rtChart.getHeight()
 							- rtTitle.getHeight());
 
 					rtChart.subtractHeight(rtTitle.getHeight());
-				} else if (TitlePosition.Left == pos) {
+				} else if (TitleDisplayPosition.Left == pos) {
 					rtTitle.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtTitle.getHeight()) / 2));
 
 					rtChart.addX(rtTitle.getWidth());
 					rtChart.subtractWidth(rtTitle.getWidth());
-				} else if (TitlePosition.Right == pos) {
+				} else if (TitleDisplayPosition.Right == pos) {
 					rtTitle.setPosition(rtChart.getX() + rtChart.getWidth() - rtTitle.getWidth(),
 							rtChart.getY() + ((rtChart.getHeight() - rtTitle.getHeight()) / 2));
 
@@ -235,8 +234,6 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	 * タイトルの描画を行う。
 	 * 
 	 * @param g Graphics
-	 * @param aTitle タイトル
-	 * @param aDesign デザイン情報
 	 * @param aRect 描画範囲
 	 */
 	protected final void drawTitle(final Graphics g, final Rect aRect) {
@@ -250,23 +247,38 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 
 		if (null != styleTitle && StringUtility.isNotEmpty(title)) {
 
-			Margin mgn = (null != styleTitle.getMargin()) ? styleTitle.getMargin() : new Margin();
+			Margin margin = (Margin) getNotNullObject(styleTitle.getMargin(), new Margin());
 			// fill background
 			if (null != styleTitle.getBackgroundColor()) {
 				g.setColor(styleTitle.getBackgroundColor());
-				g.fillRect(aRect.getX() + mgn.getLeft(), aRect.getY() + mgn.getTop(), aRect.getWidth() - mgn.getHorizontalSize(), aRect.getHeight()
-						- mgn.getVerticalSize());
+				g.fillRect(aRect.getX() + margin.getLeft(), aRect.getY() + margin.getTop(), aRect.getWidth() - margin.getHorizontalSize(),
+						aRect.getHeight() - margin.getVerticalSize());
 			}
 			// draw stroke
 			if (null != styleTitle.getStroke() && null != styleTitle.getStrokeColor()) {
 				g.setStroke(styleTitle.getStroke(), styleTitle.getStrokeColor());
-				g.drawRect(aRect.getX() + mgn.getLeft(), aRect.getY() + mgn.getTop(), aRect.getWidth() - mgn.getHorizontalSize(), aRect.getHeight()
-						- mgn.getVerticalSize());
+				g.drawRect(aRect.getX() + margin.getLeft(), aRect.getY() + margin.getTop(), aRect.getWidth() - margin.getHorizontalSize(),
+						aRect.getHeight() - margin.getVerticalSize());
 			}
 
-			Padding padding = (null != styleTitle.getPadding()) ? styleTitle.getPadding() : new Padding();
-			float x = aRect.getX() + mgn.getLeft() + padding.getLeft();
-			float y = aRect.getY() + mgn.getTop() + padding.getTop();
+			Padding padding = (Padding) getNotNullObject(styleTitle.getPadding(), new Padding());
+
+			if (styleTitle.isFontShadow()) {
+				g.setFont(styleTitle.getFont());
+				int max = 4;
+				int s = max;
+				while (s > 0) {
+					float x = aRect.getX() + margin.getLeft() + padding.getLeft() + s;
+					float y = aRect.getY() + margin.getTop() + padding.getTop() + s;
+
+					g.setColor(new Color(0, 0, 0, 255 - (255 / (max + 1)) * s));
+					g.drawStringA(title, x, y);
+					s--;
+				}
+			}
+
+			float x = aRect.getX() + margin.getLeft() + padding.getLeft();
+			float y = aRect.getY() + margin.getTop() + padding.getTop();
 
 			g.setFont(styleTitle.getFont(), styleTitle.getFontColor());
 			g.drawStringA(title, x, y);
@@ -311,4 +323,12 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 		}
 	}
 
+	protected static Object getNotNullObject(Object... objs) {
+		for (Object obj : objs) {
+			if (null != obj) {
+				return obj;
+			}
+		}
+		return null;
+	}
 }

@@ -33,7 +33,7 @@ import org.azkfw.graphics.Padding;
  */
 public interface LegendStyle {
 
-	public enum LegendPosition {
+	public enum LegendDisplayPosition {
 		/** グラフ上部 */
 		Top(),
 		/** グラフ下部 */
@@ -41,9 +41,25 @@ public interface LegendStyle {
 		/** グラフ左部 */
 		Left(),
 		/** グラフ右部 */
-		Right();
+		Right(),
+		/** グラフ内左上 */
+		InnerTopLeft,
+		/** グラフ内上 */
+		InnerTop,
+		/** グラフ内右上 */
+		InnerTopRight,
+		/** グラフ内左 */
+		InnerLeft,
+		/** グラフ内右 */
+		InnerRight,
+		/** グラフ内左下 */
+		InnerBottomLeft,
+		/** グラフ内下 */
+		InnerBottom,
+		/** グラフ内右下 */
+		InnerBottomRight;
 
-		private LegendPosition() {
+		private LegendDisplayPosition() {
 		}
 	}
 
@@ -54,15 +70,15 @@ public interface LegendStyle {
 	 */
 	public boolean isDisplay();
 
-	public LegendPosition getPosition();
-
-	public Color getFontColor();
-
-	public Font getFont();
+	public LegendDisplayPosition getPosition();
 
 	public Margin getMargin();
 
 	public Padding getPadding();
+
+	public Color getFontColor();
+
+	public Font getFont();
 
 	public Stroke getStroke();
 

@@ -35,15 +35,17 @@ public class CustomLegendStyle implements LegendStyle {
 
 	private boolean display;
 
-	private LegendPosition position;
-
-	private Color fontColor;
-
-	private Font font;
+	private LegendDisplayPosition position;
 
 	private Margin margin;
 
 	private Padding padding;
+
+	private float space;
+
+	private Color fontColor;
+
+	private Font font;
 
 	private Stroke stroke;
 
@@ -51,34 +53,43 @@ public class CustomLegendStyle implements LegendStyle {
 
 	private Color backgroundColor;
 
-	private float space;
-
 	/**
 	 * コンストラクタ
 	 */
 	public CustomLegendStyle() {
 		display = true;
-		position = LegendPosition.Right;
-		fontColor = new Color(64, 64, 64, 255);
-		font = new Font("Arial", Font.BOLD, 16);
-
+		position = LegendDisplayPosition.Right;
 		margin = new Margin(4.f, 4.f, 4.f, 4.f);
 		padding = new Padding(6.f, 6.f, 6.f, 6.f);
+		space = 4.f;
+
+		fontColor = new Color(64, 64, 64, 255);
+		font = new Font("Arial", Font.BOLD, 16);
 
 		stroke = null;
 		strokeColor = null;
 
 		backgroundColor = null;
-
-		space = 4.f;
 	}
 
 	public void setDisplay(final boolean aDisplay) {
 		display = aDisplay;
 	}
 
-	public void setPosition(final LegendPosition aPosition) {
+	public void setPosition(final LegendDisplayPosition aPosition) {
 		position = aPosition;
+	}
+
+	public void setMargin(final Margin aMargin) {
+		margin = aMargin;
+	}
+
+	public void setPadding(final Padding aPadding) {
+		padding = aPadding;
+	}
+
+	public void setSpace(final float aSpace) {
+		space = aSpace;
 	}
 
 	public void setFontColor(final Color aColor) {
@@ -92,14 +103,6 @@ public class CustomLegendStyle implements LegendStyle {
 	public void setFont(final Font aFont, final Color aColor) {
 		font = aFont;
 		fontColor = aColor;
-	}
-
-	public void setMargin(final Margin aMargin) {
-		margin = aMargin;
-	}
-
-	public void setPadding(final Padding aPadding) {
-		padding = aPadding;
 	}
 
 	public void setStroke(final Stroke aStroke) {
@@ -118,16 +121,12 @@ public class CustomLegendStyle implements LegendStyle {
 		return display;
 	}
 
-	public LegendPosition getPosition() {
+	public LegendDisplayPosition getPosition() {
 		return position;
 	}
 
-	public Color getFontColor() {
-		return fontColor;
-	}
-
-	public Font getFont() {
-		return font;
+	public Color getBackgroundColor() {
+		return backgroundColor;
 	}
 
 	public Margin getMargin() {
@@ -138,19 +137,23 @@ public class CustomLegendStyle implements LegendStyle {
 		return padding;
 	}
 
+	public float getSpace() {
+		return space;
+	}
+
+	public Color getFontColor() {
+		return fontColor;
+	}
+
+	public Font getFont() {
+		return font;
+	}
+
 	public Stroke getStroke() {
 		return stroke;
 	}
 
 	public Color getStrokeColor() {
 		return strokeColor;
-	}
-
-	public Color getBackgroundColor() {
-		return backgroundColor;
-	}
-
-	public float getSpace() {
-		return space;
 	}
 }
