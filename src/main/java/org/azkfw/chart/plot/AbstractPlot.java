@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.plot;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
@@ -116,7 +117,7 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	 * 
 	 * @param aDesign デザイン
 	 */
-	public final void setChartStyle(final DESIGN aDesign) {
+	public final void setChartDesign(final DESIGN aDesign) {
 		design = aDesign;
 	}
 
@@ -139,6 +140,15 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 		} else {
 			rtPlot = new Rect(x, y, width, height);
 		}
+
+		if (null != design) {
+			Color color = design.getBackgroundColor();
+			if (null != color) {
+				g.setColor(color);
+				g.fillRect(rtPlot);
+			}
+		}
+
 		result = doDraw(g, rtPlot);
 
 		return result;

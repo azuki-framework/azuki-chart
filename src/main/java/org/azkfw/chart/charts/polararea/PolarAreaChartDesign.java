@@ -27,8 +27,8 @@ import org.azkfw.chart.charts.polararea.PolarAreaChartDesign.PolarAreaChartStyle
 import org.azkfw.chart.design.AbstractSeriesChartDesign;
 import org.azkfw.chart.design.chart.AbstractSeriesChartStyle;
 import org.azkfw.chart.design.legend.CustomLegendStyle;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.design.title.CustomTitleStyle;
-import org.azkfw.chart.looks.marker.Marker;
 
 /**
  * このクラスは、鶏頭図のデザイン情報を保持するクラスです。
@@ -39,10 +39,13 @@ import org.azkfw.chart.looks.marker.Marker;
  */
 public class PolarAreaChartDesign extends AbstractSeriesChartDesign<PolarAreaChartStyle, PolarAreaSeries, PolarSeriesPoint> {
 
+	/** デフォルトデザイン */
+	public static PolarAreaChartDesign DefalutDesign = new PolarAreaChartDesign();
+
 	/**
 	 * コンストラクタ
 	 */
-	public PolarAreaChartDesign() {
+	protected PolarAreaChartDesign() {
 		setChartStyle(new PolarAreaChartStyle());
 		setTitleStyle(new CustomTitleStyle());
 		setLegendStyle(new CustomLegendStyle());

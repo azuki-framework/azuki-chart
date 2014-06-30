@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart.design;
 
+import java.awt.Color;
+
 import org.azkfw.chart.design.chart.ChartStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.title.TitleStyle;
@@ -71,4 +73,18 @@ public interface ChartDesign<STYLE extends ChartStyle> {
 	 * @return スタイル
 	 */
 	public LegendStyle getLegendStyle();
+
+	/**
+	 * 背景色を設定する。
+	 * 
+	 * @param aColor 背景色
+	 */
+	public void setBackgroundColor(final Color aColor);
+
+	/**
+	 * 背景色を取得する。
+	 * 
+	 * @return 背景色
+	 */
+	public Color getBackgroundColor();
 }

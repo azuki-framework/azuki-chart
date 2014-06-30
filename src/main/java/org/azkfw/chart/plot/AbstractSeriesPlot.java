@@ -26,7 +26,7 @@ import org.azkfw.chart.design.SeriesChartDesign;
 import org.azkfw.chart.design.chart.SeriesChartStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.legend.LegendStyle.LegendPosition;
-import org.azkfw.chart.looks.marker.Marker;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.series.Series;
 import org.azkfw.core.util.ListUtility;
 import org.azkfw.graphics.Graphics;

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.marker;
+package org.azkfw.chart.design.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -25,13 +25,13 @@ import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
- * このクラスは、＋形のマーカー機能を実装したクラスです。
+ * このクラスは、三角形のマーカー機能を実装したクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class PlusMarker extends AbstractMarker {
+public class TriangleMarker extends AbstractMarker {
 
 	/** size */
 	private float size;
@@ -39,12 +39,15 @@ public class PlusMarker extends AbstractMarker {
 	private Color strokeColor;
 	/** stroke */
 	private Stroke stroke;
+	/** fill color */
+	private Color fillColor;
 
-	public PlusMarker(final float aSize, final Color aColor) {
+	public TriangleMarker(final float aSize, final Color aColor) {
 		super();
 		size = aSize;
-		strokeColor = aColor;
+		strokeColor = upColor(aColor);
 		stroke = new BasicStroke(2.f);
+		fillColor = aColor;
 	}
 
 	@Override
@@ -54,12 +57,26 @@ public class PlusMarker extends AbstractMarker {
 
 	@Override
 	public void draw(final Graphics g, final float aX, final float aY) {
+		float[] xps = new float[4];
+		float[] yps = new float[4];
+
+		xps[0] = aX + (size / 2);
+		yps[0] = aY;
+		xps[1] = aX;
+		yps[1] = aY + size;
+		xps[2] = aX + size;
+		yps[2] = aY + size;
+		xps[3] = xps[0];
+		yps[3] = yps[0];
+
+		if (null != fillColor) {
+			g.setColor(fillColor);
+			g.fillPolygon(xps, yps, 4);
+		}
 		if (null != stroke && null != strokeColor) {
 			g.setColor(strokeColor);
 			g.setStroke(stroke);
-
-			g.drawLine(aX + (size / 2), aY, aX + (size / 2), aY + size);
-			g.drawLine(aX, aY + (size / 2), aX + size, aY + (size / 2));
+			g.drawPolyline(xps, yps, 4);
 		}
 	}
 

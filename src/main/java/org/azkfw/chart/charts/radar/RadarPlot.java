@@ -24,7 +24,7 @@ import java.awt.Polygon;
 import java.util.List;
 
 import org.azkfw.chart.charts.radar.RadarChartDesign.RadarChartStyle;
-import org.azkfw.chart.looks.marker.Marker;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -48,9 +48,11 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 	 * コンストラクタ
 	 */
 	public RadarPlot() {
+		super(RadarPlot.class);
+
 		axis = new RadarAxis();
 
-		setChartStyle(new RadarChartDesign());
+		setChartDesign(RadarChartDesign.DefalutDesign);
 	}
 
 	/**

@@ -20,7 +20,7 @@ package org.azkfw.chart.design.chart;
 import java.awt.Color;
 import java.awt.Stroke;
 
-import org.azkfw.chart.looks.marker.Marker;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.series.Series;
 import org.azkfw.chart.series.SeriesPoint;
 

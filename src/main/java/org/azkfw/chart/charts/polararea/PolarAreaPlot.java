@@ -46,9 +46,11 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 	 * コンストラクタ
 	 */
 	public PolarAreaPlot() {
+		super(PolarAreaPlot.class);
+
 		axis = new PolarAreaAxis();
 
-		setChartStyle(new PolarAreaChartDesign());
+		setChartDesign(PolarAreaChartDesign.DefalutDesign);
 	}
 
 	/**

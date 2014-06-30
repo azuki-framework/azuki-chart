@@ -44,10 +44,12 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 	 * コンストラクタ
 	 */
 	public BarPlot() {
+		super(BarPlot.class);
+
 		axisX = new BarXAxis();
 		axisY = new BarYAxis();
 
-		setChartStyle(new BarChartDesign());
+		setChartDesign(BarChartDesign.DefalutDesign);
 	}
 
 	/**
@@ -113,7 +115,7 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 			g.setColor(style.getBackgroundColor());
 			g.fillRect(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
 		}
-		
+
 		// Draw Y axis
 		g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
 		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());

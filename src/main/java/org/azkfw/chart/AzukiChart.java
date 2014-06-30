@@ -40,6 +40,7 @@ import org.azkfw.chart.charts.radar.RadarAxis;
 import org.azkfw.chart.charts.radar.RadarDataset;
 import org.azkfw.chart.charts.radar.RadarPlot;
 import org.azkfw.chart.charts.radar.RadarSeries;
+import org.azkfw.chart.charts.scatter.ScatterChartDesign;
 import org.azkfw.chart.charts.scatter.ScatterDataset;
 import org.azkfw.chart.charts.scatter.ScatterPlot;
 import org.azkfw.chart.charts.scatter.ScatterSeries;
@@ -50,6 +51,7 @@ import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
 import org.azkfw.graphics.AzukiGraphics2D;
 import org.azkfw.graphics.Graphics;
+import org.azkfw.graphics.Margin;
 
 /**
  * このクラスは、チャートクラスです。
@@ -143,12 +145,12 @@ public final class AzukiChart {
 		}
 
 		// createBarChart(new File(args[0]));
-		// createScatterChart(new File(args[0]));
+		createScatterChart(new File(args[0]));
 		// createPieChart(new File(args[0]));
 
 		// createRadarChart(new File(args[0]));
 		// createPolarChart(new File(args[0]));
-		createPolarAreaChart(new File(args[0]));
+		// createPolarAreaChart(new File(args[0]));
 	}
 
 	public static void createBarChart(final File aFile) {
@@ -176,7 +178,8 @@ public final class AzukiChart {
 		chart.setBackgoundColor(Color.WHITE);
 
 		ScatterPlot plot = (ScatterPlot) chart.getPlot();
-		//plot.setMargin(new Margin(50.f, 5.f, 5.f, 5.f));
+		plot.setMargin(new Margin(10.f, 10.f, 10.f, 10.f));
+		//plot.setChartDesign(ScatterChartDesign.DarkDesign);
 
 		ScatterXAxis xAxis = plot.getXAxis();
 		xAxis.setDisplayFormat(new NumericDisplayFormat(0));
@@ -325,7 +328,7 @@ public final class AzukiChart {
 		PolarAreaAxis axis = plot.getAxis();
 		//axis.setMaximumValueAutoFit(false);
 		//axis.setMaximumValue(1.5);
-		axis.setDisplayFormat(new NumericDisplayFormat(2));
+		axis.setDisplayFormat(new NumericDisplayFormat(1));
 
 		PolarAreaDataset dataset = new PolarAreaDataset("SmpaleChart (PolarArea)");
 

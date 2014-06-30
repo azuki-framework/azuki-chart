@@ -36,6 +36,9 @@ import org.azkfw.chart.design.title.CustomTitleStyle;
  */
 public class PieChartDesign extends AbstractChartDesign<PieChartStyle> {
 
+	/** デフォルトデザイン */
+	public static PieChartDesign DefalutDesign = new PieChartDesign();
+
 	private static List<Color> COLORS = new ArrayList<Color>();
 	static {
 		COLORS.add(new Color(60, 103, 154, 255));
@@ -56,7 +59,7 @@ public class PieChartDesign extends AbstractChartDesign<PieChartStyle> {
 	/**
 	 * コンストラクタ
 	 */
-	public PieChartDesign() {
+	protected PieChartDesign() {
 		setChartStyle(new PieChartStyle());
 		setTitleStyle(new CustomTitleStyle());
 		setLegendStyle(new CustomLegendStyle());

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.marker;
+package org.azkfw.chart.design.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -25,13 +25,13 @@ import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
- * このクラスは、円形のマーカー機能を実装したクラスです。
+ * このクラスは、－形のマーカー機能を実装したクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class CircleMarker extends AbstractMarker {
+public class MinusMarker extends AbstractMarker {
 
 	/** size */
 	private float size;
@@ -39,15 +39,12 @@ public class CircleMarker extends AbstractMarker {
 	private Color strokeColor;
 	/** stroke */
 	private Stroke stroke;
-	/** fill color */
-	private Color fillColor;
 
-	public CircleMarker(final float aSize, final Color aColor) {
+	public MinusMarker(final float aSize, final Color aColor) {
 		super();
 		size = aSize;
-		strokeColor = upColor(aColor);
+		strokeColor = aColor;
 		stroke = new BasicStroke(2.f);
-		fillColor = aColor;
 	}
 
 	@Override
@@ -57,14 +54,11 @@ public class CircleMarker extends AbstractMarker {
 
 	@Override
 	public void draw(final Graphics g, final float aX, final float aY) {
-		if (null != fillColor) {
-			g.setColor(fillColor);
-			g.fillArc((int) (aX), (int) (aY), (int) (size), (int) (size), 0, 360);
-		}
 		if (null != stroke && null != strokeColor) {
 			g.setColor(strokeColor);
 			g.setStroke(stroke);
-			g.drawArc((int) (aX), (int) (aY), (int) (size), (int) (size), 0, 360);
+
+			g.drawLine(aX, aY + (size / 2), aX + size, aY + (size / 2));
 		}
 	}
 

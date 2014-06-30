@@ -37,10 +37,13 @@ import org.azkfw.chart.design.title.CustomTitleStyle;
  */
 public class BarChartDesign extends AbstractSeriesChartDesign<BarChartStyle, BarSeries, BarSeriesPoint> {
 
+	/** デフォルトデザイン */
+	public static BarChartDesign DefalutDesign = new BarChartDesign();
+
 	/**
 	 * コンストラクタ
 	 */
-	public BarChartDesign() {
+	protected BarChartDesign() {
 		setChartStyle(new BarChartStyle());
 		setTitleStyle(new CustomTitleStyle());
 		setLegendStyle(new CustomLegendStyle());

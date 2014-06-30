@@ -37,10 +37,13 @@ import org.azkfw.chart.design.title.CustomTitleStyle;
  */
 public class PolarChartDesign extends AbstractSeriesChartDesign<PolarChartStyle, PolarSeries, PolarSeriesPoint> {
 
+	/** デフォルトデザイン */
+	public static PolarChartDesign DefalutDesign = new PolarChartDesign();
+
 	/**
 	 * コンストラクタ
 	 */
-	public PolarChartDesign() {
+	protected PolarChartDesign() {
 		setChartStyle(new PolarChartStyle());
 		setTitleStyle(new CustomTitleStyle());
 		setLegendStyle(new CustomLegendStyle());

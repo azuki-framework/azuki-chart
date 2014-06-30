@@ -37,10 +37,13 @@ import org.azkfw.chart.design.title.CustomTitleStyle;
  */
 public class RadarChartDesign extends AbstractSeriesChartDesign<RadarChartStyle, RadarSeries, RadarSeriesPoint> {
 
+	/** デフォルトデザイン */
+	public static RadarChartDesign DefalutDesign = new RadarChartDesign();
+
 	/**
 	 * コンストラクタ
 	 */
-	public RadarChartDesign() {
+	protected RadarChartDesign() {
 		setChartStyle(new RadarChartStyle());
 		setTitleStyle(new CustomTitleStyle());
 		setLegendStyle(new CustomLegendStyle());

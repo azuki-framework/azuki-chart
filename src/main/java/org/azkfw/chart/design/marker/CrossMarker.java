@@ -15,33 +15,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.marker;
+package org.azkfw.chart.design.marker;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Stroke;
 
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
- * このインターフェースは、グラフポイントマーカー機能を表現したインターフェースです。
+ * このクラスは、×形のマーカー機能を実装したクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public interface Marker {
+public class CrossMarker extends AbstractMarker {
 
-	/**
-	 * マーカーサイズを取得する。
-	 * 
-	 * @return サイズ
-	 */
-	public Size getSize();
+	/** size */
+	private float size;
+	/** stroke color */
+	private Color strokeColor;
+	/** stroke */
+	private Stroke stroke;
 
-	/**
-	 * マーカーを描画する。
-	 * 
-	 * @param g Graphics
-	 * @param aX 描画位置X座標
-	 * @param aY 描画位置X座標
-	 */
-	public void draw(final Graphics g, final float aX, final float aY);
+	public CrossMarker(final float aSize, final Color aColor) {
+		super();
+		size = aSize;
+		strokeColor = aColor;
+		stroke = new BasicStroke(2.f);
+	}
+
+	@Override
+	public Size getSize() {
+		return new Size(size, size);
+	}
+
+	@Override
+	public void draw(final Graphics g, final float aX, final float aY) {
+		if (null != stroke && null != strokeColor) {
+			g.setColor(strokeColor);
+			g.setStroke(stroke);
+
+			g.drawLine((int) (aX), (int) (aY), (int) (aX + size), (int) (aY + size));
+			g.drawLine((int) (aX), (int) (aY + size), (int) (aX + size), (int) (aY));
+		}
+	}
+
 }

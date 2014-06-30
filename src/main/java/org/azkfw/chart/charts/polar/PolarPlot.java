@@ -24,7 +24,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.List;
 
 import org.azkfw.chart.charts.polar.PolarChartDesign.PolarChartStyle;
-import org.azkfw.chart.looks.marker.Marker;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -48,9 +48,11 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 	 * コンストラクタ
 	 */
 	public PolarPlot() {
+		super(PolarPlot.class);
+
 		axis = new PolarAxis();
 
-		setChartStyle(new PolarChartDesign());
+		setChartDesign(PolarChartDesign.DefalutDesign);
 	}
 
 	/**

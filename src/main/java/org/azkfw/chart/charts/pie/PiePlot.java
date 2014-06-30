@@ -49,9 +49,11 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 	 * コンストラクタ
 	 */
 	public PiePlot() {
+		super(PiePlot.class);
+
 		axis = new PieAxis();
 
-		setChartStyle(new PieChartDesign());
+		setChartDesign(PieChartDesign.DefalutDesign);
 	}
 
 	/**

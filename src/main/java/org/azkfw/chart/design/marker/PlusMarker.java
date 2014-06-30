@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.marker;
+package org.azkfw.chart.design.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -25,13 +25,13 @@ import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
- * このクラスは、－形のマーカー機能を実装したクラスです。
+ * このクラスは、＋形のマーカー機能を実装したクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class MinusMarker extends AbstractMarker {
+public class PlusMarker extends AbstractMarker {
 
 	/** size */
 	private float size;
@@ -40,7 +40,7 @@ public class MinusMarker extends AbstractMarker {
 	/** stroke */
 	private Stroke stroke;
 
-	public MinusMarker(final float aSize, final Color aColor) {
+	public PlusMarker(final float aSize, final Color aColor) {
 		super();
 		size = aSize;
 		strokeColor = aColor;
@@ -58,6 +58,7 @@ public class MinusMarker extends AbstractMarker {
 			g.setColor(strokeColor);
 			g.setStroke(stroke);
 
+			g.drawLine(aX + (size / 2), aY, aX + (size / 2), aY + size);
 			g.drawLine(aX, aY + (size / 2), aX + size, aY + (size / 2));
 		}
 	}

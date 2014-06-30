@@ -26,7 +26,9 @@ import org.azkfw.chart.charts.scatter.ScatterChartDesign.ScatterChartStyle;
 import org.azkfw.chart.design.AbstractSeriesChartDesign;
 import org.azkfw.chart.design.chart.AbstractSeriesChartStyle;
 import org.azkfw.chart.design.legend.CustomLegendStyle;
+import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.title.CustomTitleStyle;
+import org.azkfw.chart.design.title.TitleStyle;
 
 /**
  * このクラスは、散布図のデザイン情報を保持するクラスです。
@@ -37,13 +39,30 @@ import org.azkfw.chart.design.title.CustomTitleStyle;
  */
 public class ScatterChartDesign extends AbstractSeriesChartDesign<ScatterChartStyle, ScatterSeries, ScatterSeriesPoint> {
 
+	/** デフォルトデザイン */
+	public static ScatterChartDesign DefalutDesign = new ScatterChartDesign();
+
+	public static ScatterChartDesign DarkDesign = new ScatterChartDesign(new ScatterChartDarkStyle(), new CustomTitleStyle(),
+			new CustomLegendStyle(), new Color(32, 32, 32, 255));
+
 	/**
 	 * コンストラクタ
 	 */
-	public ScatterChartDesign() {
+	protected ScatterChartDesign() {
 		setChartStyle(new ScatterChartStyle());
 		setTitleStyle(new CustomTitleStyle());
 		setLegendStyle(new CustomLegendStyle());
+	}
+
+	/**
+	 * コンストラクタ
+	 */
+	protected ScatterChartDesign(final ScatterChartStyle aChartStyle, final TitleStyle aTitleStyle, final LegendStyle aLegendStyle,
+			final Color aBackgroundColor) {
+		setChartStyle(aChartStyle);
+		setTitleStyle(aTitleStyle);
+		setLegendStyle(aLegendStyle);
+		setBackgroundColor(aBackgroundColor);
 	}
 
 	/**
@@ -172,6 +191,81 @@ public class ScatterChartDesign extends AbstractSeriesChartDesign<ScatterChartSt
 			float dash[] = { 2.0f, 2.0f };
 			BasicStroke dsahStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f);
 			return dsahStroke;
+		}
+	}
+
+	/**
+	 * このクラスは、散布図のスタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class ScatterChartDarkStyle extends ScatterChartStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public ScatterChartDarkStyle() {
+			setBackgroundColor(new Color(32, 32, 32, 255));
+		}
+
+		/**
+		 * X軸のフォントカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getXAxisFontColor() {
+			return new Color(220, 220, 220, 255);
+		}
+
+		/**
+		 * X軸のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getXAxisLineColor() {
+			return Color.LIGHT_GRAY;
+		}
+
+		/**
+		 * X軸のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getXAxisScaleColor() {
+			return Color.LIGHT_GRAY;
+		}
+
+		/**
+		 * Y軸のフォントカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getYAxisFontColor() {
+			return new Color(220, 220, 220, 255);
+		}
+
+		/**
+		 * Y軸のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getYAxisLineColor() {
+			return Color.LIGHT_GRAY;
+		}
+
+		/**
+		 * Y軸のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getYAxisScaleColor() {
+			return Color.LIGHT_GRAY;
+		}
+
+		public Color getSeriesFillColor(final int aIndex, final ScatterSeries aSeries) {
+			return null;
 		}
 	}
 }

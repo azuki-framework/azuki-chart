@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.looks.marker;
+package org.azkfw.chart.design.marker;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -25,13 +25,13 @@ import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Size;
 
 /**
- * このクラスは、×形のマーカー機能を実装したクラスです。
+ * このクラスは、四角形のマーカー機能を実装したクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class CrossMarker extends AbstractMarker {
+public class SquareMarker extends AbstractMarker {
 
 	/** size */
 	private float size;
@@ -39,12 +39,15 @@ public class CrossMarker extends AbstractMarker {
 	private Color strokeColor;
 	/** stroke */
 	private Stroke stroke;
+	/** fill color */
+	private Color fillColor;
 
-	public CrossMarker(final float aSize, final Color aColor) {
+	public SquareMarker(final float aSize, final Color aColor) {
 		super();
 		size = aSize;
-		strokeColor = aColor;
+		strokeColor = upColor(aColor);
 		stroke = new BasicStroke(2.f);
+		fillColor = aColor;
 	}
 
 	@Override
@@ -54,12 +57,14 @@ public class CrossMarker extends AbstractMarker {
 
 	@Override
 	public void draw(final Graphics g, final float aX, final float aY) {
+		if (null != fillColor) {
+			g.setColor(fillColor);
+			g.fillRect(aX, aY, size, size);
+		}
 		if (null != stroke && null != strokeColor) {
 			g.setColor(strokeColor);
 			g.setStroke(stroke);
-
-			g.drawLine((int) (aX), (int) (aY), (int) (aX + size), (int) (aY + size));
-			g.drawLine((int) (aX), (int) (aY + size), (int) (aX + size), (int) (aY));
+			g.drawRect(aX, aY, size, size);
 		}
 	}
 

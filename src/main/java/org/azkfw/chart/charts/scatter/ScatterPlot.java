@@ -24,8 +24,8 @@ import java.awt.Polygon;
 import java.util.List;
 
 import org.azkfw.chart.charts.scatter.ScatterChartDesign.ScatterChartStyle;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
-import org.azkfw.chart.looks.marker.Marker;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -50,10 +50,12 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 	 * コンストラクタ
 	 */
 	public ScatterPlot() {
+		super(ScatterPlot.class);
+
 		axisX = new ScatterXAxis();
 		axisY = new ScatterYAxis();
 
-		setChartStyle(new ScatterChartDesign());
+		setChartDesign(ScatterChartDesign.DefalutDesign);
 	}
 
 	/**
@@ -206,10 +208,12 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 					yps[points.size() + 1] = (int) (rtChart.getY());
 
 					Color color = style.getSeriesFillColor(index, series);
-					GradientPaint paint = new GradientPaint(0f, rtChart.getY() - rtChart.getHeight(), color, 0f, rtChart.getY(), new Color(
-							color.getRed(), color.getGreen(), color.getBlue(), 0));
-					g.setPaint(paint);
-					g.fillPolygon(new Polygon(xps, yps, points.size() + 2));
+					if (null != color) {
+						GradientPaint paint = new GradientPaint(0f, rtChart.getY() - rtChart.getHeight(), color, 0f, rtChart.getY(), new Color(
+								color.getRed(), color.getGreen(), color.getBlue(), 0));
+						g.setPaint(paint);
+						g.fillPolygon(new Polygon(xps, yps, points.size() + 2));
+					}
 				}
 
 				// Draw series line

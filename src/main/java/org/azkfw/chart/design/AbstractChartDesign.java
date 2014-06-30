@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart.design;
 
+import java.awt.Color;
+
 import org.azkfw.chart.design.chart.ChartStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.title.TitleStyle;
@@ -39,6 +41,9 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 	/** 凡例スタイル */
 	private LegendStyle legend;
 
+	/** 背景色 */
+	private Color backgroundColor;
+
 	/**
 	 * コンストラクタ
 	 */
@@ -46,6 +51,7 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 		chart = null;
 		title = null;
 		legend = null;
+		backgroundColor = null;
 	}
 
 	@Override
@@ -76,5 +82,15 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 	@Override
 	public final LegendStyle getLegendStyle() {
 		return legend;
+	}
+
+	@Override
+	public final void setBackgroundColor(final Color aColor) {
+		backgroundColor = aColor;
+	}
+
+	@Override
+	public final Color getBackgroundColor() {
+		return backgroundColor;
 	}
 }
