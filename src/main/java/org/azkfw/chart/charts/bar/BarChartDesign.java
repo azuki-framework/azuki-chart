@@ -23,9 +23,11 @@ import java.awt.Font;
 import java.awt.Stroke;
 
 import org.azkfw.chart.charts.bar.BarChartDesign.BarChartStyle;
+import org.azkfw.chart.charts.bar.BarSeries.BarSeriesPoint;
 import org.azkfw.chart.design.AbstractSeriesChartDesign;
 import org.azkfw.chart.design.chart.AbstractSeriesChartStyle;
 import org.azkfw.chart.design.legend.CustomLegendStyle;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.design.title.CustomTitleStyle;
 
 /**
@@ -135,6 +137,34 @@ public class BarChartDesign extends AbstractSeriesChartDesign<BarChartStyle, Bar
 		 */
 		public Stroke getYAxisLineStroke() {
 			return new BasicStroke(1.f);
+		}
+
+		/**
+		 * Y軸のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getYAxisScaleColor() {
+			return Color.LIGHT_GRAY;
+		}
+
+		/**
+		 * Y軸のストロークを取得する。
+		 * 
+		 * @return ストローク
+		 */
+		public Stroke getYAxisScaleStroke() {
+			float dash[] = { 2.0f, 2.0f };
+			BasicStroke dsahStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f);
+			return dsahStroke;
+		}
+
+		public Marker getSeriesMarker(final int aIndex, final BarSeries aSeries) {
+			return null;
+		}
+
+		public Marker getSeriesPointMarker(final int aIndex, final BarSeries aSeries, final int aNo, final BarSeriesPoint aPoint) {
+			return null;
 		}
 	}
 

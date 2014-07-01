@@ -18,8 +18,12 @@
 package org.azkfw.chart.charts.bar;
 
 import java.awt.FontMetrics;
+import java.util.List;
 
+import org.azkfw.chart.charts.bar.BarAxis.BarXAxis;
+import org.azkfw.chart.charts.bar.BarAxis.BarYAxis;
 import org.azkfw.chart.charts.bar.BarChartDesign.BarChartStyle;
+import org.azkfw.chart.charts.bar.BarSeries.BarSeriesPoint;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
@@ -88,15 +92,6 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 
 		float fontMargin = 8.0f;
 
-		// データポイント数取得
-		int dataPointSize = 5;
-		if (null != dataset) {
-			if (0 < dataset.getSeriesList().size()) {
-				dataPointSize = dataset.getSeriesList().get(0).getPoints().size();
-			}
-		}
-		debug(String.format("Data point size : %d", dataPointSize));
-
 		Margin margin = fitChart(g, rtChartPre, scaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
@@ -110,15 +105,27 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 		double difValue = scaleValue.getDiff();
 		double pixPerValue = rtChart.getHeight() / difValue;
 
+		// データポイント数取得
+		int dataSize = 3;
+		int dataPointSize = 5;
+		if (null != dataset && null != dataset.getSeriesList()) {
+			dataSize = dataset.getSeriesList().size();
+			if (0 < dataSize) {
+				dataPointSize = 0;
+				for (BarSeries series : dataset.getSeriesList()) {
+					dataPointSize = Math.max(dataPointSize, series.getPoints().size());
+				}
+			}
+		}
+		debug(String.format("Data point size : %d", dataPointSize));
+
 		// fill background
 		if (null != style.getBackgroundColor()) {
 			g.setColor(style.getBackgroundColor());
 			g.fillRect(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
 		}
 
-		// Draw Y axis
-		g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
-		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
+		// Draw Y axis scale
 		{
 			int fontSize = style.getYAxisFont().getSize();
 			FontMetrics fm = g.getFontMetrics(style.getYAxisFont());
@@ -129,15 +136,21 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 				String str = df.toString(value);
 				float strWidth = fm.stringWidth(str);
 
-				float x = (float) (rtChart.getX() - strWidth);
+				float x = (float) (rtChart.getX() - (strWidth + fontMargin));
 				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
 				g.drawStringA(str, x, y);
 			}
+
+			g.setStroke(style.getYAxisScaleStroke(), style.getYAxisScaleColor());
+			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+				float x = (float) (rtChart.getX());
+				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
+				g.drawLine(x, y, x + rtChart.getWidth(), y);
+			}
+
 		}
 
-		// Draw X axis
-		g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
-		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
+		// Draw X axis scale
 		{
 			float dataWidth = rtChart.getWidth() / dataPointSize;
 			FontMetrics fm = g.getFontMetrics(style.getXAxisFont());
@@ -148,9 +161,58 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 				String str = df.toString(i);
 				float strWidth = fm.stringWidth(str);
 
-				float y = rtChart.getY();
+				float y = rtChart.getY() + fontMargin;
 				float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
 				g.drawStringA(str, x, y);
+			}
+		}
+
+		// Draw Y axis
+		g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
+		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
+
+		// Draw X axis
+		g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
+		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
+
+		if (null != dataset) {
+			float width = rtChart.getWidth() / dataPointSize;
+			float barInterval = 8.f;
+			float barMargin = 4.f;
+
+			float barWidth = (1 == dataSize) ? width - (barInterval * 2) : (width - (barInterval * 2) - (barMargin * (dataSize - 1))) / dataSize;
+
+			if (!style.isOverflow()) {
+				g.setClip(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
+			}
+
+			List<BarSeries> seriesList = dataset.getSeriesList();
+			for (int index = 0; index < seriesList.size(); index++) {
+				BarSeries series = seriesList.get(index);
+				List<BarSeriesPoint> points = series.getPoints();
+				for (int i = 0; i < points.size(); i++) {
+					if (dataPointSize <= i) {
+						break;
+					}
+					BarSeriesPoint point = points.get(i);
+
+					float barHeight = (float) ((point.getValue() - scaleValue.getMin()) * pixPerValue);
+					Rect rtBar = new Rect();
+					rtBar.setX(rtChart.getX() + (width * i) + barInterval + (index * (barWidth + ((0 == index) ? 0 : barMargin))));
+					rtBar.setY(rtChart.getY() - barHeight);
+					rtBar.setWidth(barWidth);
+					rtBar.setHeight(barHeight);
+
+					g.setColor(style.getSeriesFillColor(index, series));
+					g.fillRect(rtBar);
+
+					g.setStroke(style.getSeriesStroke(index, series), style.getSeriesStrokeColor(index, series));
+					g.drawRect(rtBar);
+				}
+			}
+
+			if (!style.isOverflow()) {
+				g.clearClip();
 			}
 		}
 
@@ -275,7 +337,7 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 					String str = df.toString(i);
 					int width = fm.stringWidth(str);
 					if (0 < width) {
-						margin.setBottom(style.getXAxisFont().getSize());
+						margin.setBottom(style.getXAxisFont().getSize() + aFontMargin);
 
 						float x = margin.getLeft() + (i * dataWidth) + (dataWidth / 2);
 						float left = x - (width / 2);

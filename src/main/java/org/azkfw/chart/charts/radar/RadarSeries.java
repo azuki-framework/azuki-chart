@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.azkfw.chart.series.AbstractSeries;
+import org.azkfw.chart.series.SeriesPoint;
 
 /**
  * このクラスは、レーダーチャートのシリーズクラスです。
@@ -92,4 +93,46 @@ public class RadarSeries extends AbstractSeries {
 	public List<RadarSeriesPoint> getPoints() {
 		return points;
 	}
+
+	/**
+	 * このクラスは、レーダーチャートのポイントクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/19
+	 * @author Kawakicchi
+	 */
+	public static class RadarSeriesPoint implements SeriesPoint {
+
+		/**
+		 * 値
+		 */
+		private double value;
+
+		/**
+		 * コンストラクタ
+		 */
+		public RadarSeriesPoint() {
+			value = 1.0;
+		}
+
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param aValue 値
+		 */
+		public RadarSeriesPoint(final double aValue) {
+			value = aValue;
+		}
+
+		/**
+		 * 値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getValue() {
+			return value;
+		}
+
+	}
+
 }

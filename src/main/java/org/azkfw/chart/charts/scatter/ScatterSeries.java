@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.azkfw.chart.series.AbstractSeries;
+import org.azkfw.chart.series.SeriesPoint;
 
 /**
  * このクラスは、散布図のシリーズ情報を保持したクラスです。
@@ -92,5 +93,62 @@ public class ScatterSeries extends AbstractSeries {
 	 */
 	public List<ScatterSeriesPoint> getPoints() {
 		return points;
+	}
+
+	/**
+	 * このクラスは、散布図のポイント情報を保持したクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/25
+	 * @author Kawakicchi
+	 */
+	public static class ScatterSeriesPoint implements SeriesPoint {
+
+		/**
+		 * x値
+		 */
+		private double x;
+		/**
+		 * y値
+		 */
+		private double y;
+
+		/**
+		 * コンストラクタ
+		 */
+		public ScatterSeriesPoint() {
+			x = 1.0;
+			y = 1.0;
+		}
+
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param aX x値
+		 * @param aY y値
+		 */
+		public ScatterSeriesPoint(final double aX, final double aY) {
+			x = aX;
+			y = aY;
+		}
+
+		/**
+		 * x値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getX() {
+			return x;
+		}
+
+		/**
+		 * y値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getY() {
+			return y;
+		}
+
 	}
 }

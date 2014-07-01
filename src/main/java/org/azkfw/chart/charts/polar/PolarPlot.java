@@ -24,6 +24,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.List;
 
 import org.azkfw.chart.charts.polar.PolarChartDesign.PolarChartStyle;
+import org.azkfw.chart.charts.polar.PolarSeries.PolarSeriesPoint;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;

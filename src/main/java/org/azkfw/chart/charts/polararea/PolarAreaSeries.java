@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.azkfw.chart.series.AbstractSeries;
+import org.azkfw.chart.series.SeriesPoint;
 
 /**
  * このクラスは、鶏頭図のシリーズクラスです。
@@ -92,4 +93,46 @@ public class PolarAreaSeries extends AbstractSeries {
 	public List<PolarAreaSeriesPoint> getPoints() {
 		return points;
 	}
+
+	/**
+	 * このクラスは、鶏頭図のポイントクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/19
+	 * @author Kawakicchi
+	 */
+	public class PolarAreaSeriesPoint implements SeriesPoint {
+
+		/**
+		 * 値
+		 */
+		private double range;
+
+		/**
+		 * コンストラクタ
+		 */
+		public PolarAreaSeriesPoint() {
+			range = 1.0;
+		}
+
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param aRange 値
+		 */
+		public PolarAreaSeriesPoint(final double aRange) {
+			range = aRange;
+		}
+
+		/**
+		 * 値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getRange() {
+			return range;
+		}
+
+	}
+
 }

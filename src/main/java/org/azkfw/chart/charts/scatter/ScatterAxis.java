@@ -15,19 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.bar;
+package org.azkfw.chart.charts.scatter;
 
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.displayformat.StringDisplayFormat;
 
 /**
- * このクラスは、棒グラフのY軸情報を保持するクラスです。
+ * このクラスは、散布図のX軸情報を保持するクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class BarYAxis {
+public abstract class ScatterAxis {
 
 	/** 最小値 */
 	private double minValue;
@@ -50,14 +50,14 @@ public class BarYAxis {
 	/**
 	 * コンストラクタ
 	 */
-	public BarYAxis() {
+	public ScatterAxis() {
 		minValue = 0.0;
 		minValueAutoFit = true;
 
-		maxValue = 1.0;
+		maxValue = 0.0;
 		maxValueAutoFit = true;
 
-		scale = 0.2;
+		scale = 0.0;
 		scaleAutoFit = true;
 
 		displayFormat = new StringDisplayFormat();
@@ -71,7 +71,7 @@ public class BarYAxis {
 		return minValue;
 	}
 
-	public void setMinumumValueAutoFit(final boolean aAutoFit) {
+	public void setMinimumValueAutoFit(final boolean aAutoFit) {
 		minValueAutoFit = aAutoFit;
 	}
 
@@ -127,5 +127,53 @@ public class BarYAxis {
 	 */
 	public DisplayFormat getDisplayFormat() {
 		return displayFormat;
+	}
+
+	/**
+	 * このクラスは、散布図のX軸情報を保持するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/25
+	 * @author Kawakicchi
+	 */
+	public static class ScatterXAxis extends ScatterAxis {
+
+		/**
+		 * コンストラクタ
+		 */
+		public ScatterXAxis() {
+			setMinimumValueAutoFit(true);
+			setMaximumValue(0.0);
+
+			setMaximumValueAutoFit(true);
+			setMaximumValue(100.0);
+
+			setScaleAutoFit(true);
+			setScale(10.0);
+		}
+	}
+
+	/**
+	 * このクラスは、散布図のY軸情報を保持するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/25
+	 * @author Kawakicchi
+	 */
+	public static class ScatterYAxis extends ScatterAxis {
+
+		/**
+		 * コンストラクタ
+		 */
+		public ScatterYAxis() {
+			setMinimumValueAutoFit(true);
+			setMaximumValue(0.0);
+
+			setMaximumValueAutoFit(true);
+			setMaximumValue(1.0);
+
+			setScaleAutoFit(true);
+			setScale(0.2);
+		}
 	}
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.azkfw.chart.series.AbstractSeries;
+import org.azkfw.chart.series.SeriesPoint;
 
 /**
  * このクラスは、棒グラフのシリーズ情報を保持したクラスです。
@@ -92,4 +93,46 @@ public class BarSeries extends AbstractSeries {
 	public List<BarSeriesPoint> getPoints() {
 		return points;
 	}
+
+	/**
+	 * このクラスは、棒グラフのポイント情報を保持したクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/25
+	 * @author Kawakicchi
+	 */
+	public static class BarSeriesPoint implements SeriesPoint {
+
+		/**
+		 * 値
+		 */
+		private double value;
+
+		/**
+		 * コンストラクタ
+		 */
+		public BarSeriesPoint() {
+			value = 1.0;
+		}
+
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param aRange 値
+		 */
+		public BarSeriesPoint(final double aValue) {
+			value = aValue;
+		}
+
+		/**
+		 * 値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getValue() {
+			return value;
+		}
+
+	}
+
 }

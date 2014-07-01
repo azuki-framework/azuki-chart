@@ -131,6 +131,11 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	}
 
 	@Override
+	public final boolean draw(final Graphics g, final Rect aRect) {
+		return draw(g, aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
+	}
+
+	@Override
 	public final boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
 		boolean result = false;
 
@@ -246,42 +251,48 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 		String title = dataset.getTitle();
 
 		if (null != styleTitle && StringUtility.isNotEmpty(title)) {
-
 			Margin margin = (Margin) getNotNullObject(styleTitle.getMargin(), new Margin());
-			// fill background
-			if (null != styleTitle.getBackgroundColor()) {
-				g.setColor(styleTitle.getBackgroundColor());
-				g.fillRect(aRect.getX() + margin.getLeft(), aRect.getY() + margin.getTop(), aRect.getWidth() - margin.getHorizontalSize(),
-						aRect.getHeight() - margin.getVerticalSize());
-			}
-			// draw stroke
-			if (null != styleTitle.getStroke() && null != styleTitle.getStrokeColor()) {
-				g.setStroke(styleTitle.getStroke(), styleTitle.getStrokeColor());
-				g.drawRect(aRect.getX() + margin.getLeft(), aRect.getY() + margin.getTop(), aRect.getWidth() - margin.getHorizontalSize(),
-						aRect.getHeight() - margin.getVerticalSize());
-			}
-
 			Padding padding = (Padding) getNotNullObject(styleTitle.getPadding(), new Padding());
 
-			if (styleTitle.isFontShadow()) {
-				g.setFont(styleTitle.getFont());
-				int max = 4;
-				int s = max;
-				while (s > 0) {
-					float x = aRect.getX() + margin.getLeft() + padding.getLeft() + s;
-					float y = aRect.getY() + margin.getTop() + padding.getTop() + s;
-
-					g.setColor(new Color(0, 0, 0, 255 - (255 / (max + 1)) * s));
-					g.drawStringA(title, x, y);
-					s--;
+			{ // Draw title frame
+				Rect rtFrame = new Rect();
+				rtFrame.setX(aRect.getX() + margin.getLeft());
+				rtFrame.setY(aRect.getY() + margin.getTop());
+				rtFrame.setWidth(aRect.getWidth() - margin.getHorizontalSize());
+				rtFrame.setHeight(aRect.getHeight() - margin.getVerticalSize());
+				// fill frame background
+				if (null != styleTitle.getBackgroundColor()) {
+					g.setColor(styleTitle.getBackgroundColor());
+					g.fillRect(rtFrame);
+				}
+				// draw frame
+				if (null != styleTitle.getStroke() && null != styleTitle.getStrokeColor()) {
+					g.setStroke(styleTitle.getStroke(), styleTitle.getStrokeColor());
+					g.drawRect(rtFrame);
 				}
 			}
 
-			float x = aRect.getX() + margin.getLeft() + padding.getLeft();
-			float y = aRect.getY() + margin.getTop() + padding.getTop();
+			if (null != styleTitle.getFontColor()) { // Draw title				
+				if (styleTitle.isFontShadow()) {
+					// Draw shadow
+					g.setFont(styleTitle.getFont());
+					int max = 4;
+					int s = max;
+					while (s > 0) {
+						float x = aRect.getX() + margin.getLeft() + padding.getLeft() + s;
+						float y = aRect.getY() + margin.getTop() + padding.getTop() + s;
 
-			g.setFont(styleTitle.getFont(), styleTitle.getFontColor());
-			g.drawStringA(title, x, y);
+						g.setColor(new Color(0, 0, 0, 255 - (255 / (max + 1)) * s));
+						g.drawStringA(title, x, y);
+						s--;
+					}
+				}
+
+				float x = aRect.getX() + margin.getLeft() + padding.getLeft();
+				float y = aRect.getY() + margin.getTop() + padding.getTop();
+				g.setFont(styleTitle.getFont(), styleTitle.getFontColor());
+				g.drawStringA(title, x, y);
+			}
 		}
 	}
 

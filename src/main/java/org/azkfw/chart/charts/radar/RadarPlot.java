@@ -24,6 +24,7 @@ import java.awt.Polygon;
 import java.util.List;
 
 import org.azkfw.chart.charts.radar.RadarChartDesign.RadarChartStyle;
+import org.azkfw.chart.charts.radar.RadarSeries.RadarSeriesPoint;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;

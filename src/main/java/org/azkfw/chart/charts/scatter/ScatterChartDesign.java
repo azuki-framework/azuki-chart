@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.Stroke;
 
 import org.azkfw.chart.charts.scatter.ScatterChartDesign.ScatterChartStyle;
+import org.azkfw.chart.charts.scatter.ScatterSeries.ScatterSeriesPoint;
 import org.azkfw.chart.design.AbstractSeriesChartDesign;
 import org.azkfw.chart.design.chart.AbstractSeriesChartStyle;
 import org.azkfw.chart.design.legend.CustomLegendStyle;

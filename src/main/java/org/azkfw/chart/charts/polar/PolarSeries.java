@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.azkfw.chart.series.AbstractSeries;
+import org.azkfw.chart.series.SeriesPoint;
 
 /**
  * このクラスは、極座標のシリーズクラスです。
@@ -93,4 +94,63 @@ public class PolarSeries extends AbstractSeries {
 	public List<PolarSeriesPoint> getPoints() {
 		return points;
 	}
+
+	/**
+	 * このクラスは、
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/19
+	 * @author Kawakicchi
+	 */
+	public static class PolarSeriesPoint implements SeriesPoint {
+
+		/**
+		 * 角度
+		 */
+		private double angle;
+
+		/**
+		 * 値
+		 */
+		private double range;
+
+		/**
+		 * コンストラクタ
+		 */
+		public PolarSeriesPoint() {
+			angle = 0.0;
+			range = 1.0;
+		}
+
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param aAngle 角度
+		 * @param aRange 値
+		 */
+		public PolarSeriesPoint(final double aAngle, final double aRange) {
+			angle = aAngle;
+			range = aRange;
+		}
+
+		/**
+		 * 角度を取得する。
+		 * 
+		 * @return 角度
+		 */
+		public double getAngle() {
+			return angle;
+		}
+
+		/**
+		 * 値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getRange() {
+			return range;
+		}
+
+	}
+
 }

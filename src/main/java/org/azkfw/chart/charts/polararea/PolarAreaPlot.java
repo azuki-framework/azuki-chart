@@ -24,6 +24,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.List;
 
 import org.azkfw.chart.charts.polararea.PolarAreaChartDesign.PolarAreaChartStyle;
+import org.azkfw.chart.charts.polararea.PolarAreaSeries.PolarAreaSeriesPoint;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;

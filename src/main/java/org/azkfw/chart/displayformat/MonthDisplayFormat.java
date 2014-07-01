@@ -15,47 +15,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.polararea;
-
-import org.azkfw.chart.series.SeriesPoint;
+package org.azkfw.chart.displayformat;
 
 /**
- * このクラスは、鶏頭図のポイントクラスです。
+ * このクラスは、月の表示形式を実装するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
- * @author Kawakicchi
+ * @version 1.0.0 2014/04/01
+ * @author kawakicchi
  */
-public class PolarAreaSeriesPoint implements SeriesPoint {
+public class MonthDisplayFormat implements DisplayFormat {
 
-	/**
-	 * 値
-	 */
-	private double range;
-
-	/**
-	 * コンストラクタ
-	 */
-	public PolarAreaSeriesPoint() {
-		range = 1.0;
+	public MonthDisplayFormat() {
 	}
 
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param aRange 値
-	 */
-	public PolarAreaSeriesPoint(final double aRange) {
-		range = aRange;
+	@Override
+	public String toString(final double aValue) {
+		int value = (int) aValue;
+		switch (value) {
+		case 0:
+			return "Jan";
+		case 1:
+			return "Feb";
+		case 2:
+			return "Mar";
+		case 3:
+			return "Apr";
+		case 4:
+			return "May";
+		case 5:
+			return "Jun";
+		case 6:
+			return "Jul";
+		case 7:
+			return "Aug";
+		case 8:
+			return "Sep";
+		case 9:
+			return "Oct";
+		case 10:
+			return "Nov";
+		case 11:
+			return "Dec";
+		}
+		return null;
 	}
-
-	/**
-	 * 値を取得する。
-	 * 
-	 * @return 値
-	 */
-	public double getRange() {
-		return range;
-	}
-
 }

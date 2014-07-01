@@ -23,7 +23,10 @@ import java.awt.GradientPaint;
 import java.awt.Polygon;
 import java.util.List;
 
+import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterXAxis;
+import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterYAxis;
 import org.azkfw.chart.charts.scatter.ScatterChartDesign.ScatterChartStyle;
+import org.azkfw.chart.charts.scatter.ScatterSeries.ScatterSeriesPoint;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
@@ -135,15 +138,15 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 
 			g.setStroke(style.getYAxisScaleStroke(), style.getYAxisScaleColor());
 			for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
-				float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
 				float x = (float) (rtChart.getX());
+				float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
 				g.drawLine(x, y, x + rtChart.getWidth(), y);
 			}
 
 			g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
 			for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
-				float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
 				float x = (float) (rtChart.getX());
+				float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
 				g.drawLine(x, y, x + 6, y);
 			}
 		}
@@ -164,15 +167,15 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 
 			g.setStroke(style.getXAxisScaleStroke(), style.getXAxisScaleColor());
 			for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
-				float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
 				float y = (float) (rtChart.getY());
+				float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
 				g.drawLine(x, y, x, y - rtChart.getHeight());
 			}
 
 			g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
 			for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
-				float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
 				float y = (float) (rtChart.getY());
+				float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
 				g.drawLine(x, y, x, y - 6);
 			}
 		}

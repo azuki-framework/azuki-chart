@@ -199,21 +199,25 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 
 		if (null != design) {
 			Margin margin = (Margin) getNotNullObject(aStyle.getMargin(), new Margin());
-
-			Rect rtBox = new Rect(aRect.getX() + margin.getLeft(), aRect.getY() + margin.getTop(), aRect.getWidth() - margin.getHorizontalSize(),
-					aRect.getHeight() - margin.getVerticalSize());
-			// fill background
-			if (null != aStyle.getBackgroundColor()) {
-				g.setColor(aStyle.getBackgroundColor());
-				g.fillRect(rtBox);
-			}
-			// draw stroke
-			if (null != aStyle.getStroke() && null != aStyle.getStrokeColor()) {
-				g.setStroke(aStyle.getStroke(), aStyle.getStrokeColor());
-				g.drawRect(rtBox);
-			}
-
 			Padding padding = (Padding) getNotNullObject(aStyle.getPadding(), new Padding());
+
+			{ // Draw legend frame
+				Rect rtFrame = new Rect();
+				rtFrame.setX(aRect.getX() + margin.getLeft());
+				rtFrame.setY(aRect.getY() + margin.getTop());
+				rtFrame.setWidth(aRect.getWidth() - margin.getHorizontalSize());
+				rtFrame.setHeight(aRect.getHeight() - margin.getVerticalSize());
+				// fill background
+				if (null != aStyle.getBackgroundColor()) {
+					g.setColor(aStyle.getBackgroundColor());
+					g.fillRect(rtFrame);
+				}
+				// draw stroke
+				if (null != aStyle.getStroke() && null != aStyle.getStrokeColor()) {
+					g.setStroke(aStyle.getStroke(), aStyle.getStrokeColor());
+					g.drawRect(rtFrame);
+				}
+			}
 
 			Font font = aStyle.getFont();
 			FontMetrics fm = g.getFontMetrics(font);

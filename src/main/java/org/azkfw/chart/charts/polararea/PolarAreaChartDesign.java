@@ -22,8 +22,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
 
-import org.azkfw.chart.charts.polar.PolarSeriesPoint;
+import org.azkfw.chart.charts.polar.PolarSeries.PolarSeriesPoint;
 import org.azkfw.chart.charts.polararea.PolarAreaChartDesign.PolarAreaChartStyle;
+import org.azkfw.chart.charts.polararea.PolarAreaSeries.PolarAreaSeriesPoint;
 import org.azkfw.chart.design.AbstractSeriesChartDesign;
 import org.azkfw.chart.design.chart.AbstractSeriesChartStyle;
 import org.azkfw.chart.design.legend.CustomLegendStyle;

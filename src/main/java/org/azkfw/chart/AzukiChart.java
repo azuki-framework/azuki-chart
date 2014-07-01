@@ -22,9 +22,11 @@ import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
 
+import org.azkfw.chart.charts.bar.BarAxis.BarXAxis;
+import org.azkfw.chart.charts.bar.BarAxis.BarYAxis;
 import org.azkfw.chart.charts.bar.BarDataset;
 import org.azkfw.chart.charts.bar.BarPlot;
-import org.azkfw.chart.charts.bar.BarYAxis;
+import org.azkfw.chart.charts.bar.BarSeries;
 import org.azkfw.chart.charts.pie.PieData;
 import org.azkfw.chart.charts.pie.PieDataset;
 import org.azkfw.chart.charts.pie.PiePlot;
@@ -40,12 +42,12 @@ import org.azkfw.chart.charts.radar.RadarAxis;
 import org.azkfw.chart.charts.radar.RadarDataset;
 import org.azkfw.chart.charts.radar.RadarPlot;
 import org.azkfw.chart.charts.radar.RadarSeries;
-import org.azkfw.chart.charts.scatter.ScatterChartDesign;
+import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterXAxis;
+import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterYAxis;
 import org.azkfw.chart.charts.scatter.ScatterDataset;
 import org.azkfw.chart.charts.scatter.ScatterPlot;
 import org.azkfw.chart.charts.scatter.ScatterSeries;
-import org.azkfw.chart.charts.scatter.ScatterXAxis;
-import org.azkfw.chart.charts.scatter.ScatterYAxis;
+import org.azkfw.chart.displayformat.MonthDisplayFormat;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
@@ -144,11 +146,11 @@ public final class AzukiChart {
 			return;
 		}
 
-		// createBarChart(new File(args[0]));
+		createBarChart(new File(args[0]));
 		// createScatterChart(new File(args[0]));
 		// createPieChart(new File(args[0]));
 
-		createRadarChart(new File(args[0]));
+		// createRadarChart(new File(args[0]));
 		// createPolarChart(new File(args[0]));
 		//createPolarAreaChart(new File(args[0]));
 	}
@@ -162,8 +164,55 @@ public final class AzukiChart {
 
 		BarYAxis yAxis = plot.getYAxis();
 		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
+		yAxis.setMaximumValueAutoFit(false);
+		yAxis.setMaximumValue(150.f);
+		BarXAxis xAxis = plot.getXAxis();
+		xAxis.setDisplayFormat(new MonthDisplayFormat());
 
 		BarDataset dataset = new BarDataset("SmpaleChart (Bar)");
+		BarSeries seriesAve = new BarSeries("Average");
+		BarSeries seriesMax = new BarSeries("Maximum");
+		BarSeries seriesMin = new BarSeries("Mininum");
+		seriesAve.add(50.f);
+		seriesMax.add(100.f);
+		seriesMin.add(10.f);
+		seriesAve.add(70.f);
+		seriesMax.add(70.f);
+		seriesMin.add(70.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		seriesAve.add(50.f);
+		seriesMax.add(100.f);
+		seriesMin.add(10.f);
+		seriesAve.add(50.f);
+		seriesMax.add(100.f);
+		seriesMin.add(10.f);
+		seriesAve.add(50.f);
+		seriesMax.add(100.f);
+		seriesMin.add(10.f);
+		seriesAve.add(50.f);
+		seriesMax.add(100.f);
+		seriesMin.add(10.f);
+		seriesAve.add(50.f);
+		seriesMax.add(100.f);
+		seriesMin.add(10.f);
+		dataset.addSeries(seriesAve);
+		dataset.addSeries(seriesMax);
+		dataset.addSeries(seriesMin);
+
 		plot.setDataset(dataset);
 
 		try {
