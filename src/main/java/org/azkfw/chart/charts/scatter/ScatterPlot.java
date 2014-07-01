@@ -326,12 +326,14 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 			double dif = xMaxValue - xMinValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				xScale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				xScale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				xScale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				xScale = scaleDif;
 			} else {
-				xScale = scaleDif / 10;
+				xScale = scaleDif * 2;
 			}
 		}
 		ScaleValue xScaleValue = new ScaleValue(xMinValue, xMaxValue, xScale);
@@ -356,12 +358,14 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 			double dif = yMaxValue - yMinValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				yScale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				yScale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				yScale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				yScale = scaleDif;
 			} else {
-				yScale = scaleDif / 10;
+				yScale = scaleDif * 2;
 			}
 		}
 		ScaleValue yScaleValue = new ScaleValue(yMinValue, yMaxValue, yScale);

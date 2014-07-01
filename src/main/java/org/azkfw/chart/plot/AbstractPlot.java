@@ -42,9 +42,6 @@ import org.azkfw.graphics.Rect;
 @SuppressWarnings("rawtypes")
 public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends ChartDesign> extends LoggingObject implements Plot {
 
-	/** マージン情報 */
-	private Margin margin;
-
 	/** データセット */
 	private DATASET dataset;
 
@@ -56,7 +53,6 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	 */
 	public AbstractPlot() {
 		super(Plot.class);
-		margin = null;
 		dataset = null;
 		design = null;
 	}
@@ -68,7 +64,6 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	 */
 	public AbstractPlot(final Class<?> aClass) {
 		super(aClass);
-		margin = null;
 		dataset = null;
 		design = null;
 	}
@@ -80,18 +75,8 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	 */
 	public AbstractPlot(final String aName) {
 		super(aName);
-		margin = null;
 		dataset = null;
 		design = null;
-	}
-
-	/**
-	 * マージン情報を設定する。
-	 * 
-	 * @param aMargin マージン情報
-	 */
-	public final void setMargin(final Margin aMargin) {
-		margin = aMargin;
 	}
 
 	/**
@@ -139,18 +124,31 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	public final boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
 		boolean result = false;
 
-		Rect rtPlot = null;
-		if (null != margin) {
-			rtPlot = new Rect(x + margin.getLeft(), y + margin.getTop(), width - margin.getHorizontalSize(), height - margin.getVerticalSize());
-		} else {
-			rtPlot = new Rect(x, y, width, height);
-		}
-
+		Rect rtPlot = new Rect(x, y, width, height);
 		if (null != design) {
-			Color color = design.getBackgroundColor();
-			if (null != color) {
-				g.setColor(color);
+			Margin margin = design.getMargin();
+			if (null != margin) {
+				rtPlot.addX(margin.getLeft());
+				rtPlot.addY(margin.getTop());
+				rtPlot.subtractWidth(margin.getHorizontalSize());
+				rtPlot.subtractHeight(margin.getVerticalSize());
+			}
+
+			if (null != design.getBackgroundColor()) {
+				g.setColor(design.getBackgroundColor());
 				g.fillRect(rtPlot);
+			}
+			if (null != design.getFrameStroke() && null != design.getFrameStrokeColor()) {
+				g.setStroke(design.getFrameStroke(), design.getFrameStrokeColor());
+				g.drawRect(rtPlot);
+			}
+
+			Padding padding = design.getPadding();
+			if (null != padding) {
+				rtPlot.addX(padding.getLeft());
+				rtPlot.addY(padding.getTop());
+				rtPlot.subtractWidth(padding.getHorizontalSize());
+				rtPlot.subtractHeight(padding.getVerticalSize());
 			}
 		}
 

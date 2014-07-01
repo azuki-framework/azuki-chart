@@ -63,9 +63,10 @@ public class CustomTitleStyle implements TitleStyle {
 		margin = new Margin(4.f, 4.f, 4.f, 4.f);
 		padding = new Padding(8.f, 8.f, 8.f, 8.f);
 
-		fontColor = new Color(0, 0, 0, 255);
+		//fontColor = new Color(0, 0, 0, 255);
+		fontColor = new Color(200, 200, 200, 255);
 		font = new Font("Arial", Font.BOLD, 26);
-		fontShadow = false;
+		fontShadow = true;
 
 		stroke = null;
 		strokeColor = null;

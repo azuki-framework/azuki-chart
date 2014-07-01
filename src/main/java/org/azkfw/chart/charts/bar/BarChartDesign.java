@@ -166,6 +166,10 @@ public class BarChartDesign extends AbstractSeriesChartDesign<BarChartStyle, Bar
 		public Marker getSeriesPointMarker(final int aIndex, final BarSeries aSeries, final int aNo, final BarSeriesPoint aPoint) {
 			return null;
 		}
+
+		public Stroke getSeriesStroke(final int aIndex, final BarSeries aSeries) {
+			return new BasicStroke(1.f);
+		}
 	}
 
 }

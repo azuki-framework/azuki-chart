@@ -20,6 +20,8 @@ package org.azkfw.chart.charts.polararea;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.MultipleGradientPaint;
+import java.awt.RadialGradientPaint;
 import java.awt.geom.Ellipse2D;
 import java.util.List;
 
@@ -178,7 +180,14 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 				// Draw series fill
 				Color fillColor = style.getSeriesFillColor(index, series);
 				if (null != fillColor) {
-					g.setColor(fillColor);
+					float range = (float) ((scaleValue.getMax() - scaleValue.getMin()) * pixXPerValue);
+					float[] dist = { 0.0f, 1.0f };
+					Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
+					RadialGradientPaint gradient = new RadialGradientPaint(ptChartMiddle.getX(), ptChartMiddle.getY(), range, dist, colors,
+							MultipleGradientPaint.CycleMethod.NO_CYCLE);
+					g.setPaint(gradient);
+
+					// g.setColor(fillColor);
 					g.fillArc(ptChartMiddle.getX() - sWidth + 1, ptChartMiddle.getY() - sHeight + 1, sWidth * 2.f, sHeight * 2, i * angle, angle);
 				}
 				// Draw series line
@@ -261,12 +270,14 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 			double dif = maxValue - minValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				scale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				scale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				scale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				scale = scaleDif;
 			} else {
-				scale = scaleDif / 10;
+				scale = scaleDif * 2;
 			}
 		}
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);

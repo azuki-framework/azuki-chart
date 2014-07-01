@@ -81,7 +81,7 @@ public class PolarAxis {
 		return minValue;
 	}
 
-	public void setMinumumValueAutoFit(final boolean aAutoFit) {
+	public void setMinimumValueAutoFit(final boolean aAutoFit) {
 		minValueAutoFit = aAutoFit;
 	}
 

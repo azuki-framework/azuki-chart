@@ -48,12 +48,46 @@ public class PolarAreaChartDesign extends AbstractSeriesChartDesign<PolarAreaCha
 	 */
 	protected PolarAreaChartDesign() {
 		setChartStyle(new PolarAreaChartStyle());
-		setTitleStyle(new CustomTitleStyle());
-		setLegendStyle(new CustomLegendStyle());
+		setTitleStyle(new PolarAreaTitleStyle());
+		setLegendStyle(new PolarAreaLegendStyle());
 	}
 
 	/**
-	 * このクラスは、鶏頭図グラフのスタイルを定義するクラスです。
+	 * このクラスは、鶏頭図グラフのタイトルスタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class PolarAreaTitleStyle extends CustomTitleStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public PolarAreaTitleStyle() {
+
+		}
+	}
+
+	/**
+	 * このクラスは、鶏頭図グラフの凡例スタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class PolarAreaLegendStyle extends CustomLegendStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public PolarAreaLegendStyle() {
+			setPosition(LegendDisplayPosition.InnerTopLeft);
+		}
+	}
+
+	/**
+	 * このクラスは、鶏頭図グラフのグラフスタイルを定義するクラスです。
 	 * 
 	 * @since 1.0.0
 	 * @version 1.0.0 2014/06/30

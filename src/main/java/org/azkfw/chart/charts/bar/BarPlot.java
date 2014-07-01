@@ -17,7 +17,9 @@
  */
 package org.azkfw.chart.charts.bar;
 
+import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.GradientPaint;
 import java.util.List;
 
 import org.azkfw.chart.charts.bar.BarAxis.BarXAxis;
@@ -203,7 +205,11 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 					rtBar.setWidth(barWidth);
 					rtBar.setHeight(barHeight);
 
-					g.setColor(style.getSeriesFillColor(index, series));
+					Color fillColor = style.getSeriesFillColor(index, series);
+					GradientPaint paint = new GradientPaint(0f, rtChart.getY() - rtChart.getHeight(), fillColor, 0f, rtChart.getY(), new Color(
+							fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0));
+					g.setPaint(paint);
+					// g.setColor(style.getSeriesFillColor(index, series));
 					g.fillRect(rtBar);
 
 					g.setStroke(style.getSeriesStroke(index, series), style.getSeriesStrokeColor(index, series));
@@ -269,12 +275,14 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 			double dif = maxValue - minValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				scale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				scale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				scale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				scale = scaleDif;
 			} else {
-				scale = scaleDif / 10;
+				scale = scaleDif * 2;
 			}
 		}
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);

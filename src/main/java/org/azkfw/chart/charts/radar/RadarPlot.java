@@ -20,7 +20,9 @@ package org.azkfw.chart.charts.radar;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.MultipleGradientPaint;
 import java.awt.Polygon;
+import java.awt.RadialGradientPaint;
 import java.util.List;
 
 import org.azkfw.chart.charts.radar.RadarChartDesign.RadarChartStyle;
@@ -194,7 +196,14 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 			// Draw series fill
 			Color fillColor = style.getSeriesFillColor(index, series);
 			if (null != fillColor) {
-				g.setColor(fillColor);
+				float range = (float) ((scaleValue.getMax() - scaleValue.getMin()) * pixXPerValue);
+				float[] dist = { 0.0f, 1.0f };
+				Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
+				RadialGradientPaint gradient = new RadialGradientPaint(ptChartMiddle.getX(), ptChartMiddle.getY(), range, dist, colors,
+						MultipleGradientPaint.CycleMethod.NO_CYCLE);
+				g.setPaint(gradient);
+
+				// g.setColor(fillColor);
 				g.fillPolygon(pxs, pys, dataPointSize + 1);
 			}
 			// Draw series line
@@ -308,12 +317,14 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 			double dif = maxValue - minValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				scale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				scale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				scale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				scale = scaleDif;
 			} else {
-				scale = scaleDif / 10;
+				scale = scaleDif * 2;
 			}
 		}
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);

@@ -46,12 +46,46 @@ public class PolarChartDesign extends AbstractSeriesChartDesign<PolarChartStyle,
 	 */
 	protected PolarChartDesign() {
 		setChartStyle(new PolarChartStyle());
-		setTitleStyle(new CustomTitleStyle());
-		setLegendStyle(new CustomLegendStyle());
+		setTitleStyle(new PolarTitleStyle());
+		setLegendStyle(new PolarLegendStyle());
 	}
 
 	/**
-	 * このクラスは、極座標グラフのスタイルを定義するクラスです。
+	 * このクラスは、極座標グラフのタイトルタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class PolarTitleStyle extends CustomTitleStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public PolarTitleStyle() {
+
+		}
+	}
+
+	/**
+	 * このクラスは、極座標グラフの凡例スタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class PolarLegendStyle extends CustomLegendStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public PolarLegendStyle() {
+			setPosition(LegendDisplayPosition.InnerTopLeft);
+		}
+	}
+
+	/**
+	 * このクラスは、極座標グラフのグラフスタイルを定義するクラスです。
 	 * 
 	 * @since 1.0.0
 	 * @version 1.0.0 2014/06/30

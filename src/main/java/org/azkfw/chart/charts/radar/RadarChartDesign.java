@@ -46,12 +46,46 @@ public class RadarChartDesign extends AbstractSeriesChartDesign<RadarChartStyle,
 	 */
 	protected RadarChartDesign() {
 		setChartStyle(new RadarChartStyle());
-		setTitleStyle(new CustomTitleStyle());
-		setLegendStyle(new CustomLegendStyle());
+		setTitleStyle(new RadarTitleStyle());
+		setLegendStyle(new RadarLegendStyle());
 	}
 
 	/**
-	 * このクラスは、レーダーチャートのスタイルを定義するクラスです。
+	 * このクラスは、レーダーチャートのタイトルタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class RadarTitleStyle extends CustomTitleStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public RadarTitleStyle() {
+
+		}
+	}
+
+	/**
+	 * このクラスは、レーダーチャートの凡例スタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class RadarLegendStyle extends CustomLegendStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public RadarLegendStyle() {
+			setPosition(LegendDisplayPosition.InnerTopLeft);
+		}
+	}
+
+	/**
+	 * このクラスは、レーダーチャートのグラフスタイルを定義するクラスです。
 	 * 
 	 * @since 1.0.0
 	 * @version 1.0.0 2014/06/30

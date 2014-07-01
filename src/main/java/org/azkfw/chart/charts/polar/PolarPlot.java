@@ -20,6 +20,8 @@ package org.azkfw.chart.charts.polar;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.MultipleGradientPaint;
+import java.awt.RadialGradientPaint;
 import java.awt.geom.Ellipse2D;
 import java.util.List;
 
@@ -96,8 +98,8 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 
 		// 円に調整
 		float minRange = Math.min(rtChart.getWidth(), rtChartPre.getHeight());
-		rtChart.setX(ptChartMiddle.getX() - (minRange/2));
-		rtChart.setY(ptChartMiddle.getY() - (minRange/2));
+		rtChart.setX(ptChartMiddle.getX() - (minRange / 2));
+		rtChart.setY(ptChartMiddle.getY() - (minRange / 2));
 		rtChart.setWidth(minRange);
 		rtChart.setHeight(minRange);
 
@@ -120,8 +122,8 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 					// TODO: 主軸がある時のみ描画しない処理を追加
 					continue;
 				}
-				float x = (float) (ptChartMiddle.getX() + (pixXPerValue * scaleValue.getMax() * Math.cos(RADIANS(angle))));
-				float y = (float) (ptChartMiddle.getY() - (pixYPerValue * scaleValue.getMax() * Math.sin(RADIANS(angle))));
+				float x = (float) (ptChartMiddle.getX() + ((scaleValue.getMax() - scaleValue.getMin()) * pixXPerValue * Math.cos(RADIANS(angle))));
+				float y = (float) (ptChartMiddle.getY() - ((scaleValue.getMax() - scaleValue.getMin()) * pixYPerValue * Math.sin(RADIANS(angle))));
 				g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), x, y);
 			}
 		}
@@ -181,7 +183,14 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 			// Draw series fill
 			Color fillColor = style.getSeriesFillColor(index, series);
 			if (null != fillColor) {
-				g.setColor(fillColor);
+				float range = (float) ((scaleValue.getMax() - scaleValue.getMin()) * pixXPerValue);
+				float[] dist = { 0.0f, 1.0f };
+				Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
+				RadialGradientPaint gradient = new RadialGradientPaint(ptChartMiddle.getX(), ptChartMiddle.getY(), range, dist, colors,
+						MultipleGradientPaint.CycleMethod.NO_CYCLE);
+				g.setPaint(gradient);
+
+				// g.setColor(fillColor);
 				g.fillPolygon(pxs, pys, points.size() + 1);
 			}
 			// Draw series line
@@ -291,12 +300,14 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 			double dif = maxValue - minValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				scale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				scale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				scale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				scale = scaleDif;
 			} else {
-				scale = scaleDif / 10;
+				scale = scaleDif * 2;
 			}
 		}
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);

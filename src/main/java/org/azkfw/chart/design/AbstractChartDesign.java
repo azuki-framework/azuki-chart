@@ -17,11 +17,15 @@
  */
 package org.azkfw.chart.design;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Stroke;
 
 import org.azkfw.chart.design.chart.ChartStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.title.TitleStyle;
+import org.azkfw.graphics.Margin;
+import org.azkfw.graphics.Padding;
 
 /**
  * このクラスは、グラフデザインを定義する為の基底クラスです。
@@ -44,6 +48,18 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 	/** 背景色 */
 	private Color backgroundColor;
 
+	/** フレームストローク */
+	private Stroke frameStroke;
+
+	/** フレームストロークカラー */
+	private Color frameStrokeColor;
+
+	/** マージン情報 */
+	private Margin margin;
+
+	/** パディング情報 */
+	private Padding padding;
+
 	/**
 	 * コンストラクタ
 	 */
@@ -51,7 +67,17 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 		chart = null;
 		title = null;
 		legend = null;
-		backgroundColor = null;
+
+		// backgroundColor = null;
+		backgroundColor = new Color(240, 240, 240, 255);
+		// frameStroke = null;
+		frameStroke = new BasicStroke(1.f);
+		// frameStrokeColor = null;
+		frameStrokeColor = Color.DARK_GRAY;
+		// margin = null;
+		margin = new Margin(4.f, 4.f, 4.f, 4.f);
+		// padding = null;
+		padding = new Padding(4.f, 4.f, 4.f, 4.f);
 	}
 
 	@Override
@@ -92,5 +118,45 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 	@Override
 	public final Color getBackgroundColor() {
 		return backgroundColor;
+	}
+
+	@Override
+	public void setFrameStroke(final Stroke aStroke) {
+		frameStroke = aStroke;
+	}
+
+	@Override
+	public Stroke getFrameStroke() {
+		return frameStroke;
+	}
+
+	@Override
+	public void setFrameStrokeColor(final Color aColor) {
+		frameStrokeColor = aColor;
+	}
+
+	@Override
+	public Color getFrameStrokeColor() {
+		return frameStrokeColor;
+	}
+
+	@Override
+	public void setMargin(final Margin aMargin) {
+		margin = aMargin;
+	}
+
+	@Override
+	public Margin getMargin() {
+		return margin;
+	}
+
+	@Override
+	public void setPadding(final Padding aPadding) {
+		padding = aPadding;
+	}
+
+	@Override
+	public Padding getPadding() {
+		return padding;
 	}
 }

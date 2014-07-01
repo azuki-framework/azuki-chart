@@ -29,6 +29,7 @@ import java.awt.Color;
 public abstract class AbstractChartStyle implements ChartStyle {
 
 	private Color backgroundColor;
+	
 	private boolean overflow;
 
 	/**

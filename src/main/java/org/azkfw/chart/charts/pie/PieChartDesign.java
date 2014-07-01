@@ -61,12 +61,46 @@ public class PieChartDesign extends AbstractChartDesign<PieChartStyle> {
 	 */
 	protected PieChartDesign() {
 		setChartStyle(new PieChartStyle());
-		setTitleStyle(new CustomTitleStyle());
-		setLegendStyle(new CustomLegendStyle());
+		setTitleStyle(new PieTitleStyle());
+		setLegendStyle(new PieLegendStyle());
 	}
 
 	/**
-	 * このクラスは、円グラフのスタイルを定義するクラスです。
+	 * このクラスは、円グラフのタイトルスタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class PieTitleStyle extends CustomTitleStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public PieTitleStyle() {
+
+		}
+	}
+
+	/**
+	 * このクラスは、円グラフの凡例スタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/30
+	 * @author Kawakicchi
+	 */
+	public static class PieLegendStyle extends CustomLegendStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public PieLegendStyle() {
+			setPosition(LegendDisplayPosition.InnerTopLeft);
+		}
+	}
+
+	/**
+	 * このクラスは、円グラフのグラフスタイルを定義するクラスです。
 	 * 
 	 * @since 1.0.0
 	 * @version 1.0.0 2014/06/30
