@@ -31,6 +31,11 @@ import org.azkfw.chart.charts.bar.BarAxis.BarYAxis;
 import org.azkfw.chart.charts.bar.BarDataset;
 import org.azkfw.chart.charts.bar.BarPlot;
 import org.azkfw.chart.charts.bar.BarSeries;
+import org.azkfw.chart.charts.line.LineAxis.LineXAxis;
+import org.azkfw.chart.charts.line.LineAxis.LineYAxis;
+import org.azkfw.chart.charts.line.LineDataset;
+import org.azkfw.chart.charts.line.LinePlot;
+import org.azkfw.chart.charts.line.LineSeries;
 import org.azkfw.chart.charts.pie.PieData;
 import org.azkfw.chart.charts.pie.PieDataset;
 import org.azkfw.chart.charts.pie.PiePlot;
@@ -57,7 +62,6 @@ import org.azkfw.chart.plot.Plot;
 import org.azkfw.chart.util.AzukiChartUtility;
 import org.azkfw.graphics.AzukiGraphics2D;
 import org.azkfw.graphics.Graphics;
-import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Rect;
 
 /**
@@ -163,20 +167,21 @@ public final class AzukiChart {
 	}
 
 	public static void createAllChart(final File aFile) {
-		int width = 600;
-		int height = 400;
-		BufferedImage image = new BufferedImage(width * 2, height * 3, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage(1400,1200, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		AzukiChartGraphics gra = new AzukiChartGraphics(g);
 
-		gra.drawBarChart(createBarPlot(), new Rect(width * 0, height * 0, width, height));
-		gra.drawScatterChart(createScatterPlot(), new Rect(width * 1, height * 0, width, height));
-		gra.drawPolarChart(createPolarPlot(), new Rect(width * 0, height * 1, width, height));
-		gra.drawPolarAreaChart(createPolarAreaPlot(), new Rect(width * 1, height * 1, width, height));
-		gra.drawPieChart(createPiePlot(), new Rect(width * 0, height * 2, width, height));
-		gra.drawRadarChart(createRadarPlot(), new Rect(width * 1, height * 2, width, height));
+		gra.drawLineChart(createLinePlot(), new Rect(0,0, 600, 400));
+		gra.drawBarChart(createBarPlot(), new Rect(0,400, 600, 400));
+		gra.drawScatterChart(createScatterPlot(), new Rect(0, 800, 600, 400));
+		
+		gra.drawPolarChart(createPolarPlot(), new Rect(600,0,400,400));
+		gra.drawPolarAreaChart(createPolarAreaPlot(), new Rect(600,400,400,400));
+		gra.drawPieChart(createPiePlot(), new Rect(600,800,400,400));
+
+		gra.drawRadarChart(createRadarPlot(), new Rect(1000,0,400,400));
 
 		try {
 			ImageIO.write(image, "png", aFile);
@@ -185,7 +190,25 @@ public final class AzukiChart {
 		}
 	}
 
+	private static LinePlot createLinePlot() {
+		AzukiChart chart = AzukiChartFactory.createLineChart();
+		chart.setBackgoundColor(Color.WHITE);
 
+		LinePlot plot = (LinePlot) chart.getPlot();
+
+		LineYAxis yAxis = plot.getYAxis();
+		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
+		yAxis.setMinimumValueAutoFit(false);
+		yAxis.setMinimumValue(0.f);
+		// yAxis.setMaximumValueAutoFit(false);
+		// yAxis.setMaximumValue(150.f);
+		LineXAxis xAxis = plot.getXAxis();
+		xAxis.setDisplayFormat(new MonthDisplayFormat());
+
+		plot.setDataset(createLineDataset());
+
+		return plot;
+	}
 	private static BarPlot createBarPlot() {
 		AzukiChart chart = AzukiChartFactory.createBarChart();
 		chart.setBackgoundColor(Color.WHITE);
@@ -291,6 +314,33 @@ public final class AzukiChart {
 		return plot;
 	}
 
+	private static LineDataset createLineDataset() {
+		LineDataset dataset = new LineDataset("Smpale Line Chart");
+
+		LineSeries seriesAve = new LineSeries("Average");
+		LineSeries seriesMax = new LineSeries("Maximum");
+		LineSeries seriesMin = new LineSeries("Mininum");
+		seriesAve.add(50.f);
+		seriesMax.add(100.f);
+		seriesMin.add(10.f);
+		seriesAve.add(70.f);
+		seriesMax.add(70.f);
+		seriesMin.add(70.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		dataset.addSeries(seriesAve);
+		dataset.addSeries(seriesMax);
+		dataset.addSeries(seriesMin);
+
+		return dataset;
+	}
 	private static BarDataset createBarDataset() {
 		BarDataset dataset = new BarDataset("Smpale Bar Chart");
 
@@ -387,13 +437,13 @@ public final class AzukiChart {
 		dataset.addSeries(series1);
 
 		PolarSeries series2 = new PolarSeries("bbb");
-		for (int i = 0; i < 360; i+=30) {
+		for (int i = 0; i < 360; i += 30) {
 			series2.add(i, i * 0.002 + 0.2);
 		}
 		dataset.addSeries(series2);
 
 		PolarSeries series3 = new PolarSeries("ccc");
-		for (int i = 0; i < 360; i+=45) {
+		for (int i = 0; i < 360; i += 45) {
 			series3.add(i, 0.85);
 		}
 		dataset.addSeries(series3);
@@ -431,7 +481,6 @@ public final class AzukiChart {
 	private static double RADIANS(double aAngle) {
 		return aAngle * Math.PI / 180.0;
 	}
-	
 
 	public static void createBarChart(final File aFile) {
 		AzukiChart chart = AzukiChartFactory.createBarChart();

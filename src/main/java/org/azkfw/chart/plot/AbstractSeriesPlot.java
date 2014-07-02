@@ -17,8 +17,10 @@
  */
 package org.azkfw.chart.plot;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Stroke;
 import java.util.List;
 
 import org.azkfw.chart.dataset.SeriesDataset;
@@ -33,6 +35,8 @@ import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Rect;
 import org.azkfw.util.ListUtility;
+import org.azkfw.util.ObjectUtility;
+import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、グラフプロット機能を実装するための基底クラスです。
@@ -86,10 +90,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 
 		DATASET dataset = getDataset();
 
-		if (null == aStyle) {
-			return rtLegend;
-		}
-		if (null == dataset) {
+		if (!ObjectUtility.isAllNotNull(aStyle, dataset)) {
 			return rtLegend;
 		}
 		if (ListUtility.isEmpty(dataset.getSeriesList())) {
@@ -102,20 +103,33 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 			Margin margin = aStyle.getMargin();
 			Padding padding = aStyle.getPadding();
 
+			int fontHeight = 16;
+			FontMetrics fm = null;
 			Font font = aStyle.getFont();
-			FontMetrics fm = g.getFontMetrics(font);
+			if (ObjectUtility.isNotNull(font)) {
+				fm = g.getFontMetrics(font);
+				fontHeight = font.getSize();
+			}
+
 			LegendDisplayPosition pos = aStyle.getPosition();
 
-			List<? extends Series> seriesList = dataset.getSeriesList();
+			@SuppressWarnings("unchecked")
+			List<Series> seriesList = dataset.getSeriesList();
 
 			// get size
 			if (isHorizontalLegend(pos)) {
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
 
-					int strWidth = fm.stringWidth(series.getTitle());
-					rtLegend.setHeight(font.getSize());
-					rtLegend.addWidth((font.getSize() * 2) + strWidth);
+					String title = series.getTitle();
+					Color fontColor = aStyle.getFontColor();
+					int strWidth = 16; // XXX: タイトルがない場合とりあえず16pixelあける
+					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
+						strWidth = fm.stringWidth(title);
+					}
+
+					rtLegend.setHeight(fontHeight);
+					rtLegend.addWidth((fontHeight * 2) + strWidth);
 					if (0 < i) {
 						rtLegend.addWidth(aStyle.getSpace());
 					}
@@ -124,18 +138,24 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
 
-					int strWidth = fm.stringWidth(series.getTitle());
-					rtLegend.addHeight(font.getSize());
-					rtLegend.setWidth(Math.max(rtLegend.getWidth(), (font.getSize() * 2) + strWidth));
+					String title = series.getTitle();
+					Color fontColor = aStyle.getFontColor();
+					int strWidth = 16; // XXX: タイトルがない場合とりあえず16pixelあける
+					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
+						strWidth = fm.stringWidth(title);
+					}
+
+					rtLegend.addHeight(fontHeight);
+					rtLegend.setWidth(Math.max(rtLegend.getWidth(), (fontHeight * 2) + strWidth));
 					if (0 < i) {
 						rtLegend.addHeight(aStyle.getSpace());
 					}
 				}
 			}
-			if (null != margin) { // Add margin
+			if (ObjectUtility.isNotNull(margin)) { // Add margin
 				rtLegend.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
 			}
-			if (null != padding) { // Add padding
+			if (ObjectUtility.isNotNull(padding)) { // Add padding
 				rtLegend.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
 			}
 
@@ -192,6 +212,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 	 * @param aStyle 凡例スタイル
 	 * @param aRect 描画範囲
 	 */
+	@SuppressWarnings("unchecked")
 	protected void drawLegend(final Graphics g, final LegendStyle aStyle, final Rect aRect) {
 		DATASET dataset = getDataset();
 		DESIGN design = getChartDesign();
@@ -208,62 +229,80 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 				rtFrame.setWidth(aRect.getWidth() - margin.getHorizontalSize());
 				rtFrame.setHeight(aRect.getHeight() - margin.getVerticalSize());
 				// fill background
-				if (null != aStyle.getBackgroundColor()) {
+				if (ObjectUtility.isNotNull(aStyle.getBackgroundColor())) {
 					g.setColor(aStyle.getBackgroundColor());
 					g.fillRect(rtFrame);
 				}
 				// draw stroke
-				if (null != aStyle.getStroke() && null != aStyle.getStrokeColor()) {
+				if (ObjectUtility.isAllNotNull(aStyle.getStroke(), aStyle.getStrokeColor())) {
 					g.setStroke(aStyle.getStroke(), aStyle.getStrokeColor());
 					g.drawRect(rtFrame);
 				}
 			}
 
+			int fontHeight = 16;
+			FontMetrics fm = null;
 			Font font = aStyle.getFont();
-			FontMetrics fm = g.getFontMetrics(font);
-			LegendDisplayPosition pos = aStyle.getPosition();
-			int fontHeight = font.getSize();
+			if (ObjectUtility.isNotNull(font)) {
+				fm = g.getFontMetrics(font);
+				fontHeight = font.getSize();
+			}
 
 			List<? extends Series> seriesList = dataset.getSeriesList();
 
+			float x = aRect.getX() + margin.getLeft() + padding.getLeft();
+			float y = aRect.getY() + margin.getTop() + padding.getTop();
+			LegendDisplayPosition pos = aStyle.getPosition();
 			if (isHorizontalLegend(pos)) {
-				float x = aRect.getX() + margin.getLeft() + padding.getLeft();
-				float y = aRect.getY() + margin.getTop() + padding.getTop();
-
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
 					// draw line
-					g.setStroke(style.getSeriesStroke(i, series), style.getSeriesStrokeColor(i, series));
-					g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
+					Stroke stroke = style.getSeriesStroke(i, series);
+					Color strokeColor = style.getSeriesStrokeColor(i, series);
+					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+						g.setStroke(stroke, strokeColor);
+						g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
+					}
 					// draw marker
 					Marker marker = style.getSeriesMarker(i, series);
-					if (null != marker) {
+					if (ObjectUtility.isNotNull(marker)) {
 						marker.draw(g, x + (fontHeight * 2 - marker.getSize().getWidth()) / 2, y + (fontHeight - marker.getSize().getHeight()) / 2);
 					}
 					// draw title
-					int strWidth = fm.stringWidth(series.getTitle());
-					g.setFont(font, aStyle.getFontColor());
-					g.drawStringA(series.getTitle(), (fontHeight * 2) + x, y);
+					String title = series.getTitle();
+					Color fontColor = aStyle.getFontColor();
+					int strWidth = 16; // XXX: タイトルがない場合とりあえず16pixelあける
+					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
+						strWidth = fm.stringWidth(title);
+						g.setFont(font, fontColor);
+						g.drawStringA(title, (fontHeight * 2) + x, y);
+					}
 
 					x += aStyle.getSpace() + (fontHeight * 2) + strWidth;
 				}
-			} else if (isVerticalLegend(pos)) {
-				float x = aRect.getX() + margin.getLeft() + padding.getLeft();
-				float y = aRect.getY() + margin.getTop() + padding.getTop();
 
+			} else if (isVerticalLegend(pos)) {
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
 					// draw line
-					g.setStroke(style.getSeriesStroke(i, series), style.getSeriesStrokeColor(i, series));
-					g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
+					Stroke stroke = style.getSeriesStroke(i, series);
+					Color strokeColor = style.getSeriesStrokeColor(i, series);
+					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+						g.setStroke(stroke, strokeColor);
+						g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
+					}
 					// draw marker
 					Marker marker = style.getSeriesMarker(i, series);
-					if (null != marker) {
+					if (ObjectUtility.isNotNull(marker)) {
 						marker.draw(g, x + (fontHeight * 2 - marker.getSize().getWidth()) / 2, y + (fontHeight - marker.getSize().getHeight()) / 2);
 					}
 					// draw title
-					g.setFont(font, aStyle.getFontColor());
-					g.drawStringA(series.getTitle(), (fontHeight * 2) + x, y);
+					String title = series.getTitle();
+					Color fontColor = aStyle.getFontColor();
+					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
+						g.setFont(font, fontColor);
+						g.drawStringA(title, (fontHeight * 2) + x, y);
+					}
 
 					y += aStyle.getSpace() + fontHeight;
 				}

@@ -33,7 +33,7 @@ import org.azkfw.chart.charts.scatter.ScatterPlot;
  * @author Kawakicchi
  */
 public class AzukiChartFactory {
-
+	
 	/**
 	 * 棒グラフのインスタンスを生成する。
 	 * 

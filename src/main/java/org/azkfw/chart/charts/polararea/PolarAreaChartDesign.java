@@ -176,14 +176,48 @@ public class PolarAreaChartDesign extends AbstractSeriesChartDesign<PolarAreaCha
 			return dsahStroke;
 		}
 
+		@Override
 		public Marker getSeriesMarker(final int aIndex, final PolarAreaSeries aSeries) {
 			return null;
 		}
 
-		public Marker getSeriesPointMarker(final int aIndex, final PolarAreaSeries aSeries, final int aNo, final PolarSeriesPoint aPoint) {
+		@Override
+		public Marker getSeriesPointMarker(final int aIndex, final PolarAreaSeries aSeries, final int aNo, final PolarAreaSeriesPoint aPoint) {
 			return null;
 		}
 
+		/**
+		 * データのストロークを取得する。
+		 * 
+		 * @param aIndex データインデックス
+		 * @param aSeries シリーズデータ
+		 * @return ストローク
+		 */
+		public Stroke getSeriesStroke(final int aIndex, final PolarAreaSeries aSeries, final int aNo, final PolarAreaSeriesPoint aPoint) {
+			return getSeriesStroke(aIndex, aSeries);
+		}
+
+		/**
+		 * データのストロークカラーを取得する。
+		 * 
+		 * @param aIndex データインデックス
+		 * @param aSeries シリーズデータ
+		 * @return カラー
+		 */
+		public Color getSeriesStrokeColor(final int aIndex, final PolarAreaSeries aSeries, final int aNo, final PolarAreaSeriesPoint aPoint) {
+			return getSeriesStrokeColor(aIndex, aSeries);
+		}
+
+		/**
+		 * データの塗りつぶしカラーを取得する。
+		 * 
+		 * @param aIndex データインデックス
+		 * @param aSeries シリーズデータ
+		 * @return カラー
+		 */
+		public Color getSeriesFillColor(final int aIndex, final PolarAreaSeries aSeries, final int aNo, final PolarAreaSeriesPoint aPoint) {
+			return getSeriesFillColor(aIndex, aSeries);
+		}
 	}
 
 }

@@ -23,6 +23,7 @@ import java.awt.FontMetrics;
 import java.awt.MultipleGradientPaint;
 import java.awt.Polygon;
 import java.awt.RadialGradientPaint;
+import java.awt.Stroke;
 import java.util.List;
 
 import org.azkfw.chart.charts.radar.RadarChartDesign.RadarChartStyle;
@@ -34,6 +35,7 @@ import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
+import org.azkfw.util.ObjectUtility;
 
 /**
  * このクラスは、レーダーチャートのプロット情報を保持するクラスです。
@@ -103,10 +105,9 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 		rtChart.setWidth(minRange);
 		rtChart.setHeight(minRange);
 
-		// スケール計算
+		// スケール計算(正多角形のためX,Yどちらでもいい)
 		double difValue = scaleValue.getDiff();
-		double pixXPerValue = (rtChart.getWidth() / 2.f) / difValue;
-		double pixYPerValue = (rtChart.getHeight() / 2.f) / difValue;
+		double pixPerValue = (rtChart.getWidth() / 2.f) / difValue;
 
 		// データポイント数取得
 		int dataPointSize = 5;
@@ -125,8 +126,8 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 				double angle = -1 * (360.f / dataPointSize) * i + 90;
 				double value = scaleValue.getMax();
 
-				float x = (float) (ptChartMiddle.getX() + (pixXPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
-				float y = (float) (ptChartMiddle.getY() - (pixYPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
+				float x = (float) (ptChartMiddle.getX() + (pixPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
+				float y = (float) (ptChartMiddle.getY() - (pixPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
 				pxs[i] = (int) pixelLimit(x);
 				pys[i] = (int) pixelLimit(y);
 			}
@@ -146,8 +147,8 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 		g.setStroke(style.getAxisLineStroke(), style.getAxisLineColor());
 		for (int i = 0; i < dataPointSize; i++) {
 			double angle = (360.f / dataPointSize) * i + 90;
-			float x = (float) (ptChartMiddle.getX() + (pixXPerValue * scaleValue.getDiff() * Math.cos(RADIANS(angle))));
-			float y = (float) (ptChartMiddle.getY() - (pixYPerValue * scaleValue.getDiff() * Math.sin(RADIANS(angle))));
+			float x = (float) (ptChartMiddle.getX() + (pixPerValue * scaleValue.getDiff() * Math.cos(RADIANS(angle))));
+			float y = (float) (ptChartMiddle.getY() - (pixPerValue * scaleValue.getDiff() * Math.sin(RADIANS(angle))));
 			g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), x, y);
 		}
 
@@ -158,8 +159,8 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 			float[] pys = new float[dataPointSize + 1];
 			for (int i = 0; i < dataPointSize; i++) {
 				double angle = (360.f / dataPointSize) * i + 90;
-				float x = (float) (ptChartMiddle.getX() + (pixXPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
-				float y = (float) (ptChartMiddle.getY() - (pixYPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
+				float x = (float) (ptChartMiddle.getX() + (pixPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
+				float y = (float) (ptChartMiddle.getY() - (pixPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
 				pxs[i] = x;
 				pys[i] = y;
 			}
@@ -168,85 +169,8 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 			g.drawPolyline(pxs, pys, dataPointSize + 1);
 		}
 
-		// Draw series
-		List<RadarSeries> seriesList = dataset.getSeriesList();
-		for (int index = 0; index < seriesList.size(); index++) {
-			RadarSeries series = seriesList.get(index);
-
-			List<RadarSeriesPoint> points = series.getPoints();
-
-			int[] pxs = new int[dataPointSize + 1];
-			int[] pys = new int[dataPointSize + 1];
-			for (int i = 0; i < points.size(); i++) {
-				RadarSeriesPoint point = points.get(i);
-
-				double angle = -1 * (360.f / dataPointSize) * i + 90;
-				double value = point.getValue();
-
-				float x = (float) (ptChartMiddle.getX() + (pixXPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
-				float y = (float) (ptChartMiddle.getY() - (pixYPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
-				pxs[i] = (int) pixelLimit(x);
-				pys[i] = (int) pixelLimit(y);
-			}
-			pxs[dataPointSize] = pxs[0];
-			pys[dataPointSize] = pys[0];
-
-			g.setClip(polygon);
-
-			// Draw series fill
-			Color fillColor = style.getSeriesFillColor(index, series);
-			if (null != fillColor) {
-				float range = (float) ((scaleValue.getMax() - scaleValue.getMin()) * pixXPerValue);
-				float[] dist = { 0.0f, 1.0f };
-				Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
-				RadialGradientPaint gradient = new RadialGradientPaint(ptChartMiddle.getX(), ptChartMiddle.getY(), range, dist, colors,
-						MultipleGradientPaint.CycleMethod.NO_CYCLE);
-				g.setPaint(gradient);
-
-				// g.setColor(fillColor);
-				g.fillPolygon(pxs, pys, dataPointSize + 1);
-			}
-			// Draw series line
-			Color strokeColor = style.getSeriesStrokeColor(index, series);
-			if (null != strokeColor) {
-				g.setStroke(style.getSeriesStroke(index, series), strokeColor);
-				g.drawPolyline(pxs, pys, dataPointSize + 1);
-			}
-
-			g.clearClip();
-
-			// Draw series marker
-			{
-				Marker seriesMarker = style.getSeriesMarker(index, series);
-				for (int j = 0; j < points.size(); j++) {
-					RadarSeriesPoint point = points.get(j);
-
-					if (point.getValue() < scaleValue.getMin() || point.getValue() > scaleValue.getMax()) {
-						continue;
-					}
-
-					Marker pointMarker = style.getSeriesPointMarker(index, series, j, point);
-					Marker marker = (null != pointMarker) ? pointMarker : seriesMarker;
-					if (null != marker) {
-						double angle = -1 * (360.f / dataPointSize) * j + 90;
-						double value = point.getValue();
-
-						float x = (float) (ptChartMiddle.getX() + (pixXPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
-						float y = (float) (ptChartMiddle.getY() - (pixYPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
-						x = pixelLimit(x);
-						y = pixelLimit(y);
-
-						Size size = marker.getSize();
-
-						int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
-						int my = (0 == (int) size.getHeight() % 2) ? 0 : 1;
-						marker.draw(g, x - (size.getWidth() / 2) + mx, y - (size.getHeight() / 2) + my);
-					}
-
-				}
-
-			}
-		}
+		// Draw dataset
+		drawDataset(g, dataset, dataPointSize, scaleValue, style, rtChart, polygon);
 
 		// Draw axis scale
 		int fontSize = style.getAxisFont().getSize();
@@ -255,7 +179,7 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 		g.setFont(style.getAxisFont());
 		g.setStroke(new BasicStroke(1.f));
 		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			double rangeY = pixYPerValue * (value - scaleValue.getMin());
+			double rangeY = pixPerValue * (value - scaleValue.getMin());
 
 			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
 			int strWidth = fm.stringWidth(str);
@@ -265,15 +189,114 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 		}
 
 		// Draw Legend
-		if (null != rtLegend) {
+		if (ObjectUtility.isNotNull(rtLegend)) {
 			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
-		if (null != rtTitle) {
+		if (ObjectUtility.isNotNull(rtTitle)) {
 			drawTitle(g, rtTitle);
 		}
 
 		return true;
+	}
+
+	private void drawDataset(final Graphics g, final RadarDataset aDataset, final int aDataPointSize, final ScaleValue aScaleValue,
+			final RadarChartStyle aStyle, final Rect aRect, final Polygon aPolygon) {
+		if (ObjectUtility.isNotNull(aDataset)) {
+			// 中心座標取得
+			Point ptMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
+			// スケール計算(正多角形のためX,Yどちらでもいい)
+			double difValue = aScaleValue.getDiff();
+			double pixPerValue = (aRect.getWidth() / 2.f) / difValue;
+
+			float maxRange = (float) ((aScaleValue.getMax() - aScaleValue.getMin()) * pixPerValue);
+
+			// Draw series
+			List<RadarSeries> seriesList = aDataset.getSeriesList();
+			for (int index = 0; index < seriesList.size(); index++) {
+				RadarSeries series = seriesList.get(index);
+
+				List<RadarSeriesPoint> points = series.getPoints();
+
+				int[] pxs = new int[aDataPointSize + 1];
+				int[] pys = new int[aDataPointSize + 1];
+				for (int i = 0; i < points.size(); i++) {
+					RadarSeriesPoint point = points.get(i);
+
+					double angle = -1 * (360.f / aDataPointSize) * i + 90;
+					double value = point.getValue();
+
+					float x = (float) (ptMiddle.getX() + (pixPerValue * (value - aScaleValue.getMin()) * Math.cos(RADIANS(angle))));
+					float y = (float) (ptMiddle.getY() - (pixPerValue * (value - aScaleValue.getMin()) * Math.sin(RADIANS(angle))));
+					pxs[i] = (int) pixelLimit(x);
+					pys[i] = (int) pixelLimit(y);
+				}
+				pxs[aDataPointSize] = pxs[0];
+				pys[aDataPointSize] = pys[0];
+
+				if (!aStyle.isOverflow()) {
+					g.setClip(aPolygon);
+				}
+
+				// Draw series fill
+				Color fillColor = aStyle.getSeriesFillColor(index, series);
+				if (null != fillColor) {
+					float[] dist = { 0.0f, 1.0f };
+					Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
+					RadialGradientPaint gradient = new RadialGradientPaint(ptMiddle.getX(), ptMiddle.getY(), maxRange, dist, colors,
+							MultipleGradientPaint.CycleMethod.NO_CYCLE);
+					g.setPaint(gradient);
+
+					// g.setColor(fillColor);
+					g.fillPolygon(pxs, pys, aDataPointSize + 1);
+				}
+				// Draw series line
+				Stroke stroke = aStyle.getSeriesStroke(index, series);
+				Color strokeColor = aStyle.getSeriesStrokeColor(index, series);
+				if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+					g.setStroke(stroke, strokeColor);
+					g.drawPolyline(pxs, pys, aDataPointSize + 1);
+				}
+
+				if (!aStyle.isOverflow()) {
+					g.clearClip();
+				}
+
+				// Draw series marker
+				{
+					Marker seriesMarker = aStyle.getSeriesMarker(index, series);
+					for (int j = 0; j < points.size(); j++) {
+						RadarSeriesPoint point = points.get(j);
+
+						if (!aStyle.isOverflow()) {
+							if (point.getValue() < aScaleValue.getMin() || point.getValue() > aScaleValue.getMax()) {
+								continue;
+							}
+						}
+
+						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
+						Marker marker = (Marker) getNotNullObject(pointMarker, seriesMarker);
+						if (ObjectUtility.isNotNull(marker)) {
+							double angle = -1 * (360.f / aDataPointSize) * j + 90;
+							double value = point.getValue();
+
+							float x = (float) (ptMiddle.getX() + (pixPerValue * (value - aScaleValue.getMin()) * Math.cos(RADIANS(angle))));
+							float y = (float) (ptMiddle.getY() - (pixPerValue * (value - aScaleValue.getMin()) * Math.sin(RADIANS(angle))));
+							x = pixelLimit(x);
+							y = pixelLimit(y);
+
+							Size size = marker.getSize();
+
+							int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
+							int my = (0 == (int) size.getHeight() % 2) ? 0 : 1;
+							marker.draw(g, x - (size.getWidth() / 2) + mx, y - (size.getHeight() / 2) + my);
+						}
+
+					}
+
+				}
+			}
+		}
 	}
 
 	private ScaleValue getScaleValue() {

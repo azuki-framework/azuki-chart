@@ -18,8 +18,11 @@
 package org.azkfw.chart.charts.bar;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GradientPaint;
+import java.awt.Stroke;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.azkfw.chart.charts.bar.BarAxis.BarXAxis;
@@ -30,7 +33,9 @@ import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
+import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
+import org.azkfw.util.ObjectUtility;
 
 /**
  * このクラスは、棒グラフのプロットクラスです。
@@ -99,7 +104,7 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 
 		Rect rtChart = new Rect();
 		rtChart.setX(rtChartPre.getX() + margin.getLeft());
-		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom());
+		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom()); // ★注意：Yは原点から
 		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
 
@@ -107,131 +112,180 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 		double difValue = scaleValue.getDiff();
 		double pixPerValue = rtChart.getHeight() / difValue;
 
-		// データポイント数取得
+		// データポイント数取得(ポイント数が最大のシリーズを採用する）
 		int dataSize = 3;
 		int dataPointSize = 5;
-		if (null != dataset && null != dataset.getSeriesList()) {
-			dataSize = dataset.getSeriesList().size();
-			if (0 < dataSize) {
-				dataPointSize = 0;
-				for (BarSeries series : dataset.getSeriesList()) {
-					dataPointSize = Math.max(dataPointSize, series.getPoints().size());
+		if (ObjectUtility.isNotNull(dataset)) {
+			if (ObjectUtility.isNotNull(dataset.getSeriesList())) {
+				dataSize = dataset.getSeriesList().size();
+				if (0 < dataSize) {
+					dataPointSize = 0;
+					for (BarSeries series : dataset.getSeriesList()) {
+						dataPointSize = Math.max(dataPointSize, series.getPoints().size());
+					}
 				}
 			}
 		}
 		debug(String.format("Data point size : %d", dataPointSize));
 
 		// fill background
-		if (null != style.getBackgroundColor()) {
+		if (ObjectUtility.isNotNull(style.getBackgroundColor())) {
 			g.setColor(style.getBackgroundColor());
 			g.fillRect(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
 		}
 
 		// Draw Y axis scale
 		{
-			int fontSize = style.getYAxisFont().getSize();
-			FontMetrics fm = g.getFontMetrics(style.getYAxisFont());
-			DisplayFormat df = axisY.getDisplayFormat();
+			// Y軸目盛ラベル
+			Font font = style.getYAxisFont();
+			Color fontColor = style.getYAxisFontColor();
+			if (ObjectUtility.isAllNotNull(font, fontColor)) {
+				int fontSize = font.getSize();
+				FontMetrics fm = g.getFontMetrics(font);
+				DisplayFormat df = axisY.getDisplayFormat();
 
-			g.setFont(style.getYAxisFont(), style.getYAxisFontColor());
-			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-				String str = df.toString(value);
-				float strWidth = fm.stringWidth(str);
+				g.setFont(font, fontColor);
+				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+					String str = df.toString(value);
+					float strWidth = fm.stringWidth(str);
 
-				float x = (float) (rtChart.getX() - (strWidth + fontMargin));
-				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
-				g.drawStringA(str, x, y);
+					float x = (float) (rtChart.getX() - (strWidth + fontMargin));
+					float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
+					g.drawStringA(str, x, y);
+				}
 			}
-
+			// Y軸補助線
 			g.setStroke(style.getYAxisScaleStroke(), style.getYAxisScaleColor());
 			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 				float x = (float) (rtChart.getX());
 				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
 				g.drawLine(x, y, x + rtChart.getWidth(), y);
 			}
-
+			// Y軸目盛線
+			g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
+			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+				float x = (float) (rtChart.getX());
+				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
+				g.drawLine(x, y, x + 6, y);
+			}
 		}
-
 		// Draw X axis scale
 		{
 			float dataWidth = rtChart.getWidth() / dataPointSize;
-			FontMetrics fm = g.getFontMetrics(style.getXAxisFont());
-			DisplayFormat df = axisX.getDisplayFormat();
 
-			g.setFont(style.getXAxisFont(), style.getXAxisFontColor());
+			// X軸目盛ラベル
+			Font font = style.getXAxisFont();
+			Color fontColor = style.getXAxisFontColor();
+			if (ObjectUtility.isAllNotNull(font, fontColor)) {
+				FontMetrics fm = g.getFontMetrics(font);
+				DisplayFormat df = axisX.getDisplayFormat();
+
+				g.setFont(font, fontColor);
+				for (int i = 0; i < dataPointSize; i++) {
+					String str = df.toString(i);
+					float strWidth = fm.stringWidth(str);
+
+					float y = rtChart.getY() + fontMargin;
+					float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
+					g.drawStringA(str, x, y);
+				}
+			}
+			// X軸目盛線
+			g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
 			for (int i = 0; i < dataPointSize; i++) {
-				String str = df.toString(i);
-				float strWidth = fm.stringWidth(str);
-
-				float y = rtChart.getY() + fontMargin;
-				float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
-				g.drawStringA(str, x, y);
+				if (0 != i) {
+					float y = (float) (rtChart.getY());
+					float x = (float) (rtChart.getX() + (i * dataWidth));
+					g.drawLine(x, y, x, y - 6);
+				}
 			}
 		}
 
-		// Draw Y axis
+		// Y軸線
 		g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
 		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
-
-		// Draw X axis
+		// X軸線
 		g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
 		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
 
-		if (null != dataset) {
-			float width = rtChart.getWidth() / dataPointSize;
-			float barInterval = 8.f;
-			float barMargin = 4.f;
-
-			float barWidth = (1 == dataSize) ? width - (barInterval * 2) : (width - (barInterval * 2) - (barMargin * (dataSize - 1))) / dataSize;
-
-			if (!style.isOverflow()) {
-				g.setClip(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
-			}
-
-			List<BarSeries> seriesList = dataset.getSeriesList();
-			for (int index = 0; index < seriesList.size(); index++) {
-				BarSeries series = seriesList.get(index);
-				List<BarSeriesPoint> points = series.getPoints();
-				for (int i = 0; i < points.size(); i++) {
-					if (dataPointSize <= i) {
-						break;
-					}
-					BarSeriesPoint point = points.get(i);
-
-					float barHeight = (float) ((point.getValue() - scaleValue.getMin()) * pixPerValue);
-					Rect rtBar = new Rect();
-					rtBar.setX(rtChart.getX() + (width * i) + barInterval + (index * (barWidth + ((0 == index) ? 0 : barMargin))));
-					rtBar.setY(rtChart.getY() - barHeight);
-					rtBar.setWidth(barWidth);
-					rtBar.setHeight(barHeight);
-
-					Color fillColor = style.getSeriesFillColor(index, series);
-					GradientPaint paint = new GradientPaint(0f, rtChart.getY() - rtChart.getHeight(), fillColor, 0f, rtChart.getY(), new Color(
-							fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0));
-					g.setPaint(paint);
-					// g.setColor(style.getSeriesFillColor(index, series));
-					g.fillRect(rtBar);
-
-					g.setStroke(style.getSeriesStroke(index, series), style.getSeriesStrokeColor(index, series));
-					g.drawRect(rtBar);
-				}
-			}
-
-			if (!style.isOverflow()) {
-				g.clearClip();
-			}
-		}
+		// Draw dataset
+		drawDataset(g, dataset, dataSize, dataPointSize, scaleValue, style, rtChart);
 
 		// Draw Legend
-		if (null != rtLegend) {
+		if (ObjectUtility.isNotNull(rtLegend)) {
 			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
-		if (null != rtTitle) {
+		if (ObjectUtility.isNotNull(rtTitle)) {
 			drawTitle(g, rtTitle);
 		}
 
 		return true;
+	}
+
+	private void drawDataset(final Graphics g, final BarDataset aDataset, final int aDataSize, final int aDataPointSize,
+			final ScaleValue aScaleValue, final BarChartStyle aStyle, final Rect aRect) {
+		if (ObjectUtility.isNotNull(aDataset)) {
+			// スケール計算
+			double difValue = aScaleValue.getDiff();
+			double pixPerValue = aRect.getHeight() / difValue;
+
+			float width = aRect.getWidth() / aDataPointSize;
+			float barInterval = 8.f;
+			float barMargin = 4.f;
+
+			float barWidth = (1 == aDataSize) ? width - (barInterval * 2) : (width - (barInterval * 2) - (barMargin * (aDataSize - 1))) / aDataSize;
+
+			if (!aStyle.isOverflow()) {
+				g.setClip(aRect.getX(), aRect.getY() - aRect.getHeight(), aRect.getWidth(), aRect.getHeight());
+			}
+
+			List<BarSeries> seriesList = aDataset.getSeriesList();
+			for (int index = 0; index < seriesList.size(); index++) {
+				BarSeries series = seriesList.get(index);
+				List<BarSeriesPoint> points = series.getPoints();
+				for (int i = 0; i < points.size(); i++) {
+					if (aDataPointSize <= i) {
+						break;
+					}
+					BarSeriesPoint point = points.get(i);
+
+					float barHeight = (float) ((point.getValue() - aScaleValue.getMin()) * pixPerValue);
+					Rect rtBar = new Rect();
+					rtBar.setX(aRect.getX() + (width * i) + barInterval + (index * (barWidth + ((0 == index) ? 0 : barMargin))));
+					rtBar.setY(aRect.getY() - barHeight);
+					rtBar.setWidth(barWidth);
+					rtBar.setHeight(barHeight);
+
+					Color fillColor = aStyle.getSeriesFillColor(index, series);
+					if (ObjectUtility.isNotNull(fillColor)) {
+						GradientPaint paint = new GradientPaint(0f, aRect.getY() - aRect.getHeight(), fillColor, 0f, aRect.getY(), new Color(
+								fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0));
+						g.setPaint(paint);
+						// g.setColor(style.getSeriesFillColor(index, series));
+						g.fillRect(rtBar);
+					}
+
+					Stroke stroke = aStyle.getSeriesStroke(index, series);
+					Color strokeColor = aStyle.getSeriesStrokeColor(index, series);
+					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+						List<Point> ps = new ArrayList<Point>();
+						ps.add(new Point(rtBar.getX(), rtBar.getY() + rtBar.getHeight()));
+						ps.add(new Point(rtBar.getX(), rtBar.getY()));
+						ps.add(new Point(rtBar.getX() + rtBar.getWidth(), rtBar.getY()));
+						ps.add(new Point(rtBar.getX() + rtBar.getWidth(), rtBar.getY() + rtBar.getHeight()));
+
+						g.setStroke(stroke, strokeColor);
+						// g.drawRect(rtBar);
+						g.drawPolyline(ps);
+					}
+				}
+			}
+
+			if (!aStyle.isOverflow()) {
+				g.clearClip();
+			}
+		}
 	}
 
 	private ScaleValue getScaleValue() {

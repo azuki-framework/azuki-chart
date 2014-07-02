@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.MultipleGradientPaint;
 import java.awt.RadialGradientPaint;
+import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
+import org.azkfw.util.ObjectUtility;
 
 /**
  * このクラスは、極座標グラフのプロット情報を保持するクラスです。
@@ -103,10 +105,9 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 		rtChart.setWidth(minRange);
 		rtChart.setHeight(minRange);
 
-		// スケール計算
+		// スケール計算(円のためX,Yどちらでもいい)
 		double difValue = scaleValue.getDiff();
-		double pixXPerValue = (rtChart.getWidth() / 2.f) / difValue;
-		double pixYPerValue = (rtChart.getHeight() / 2.f) / difValue;
+		double pixPerValue = (rtChart.getWidth() / 2.f) / difValue;
 
 		// fill background
 		if (null != style.getBackgroundColor()) {
@@ -122,8 +123,8 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 					// TODO: 主軸がある時のみ描画しない処理を追加
 					continue;
 				}
-				float x = (float) (ptChartMiddle.getX() + ((scaleValue.getMax() - scaleValue.getMin()) * pixXPerValue * Math.cos(RADIANS(angle))));
-				float y = (float) (ptChartMiddle.getY() - ((scaleValue.getMax() - scaleValue.getMin()) * pixYPerValue * Math.sin(RADIANS(angle))));
+				float x = (float) (ptChartMiddle.getX() + ((scaleValue.getMax() - scaleValue.getMin()) * pixPerValue * Math.cos(RADIANS(angle))));
+				float y = (float) (ptChartMiddle.getY() - ((scaleValue.getMax() - scaleValue.getMin()) * pixPerValue * Math.sin(RADIANS(angle))));
 				g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), x, y);
 			}
 		}
@@ -138,8 +139,8 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 		// Draw circle
 		g.setStroke(style.getAxisCircleStroke(), style.getAxisCircleColor());
 		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			float rangeX = (float) (pixXPerValue * (value - scaleValue.getMin()));
-			float rangeY = (float) (pixYPerValue * (value - scaleValue.getMin()));
+			float rangeX = (float) (pixPerValue * (value - scaleValue.getMin()));
+			float rangeY = (float) (pixPerValue * (value - scaleValue.getMin()));
 
 			g.drawArc(ptChartMiddle.getX() - rangeX, ptChartMiddle.getY() - rangeY, rangeX * 2.f, rangeY * 2.f, 0, 360);
 		}
@@ -147,92 +148,13 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 		// Draw axis scale
 		g.setStroke(style.getAxisLineStroke(), style.getAxisLineColor());
 		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			float range = (float) (pixXPerValue * (value - scaleValue.getMin()));
+			float range = (float) (pixPerValue * (value - scaleValue.getMin()));
 
 			g.drawLine(ptChartMiddle.getX() + range, ptChartMiddle.getY(), ptChartMiddle.getX() + range, ptChartMiddle.getY() + fontMargin);
 		}
 
-		Ellipse2D ellipse = null;
-		if (!style.isOverflow()) {
-			ellipse = new Ellipse2D.Double(rtChart.getX(), rtChart.getY(), rtChart.getWidth(), rtChart.getHeight());
-		}
-
-		// Draw series
-		List<PolarSeries> seriesList = dataset.getSeriesList();
-		for (int index = 0; index < seriesList.size(); index++) {
-			PolarSeries series = seriesList.get(index);
-
-			List<PolarSeriesPoint> points = series.getPoints();
-			float[] pxs = new float[points.size() + 1];
-			float[] pys = new float[points.size() + 1];
-			for (int i = 0; i < points.size(); i++) {
-				PolarSeriesPoint point = points.get(i);
-
-				float x = (float) (ptChartMiddle.getX() + pixXPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
-				float y = (float) (ptChartMiddle.getY() - pixYPerValue * point.getRange() * Math.sin(RADIANS(point.getAngle())));
-				pxs[i] = (int) pixelLimit(x);
-				pys[i] = (int) pixelLimit(y);
-			}
-			pxs[points.size()] = pxs[0];
-			pys[points.size()] = pys[0];
-
-			if (!style.isOverflow()) {
-				g.setClip(ellipse);
-			}
-
-			// Draw series fill
-			Color fillColor = style.getSeriesFillColor(index, series);
-			if (null != fillColor) {
-				float range = (float) ((scaleValue.getMax() - scaleValue.getMin()) * pixXPerValue);
-				float[] dist = { 0.0f, 1.0f };
-				Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
-				RadialGradientPaint gradient = new RadialGradientPaint(ptChartMiddle.getX(), ptChartMiddle.getY(), range, dist, colors,
-						MultipleGradientPaint.CycleMethod.NO_CYCLE);
-				g.setPaint(gradient);
-
-				// g.setColor(fillColor);
-				g.fillPolygon(pxs, pys, points.size() + 1);
-			}
-			// Draw series line
-			Color strokeColor = style.getSeriesStrokeColor(index, series);
-			if (null != strokeColor) {
-				g.setStroke(style.getSeriesStroke(index, series), strokeColor);
-				g.drawPolygon(pxs, pys, points.size() + 1);
-			}
-
-			if (!style.isOverflow()) {
-				g.clearClip();
-			}
-
-			// Draw series marker
-			{
-				Marker seriesMarker = style.getSeriesMarker(index, series);
-				for (int j = 0; j < points.size(); j++) {
-					PolarSeriesPoint point = points.get(j);
-
-					if (point.getRange() < scaleValue.getMin() || point.getRange() > scaleValue.getMax()) {
-						continue;
-					}
-
-					Marker pointMarker = style.getSeriesPointMarker(index, series, j, point);
-					Marker marker = (null != pointMarker) ? pointMarker : seriesMarker;
-					if (null != marker) {
-						float x = (float) (ptChartMiddle.getX() + pixXPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
-						float y = (float) (ptChartMiddle.getY() - pixYPerValue * point.getRange() * Math.sin(RADIANS(point.getAngle())));
-						x = (int) pixelLimit(x);
-						y = (int) pixelLimit(y);
-
-						Size size = marker.getSize();
-
-						int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
-						int my = (0 == (int) size.getHeight() % 2) ? 0 : 1;
-						marker.draw(g, x - (size.getWidth() / 2) + mx, y - (size.getHeight() / 2) + my);
-					}
-
-				}
-
-			}
-		}
+		// Draw dataset
+		drawDataset(g, dataset, scaleValue, style, rtChart);
 
 		// Draw axis scale
 		FontMetrics fm = g.getFontMetrics(style.getAxisFont());
@@ -240,7 +162,7 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 		g.setFont(style.getAxisFont());
 		g.setStroke(new BasicStroke(1.f));
 		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			float range = (float) (pixXPerValue * (value - scaleValue.getMin()));
+			float range = (float) (pixPerValue * (value - scaleValue.getMin()));
 
 			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
 			int strWidth = fm.stringWidth(str);
@@ -248,15 +170,113 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 		}
 
 		// Draw Legend
-		if (null != rtLegend) {
+		if (ObjectUtility.isNotNull(rtLegend)) {
 			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
-		if (null != rtTitle) {
+		if (ObjectUtility.isNotNull(rtTitle)) {
 			drawTitle(g, rtTitle);
 		}
 
 		return true;
+	}
+
+	private void drawDataset(final Graphics g, final PolarDataset aDataset, final ScaleValue aScaleValue, final PolarChartStyle aStyle,
+			final Rect aRect) {
+		if (ObjectUtility.isNotNull(aDataset)) {
+			// 中心座標取得
+			Point ptMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
+			// スケール計算(円のためX,Yどちらでもいい)
+			double difValue = aScaleValue.getDiff();
+			double pixPerValue = (aRect.getWidth() / 2.f) / difValue;
+
+			Ellipse2D ellipse = null;
+			if (!aStyle.isOverflow()) {
+				ellipse = new Ellipse2D.Double(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
+			}
+			
+			float maxRange = (float) ((aScaleValue.getMax() - aScaleValue.getMin()) * pixPerValue);
+
+			// Draw series
+			List<PolarSeries> seriesList = aDataset.getSeriesList();
+			for (int index = 0; index < seriesList.size(); index++) {
+				PolarSeries series = seriesList.get(index);
+
+				List<PolarSeriesPoint> points = series.getPoints();
+				float[] pxs = new float[points.size() + 1];
+				float[] pys = new float[points.size() + 1];
+				for (int i = 0; i < points.size(); i++) {
+					PolarSeriesPoint point = points.get(i);
+
+					float x = (float) (ptMiddle.getX() + pixPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
+					float y = (float) (ptMiddle.getY() - pixPerValue * point.getRange() * Math.sin(RADIANS(point.getAngle())));
+					pxs[i] = (int) pixelLimit(x);
+					pys[i] = (int) pixelLimit(y);
+				}
+				pxs[points.size()] = pxs[0];
+				pys[points.size()] = pys[0];
+
+				if (!aStyle.isOverflow()) {
+					g.setClip(ellipse);
+				}
+
+				// Draw series fill
+				Color fillColor = aStyle.getSeriesFillColor(index, series);
+				if (ObjectUtility.isNotNull(fillColor)) {
+					float[] dist = { 0.0f, 1.0f };
+					Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
+					RadialGradientPaint gradient = new RadialGradientPaint(ptMiddle.getX(), ptMiddle.getY(), maxRange, dist, colors,
+							MultipleGradientPaint.CycleMethod.NO_CYCLE);
+					g.setPaint(gradient);
+
+					// g.setColor(fillColor);
+					g.fillPolygon(pxs, pys, points.size() + 1);
+				}
+				// Draw series line
+				Stroke stroke = aStyle.getSeriesStroke(index, series);
+				Color strokeColor = aStyle.getSeriesStrokeColor(index, series);
+				if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+					g.setStroke(stroke, strokeColor);
+					g.drawPolygon(pxs, pys, points.size() + 1);
+				}
+
+				if (!aStyle.isOverflow()) {
+					g.clearClip();
+				}
+
+				// Draw series marker
+				{
+					Marker seriesMarker = aStyle.getSeriesMarker(index, series);
+					for (int j = 0; j < points.size(); j++) {
+						PolarSeriesPoint point = points.get(j);
+
+						if (!aStyle.isOverflow()) {
+							if (point.getRange() < aScaleValue.getMin() || point.getRange() > aScaleValue.getMax()) {
+								continue;
+							}
+						}
+
+						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
+						Marker marker = (Marker) getNotNullObject(pointMarker, seriesMarker);
+						if (ObjectUtility.isNotNull(marker)) {
+							float x = (float) (ptMiddle.getX() + pixPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
+							float y = (float) (ptMiddle.getY() - pixPerValue * point.getRange() * Math.sin(RADIANS(point.getAngle())));
+							x = pixelLimit(x);
+							y = pixelLimit(y);
+
+							Size size = marker.getSize();
+
+							int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
+							int my = (0 == (int) size.getHeight() % 2) ? 0 : 1;
+							marker.draw(g, x - (size.getWidth() / 2) + mx, y - (size.getHeight() / 2) + my);
+						}
+
+					}
+
+				}
+			}
+		}
+
 	}
 
 	private ScaleValue getScaleValue() {

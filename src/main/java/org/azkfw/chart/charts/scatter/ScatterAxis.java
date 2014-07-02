@@ -21,7 +21,7 @@ import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.displayformat.StringDisplayFormat;
 
 /**
- * このクラスは、散布図のX軸情報を保持するクラスです。
+ * このクラスは、散布図の軸情報を保持するクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/25
