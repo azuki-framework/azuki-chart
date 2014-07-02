@@ -22,12 +22,12 @@ import java.awt.FontMetrics;
 
 import org.azkfw.chart.looks.title.TitleDesign;
 import org.azkfw.chart.looks.title.TitleDesign.TitlePosition;
-import org.azkfw.core.lang.LoggingObject;
-import org.azkfw.core.util.StringUtility;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Rect;
+import org.azkfw.lang.LoggingObject;
+import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、グラフプロット機能を実装するための基底クラスです。
@@ -201,6 +201,15 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 			return -100000;
 		}
 		return aValue;
+	}
+
+	protected static Object getNotNullObject(final Object... objects) {
+		for (Object object : objects) {
+			if (null != object) {
+				return object;
+			}
+		}
+		return null;
 	}
 
 	protected static class ScaleValue {

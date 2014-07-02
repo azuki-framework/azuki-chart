@@ -20,6 +20,7 @@ package org.azkfw.chart.charts.polararea;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.Stroke;
 import java.util.List;
 
 import org.azkfw.chart.plot.AbstractPlot;
@@ -201,16 +202,18 @@ public class PolarAreaPlot extends AbstractPlot {
 					sHeight = -100000;
 				}
 
-				Color fillColor = looks.getSeriesFillColor(index, series);
+				Color fillColor = (Color) getNotNullObject(looks.getSeriesFillColor(index, series, i, point), looks.getSeriesFillColor(index, series));
 				if (null != fillColor) {
 					g.setColor(fillColor);
 					g.fillArc((int) (ptChartMiddle.getX() - sWidth) + 1, (int) (ptChartMiddle.getY() - sHeight) + 1, (int) (sWidth * 2.f),
 							(int) (sHeight * 2), i * angle, angle);
 				}
 
-				Color strokeColor = looks.getSeriesStrokeColor(index, series);
-				if (null != strokeColor) {
-					g.setStroke(looks.getSeriesStroke(index, series));
+				Stroke stroke = (Stroke) getNotNullObject(looks.getSeriesStroke(index, series, i, point), looks.getSeriesStroke(index, series));
+				Color strokeColor = (Color) getNotNullObject(looks.getSeriesStrokeColor(index, series, i, point),
+						looks.getSeriesStrokeColor(index, series));
+				if (null != stroke && null != strokeColor) {
+					g.setStroke(stroke);
 					g.setColor(strokeColor);
 					g.drawArc((int) (ptChartMiddle.getX() - sWidth) + 1, (int) (ptChartMiddle.getY() - sHeight) + 1, (int) (sWidth * 2.f),
 							(int) (sHeight * 2), i * angle, angle);

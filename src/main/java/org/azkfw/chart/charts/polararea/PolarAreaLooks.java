@@ -138,6 +138,19 @@ public class PolarAreaLooks extends AbstractLooks {
 	}
 
 	/**
+	 * データのストロークを取得する。
+	 * 
+	 * @param aIndex データインデックス
+	 * @param aSeries シリーズデータ
+	 * @param aNo ポイント番号
+	 * @param aPoint シリーズポイントデータ
+	 * @return ストローク
+	 */
+	public Stroke getSeriesStroke(final int aIndex, final PolarAreaSeries aSeries, final int aNo, final PolarAreaSeriesPoint aPoint) {
+		return getSeriesStroke(aIndex, aSeries);
+	}
+
+	/**
 	 * データのストロークカラーを取得する。
 	 * 
 	 * @param aIndex データインデックス
@@ -155,6 +168,19 @@ public class PolarAreaLooks extends AbstractLooks {
 	}
 
 	/**
+	 * データのストロークカラーを取得する。
+	 * 
+	 * @param aIndex データインデックス
+	 * @param aSeries シリーズデータ
+	 * @param aNo ポイント番号
+	 * @param aPoint シリーズポイントデータ
+	 * @return カラー
+	 */
+	public Color getSeriesStrokeColor(final int aIndex, final PolarAreaSeries aSeries, final int aNo, final PolarAreaSeriesPoint aPoint) {
+		return getSeriesStrokeColor(aIndex, aSeries);
+	}
+
+	/**
 	 * データの塗りつぶしカラーを取得する。
 	 * 
 	 * @param aIndex データインデックス
@@ -166,4 +192,18 @@ public class PolarAreaLooks extends AbstractLooks {
 		color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 64);
 		return color;
 	}
+
+	/**
+	 * データの塗りつぶしカラーを取得する。
+	 * 
+	 * @param aIndex データインデックス
+	 * @param aSeries シリーズデータ
+	 * @param aNo ポイント番号
+	 * @param aPoint シリーズポイントデータ
+	 * @return カラー
+	 */
+	public Color getSeriesFillColor(final int aIndex, final PolarAreaSeries aSeries, final int aNo, final PolarAreaSeriesPoint aPoint) {
+		return getSeriesFillColor(aIndex, aSeries);
+	}
+
 }

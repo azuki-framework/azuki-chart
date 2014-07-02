@@ -445,33 +445,33 @@ public class PolarPlot extends AbstractPlot {
 
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
-
-		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
-
-		double difValue = aScaleValue.getDiff();
-
-		// スケール計算(プレ)
-		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
-
-		float maxX = aRtChart.getX() + aRtChart.getWidth();
-
-		// Draw axis scale
-		FontMetrics fm = g.getFontMetrics(looks.getAxisFont());
-		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
-			float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
-
-			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
-			int strWidth = fm.stringWidth(str);
-
-			float x = ptChartMiddle.getX() + range + (strWidth / 2);
-
-			maxX = Math.max(maxX, x);
-		}
-
-		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
-			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
-		}
-
+//
+//		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
+//
+//		double difValue = aScaleValue.getDiff();
+//
+//		// スケール計算(プレ)
+//		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
+//
+//		float maxX = aRtChart.getX() + aRtChart.getWidth();
+//
+//		// Draw axis scale
+//		FontMetrics fm = g.getFontMetrics(looks.getAxisFont());
+//		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
+//			float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
+//
+//			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
+//			int strWidth = fm.stringWidth(str);
+//
+//			float x = ptChartMiddle.getX() + range + (strWidth / 2);
+//
+//			maxX = Math.max(maxX, x);
+//		}
+//
+//		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
+//			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
+//		}
+//
 		return margin;
 	}
 
