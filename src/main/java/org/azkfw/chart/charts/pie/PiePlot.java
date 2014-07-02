@@ -28,13 +28,13 @@ import org.azkfw.chart.charts.pie.PieChartDesign.PieChartStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.legend.LegendStyle.LegendDisplayPosition;
 import org.azkfw.chart.plot.AbstractPlot;
-import org.azkfw.core.util.ListUtility;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
+import org.azkfw.util.ListUtility;
 
 /**
  * このクラスは、円グラフのプロットクラスです。

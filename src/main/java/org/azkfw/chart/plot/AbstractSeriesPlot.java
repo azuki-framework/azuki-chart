@@ -28,11 +28,11 @@ import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.legend.LegendStyle.LegendDisplayPosition;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.series.Series;
-import org.azkfw.core.util.ListUtility;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Rect;
+import org.azkfw.util.ListUtility;
 
 /**
  * このクラスは、グラフプロット機能を実装するための基底クラスです。

@@ -25,12 +25,12 @@ import org.azkfw.chart.dataset.Dataset;
 import org.azkfw.chart.design.ChartDesign;
 import org.azkfw.chart.design.title.TitleStyle;
 import org.azkfw.chart.design.title.TitleStyle.TitleDisplayPosition;
-import org.azkfw.core.lang.LoggingObject;
-import org.azkfw.core.util.StringUtility;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Rect;
+import org.azkfw.lang.LoggingObject;
+import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、グラフプロット機能を実装するための基底クラスです。
