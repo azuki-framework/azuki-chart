@@ -94,11 +94,12 @@ public class LineChartDesign extends AbstractSeriesChartDesign<LineChartStyle, L
 	 */
 	public static class LineChartStyle extends AbstractSeriesChartStyle<LineSeries, LineSeriesPoint> {
 
+		private String verticalLabelTitle;
+
 		/**
 		 * コンストラクタ
 		 */
 		public LineChartStyle() {
-
 		}
 
 		/**
@@ -117,6 +118,24 @@ public class LineChartDesign extends AbstractSeriesChartDesign<LineChartStyle, L
 		 */
 		public Stroke getHorizontalAxisLineStroke() {
 			return getDefaultAxisLineStroke();
+		}
+
+		/**
+		 * 水平軸ラベルのフォントを取得する。
+		 * 
+		 * @return フォント
+		 */
+		public Font getHorizontalAxisLabelFont() {
+			return getDefaultAxisLabelFont();
+		}
+
+		/**
+		 * 水平軸ラベルのカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getHorizontalAxisLabelColor() {
+			return getDefaultAxisLabelColor();
 		}
 
 		/**
@@ -171,6 +190,28 @@ public class LineChartDesign extends AbstractSeriesChartDesign<LineChartStyle, L
 		 */
 		public Stroke getVerticalAxisLineStroke() {
 			return null;
+		}
+
+		public String getVerticalAxisLabelTitle() {
+			return verticalLabelTitle;
+		}
+
+		/**
+		 * 垂直軸ラベルのフォントを取得する。
+		 * 
+		 * @return フォント
+		 */
+		public Font getVerticalAxisLabelFont() {
+			return getDefaultAxisLabelFont();
+		}
+
+		/**
+		 * 垂直軸ラベルのカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getVerticalAxisLabelColor() {
+			return getDefaultAxisLabelColor();
 		}
 
 		/**

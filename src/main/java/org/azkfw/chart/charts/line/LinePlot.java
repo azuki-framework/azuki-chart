@@ -23,6 +23,7 @@ import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Polygon;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.util.List;
 
 import org.azkfw.chart.charts.line.LineAxis.LineHorizontalAxis;
@@ -152,6 +153,27 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 
 		// 垂直軸描画
 		{
+			// ラベル描画 TODO: タイトル・凡例が右にある場合の対応が出来ていない
+			Font labelFont = style.getVerticalAxisLabelFont();
+			Color labelColor = style.getVerticalAxisLabelColor();
+			String labelTitle = style.getVerticalAxisLabelTitle();
+			if (ObjectUtility.isAllNotNull(labelFont, labelColor) && StringUtility.isNotEmpty(labelTitle)) {
+				FontMetrics fm = g.getFontMetrics(labelFont);
+				int strWidth = fm.stringWidth(labelTitle);
+
+				float x = aRect.getX() + (labelFont.getSize() / 2);
+				float y = rtChart.getY() - (rtChart.getHeight() / 2);
+
+				AffineTransform save = g.getTransform();
+				AffineTransform at = new AffineTransform();
+				at.setToRotation(Math.toRadians(-90), x, y);
+				g.setTransform(at);
+
+				g.setFont(labelFont, labelColor);
+				g.drawStringA(labelTitle, x - (strWidth / 2), y - (labelFont.getSize() / 2));
+
+				g.setTransform(save);
+			}
 			// 目盛ラベル描画
 			Font scaleLabelFont = style.getVerticalAxisScaleLabelFont();
 			Color scaleLabelColor = style.getVerticalAxisScaleLabelColor();
@@ -443,6 +465,14 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 		double pixPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / difValue;
 		{
 			{
+				Font labelFont = style.getVerticalAxisLabelFont();
+				Color labelColor = style.getVerticalAxisLabelColor();
+				String labelTitle = style.getVerticalAxisLabelTitle();
+				if (ObjectUtility.isAllNotNull(labelFont, labelColor) && StringUtility.isNotEmpty(labelTitle)) {
+					margin.setLeft(labelFont.getSize());
+				}
+			}
+			{
 				float maxYLabelWidth = 0.0f;
 				FontMetrics fm = g.getFontMetrics(style.getVerticalAxisScaleLabelFont());
 				DisplayFormat df = axisVertical.getDisplayFormat();
@@ -459,7 +489,7 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 					maxYLabelWidth += aFontMargin;
 				}
 				debug(String.format("Max y axis label width : %f", maxYLabelWidth));
-				margin.setLeft(maxYLabelWidth);
+				margin.setLeft(margin.getLeft() + maxYLabelWidth);
 			}
 
 			// スケール計算(プレ)

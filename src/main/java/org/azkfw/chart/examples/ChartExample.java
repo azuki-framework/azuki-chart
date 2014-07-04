@@ -122,7 +122,7 @@ public class ChartExample {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void createAllChartData(final File aFile) {
 		BufferedImage image = new BufferedImage(1400, 1200, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();

@@ -37,17 +37,21 @@ import org.azkfw.graphics.Padding;
  */
 public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements ChartDesign<STYLE> {
 
-	/** デフォルト 軸ストローク */
+	/** デフォルト 軸線ストローク */
 	private final static Stroke DEFAULT_STROKE_AXIS = new BasicStroke(1.0f);
-	/** デフォルト 軸ストロークカラー */
+	/** デフォルト 軸線カラー */
 	private final static Color DEFAULT_STROKE_COLOR_AXIS = Color.LIGHT_GRAY;;
-	/** デフォルト 目盛フォント */
-	private final static Font DEFAULT_FONT_SCALE = new Font("Arial", Font.BOLD, 14);
-	/** デフォルト 目盛フォントカラー */
-	private final static Color DEFAULT_FONT_COLOR_SCALE = Color.DARK_GRAY;
-	/** デフォルト 軸ストローク */
+	/** デフォルト 軸ラベルフォント */
+	private final static Font DEFAULT_FONT_AXIS_LABEL = new Font("Arial", Font.BOLD, 14);
+	/** デフォルト 軸ラベルフォントカラー */
+	private final static Color DEFAULT_FONT_COLOR_AXIS_LABEL = Color.DARK_GRAY;
+	/** デフォルト 軸目盛ラベルフォント */
+	private final static Font DEFAULT_FONT_AXIS_SCALE_LABEL = new Font("Arial", Font.BOLD, 14);
+	/** デフォルト 軸目盛ラベルカラー */
+	private final static Color DEFAULT_FONT_COLOR_AXIS_SCALE_LABEL = Color.DARK_GRAY;
+	/** デフォルト 軸目盛線ストローク */
 	private final static Stroke DEFAULT_STROKE_SCALE = new BasicStroke(1.0f);
-	/** デフォルト 軸ストロークカラー */
+	/** デフォルト 軸目盛線カラー */
 	private final static Color DEFAULT_STROKE_COLOR_SCALE = Color.LIGHT_GRAY;;
 
 	/** グラフスタイル */
@@ -104,12 +108,30 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 	}
 
 	/**
+	 * デフォルトの軸ラベルのフォントを取得する。
+	 * 
+	 * @return フォント
+	 */
+	public final static Font getDefaultAxisLabelFont() {
+		return DEFAULT_FONT_AXIS_LABEL;
+	}
+
+	/**
+	 * デフォルトの軸ラベルのカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
+	public final static Color getDefaultAxisLabelColor() {
+		return DEFAULT_FONT_COLOR_AXIS_LABEL;
+	}
+
+	/**
 	 * デフォルトの軸目盛ラベルのフォントを取得する。
 	 * 
 	 * @return フォント
 	 */
 	public final static Font getDefaultAxisScaleLabelFont() {
-		return DEFAULT_FONT_SCALE;
+		return DEFAULT_FONT_AXIS_SCALE_LABEL;
 	}
 
 	/**
@@ -118,7 +140,7 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 	 * @return カラー
 	 */
 	public final static Color getDefaultAxisScaleLabelColor() {
-		return DEFAULT_FONT_COLOR_SCALE;
+		return DEFAULT_FONT_COLOR_AXIS_SCALE_LABEL;
 	}
 
 	/**
