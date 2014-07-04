@@ -62,7 +62,7 @@ public class LineChartExample {
 			LineSeries readSeries = new LineSeries("Read");
 			LineSeries writeSeries = new LineSeries("Write");
 			double readSize = (24 * 60 * 60) + (60 * 60 * 12) + (60 * 30) + 30.f;
-			double writeSize = 0;
+			//double writeSize = 0;
 			for (int i = 0; i < 24; i++) {
 				//				readSize += (Math.random() * 2048.f )- 1024.f;
 				//				writeSize += (Math.random() * 2048.f )- 1024.f;
