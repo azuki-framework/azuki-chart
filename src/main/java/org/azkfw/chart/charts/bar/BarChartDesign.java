@@ -47,12 +47,45 @@ public class BarChartDesign extends AbstractSeriesChartDesign<BarChartStyle, Bar
 	 */
 	protected BarChartDesign() {
 		setChartStyle(new BarChartStyle());
-		setTitleStyle(new CustomTitleStyle());
-		setLegendStyle(new CustomLegendStyle());
+		setTitleStyle(new BarTitleStyle());
+		setLegendStyle(new BarLegendStyle());
 	}
 
 	/**
-	 * このクラスは、棒グラフのスタイルを定義するクラスです。
+	 * このクラスは、棒グラフのタイトルスタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/07/03
+	 * @author Kawakicchi
+	 */
+	public static class BarTitleStyle extends CustomTitleStyle {
+		/**
+		 * コンストラクタ
+		 */
+		public BarTitleStyle() {
+
+		}
+	}
+
+	/**
+	 * このクラスは、棒グラフの凡例スタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/07/03
+	 * @author Kawakicchi
+	 */
+	public static class BarLegendStyle extends CustomLegendStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public BarLegendStyle() {
+			setPosition(LegendDisplayPosition.Bottom);
+		}
+	}
+
+	/**
+	 * このクラスは、棒グラフのグラフスタイルを定義するクラスです。
 	 * 
 	 * @since 1.0.0
 	 * @version 1.0.0 2014/06/30
@@ -68,105 +101,124 @@ public class BarChartDesign extends AbstractSeriesChartDesign<BarChartStyle, Bar
 		}
 
 		/**
-		 * X軸のフォントを取得する。
+		 * 水平軸線のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getHorizontalAxisLineColor() {
+			return getDefaultAxisLineColor();
+		}
+
+		/**
+		 * 水平軸線のストロークを取得する。
+		 * 
+		 * @return ストローク
+		 */
+		public Stroke getHorizontalAxisLineStroke() {
+			return getDefaultAxisLineStroke();
+		}
+
+		/**
+		 * 水平軸目盛ラベルのフォントを取得する。
 		 * 
 		 * @return フォント
 		 */
-		public Font getXAxisFont() {
-			return new Font("Arial", Font.BOLD, 16);
+		public Font getHorizontalAxisScaleLabelFont() {
+			return getDefaultAxisScaleLabelFont();
 		}
 
 		/**
-		 * X軸のフォントカラーを取得する。
+		 * 水平軸目盛ラベルのカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getXAxisFontColor() {
-			return Color.BLACK;
+		public Color getHorizontalAxisScaleLabelColor() {
+			return getDefaultAxisScaleLabelColor();
 		}
 
 		/**
-		 * X軸のカラーを取得する。
+		 * 水平軸目盛線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getXAxisLineColor() {
-			return Color.BLACK;
+		public Color getHorizontalAxisScaleLineColor() {
+			return null;
 		}
 
 		/**
-		 * X軸のストロークを取得する。
+		 * 水平軸目盛線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
-		public Stroke getXAxisLineStroke() {
-			return new BasicStroke(1.f);
+		public Stroke getHorizontalAxisScaleLineStroke() {
+			return null;
 		}
 
 		/**
-		 * Y軸のフォントを取得する。
+		 * 垂直軸線のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getVerticalAxisLineColor() {
+			return null;
+		}
+
+		/**
+		 * 垂直軸線のストロークを取得する。
+		 * 
+		 * @return ストローク
+		 */
+		public Stroke getVerticalAxisLineStroke() {
+			return null;
+		}
+
+		/**
+		 * 垂直軸目盛ラベルのフォントを取得する。
 		 * 
 		 * @return フォント
 		 */
-		public Font getYAxisFont() {
-			return new Font("Arial", Font.BOLD, 16);
+		public Font getVerticalAxisScaleLabelFont() {
+			return getDefaultAxisScaleLabelFont();
 		}
 
 		/**
-		 * Y軸のフォントカラーを取得する。
+		 * 垂直軸目盛ラベルのカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getYAxisFontColor() {
-			return Color.BLACK;
+		public Color getVerticalAxisScaleLabelColor() {
+			return getDefaultAxisScaleLabelColor();
 		}
 
 		/**
-		 * Y軸のカラーを取得する。
+		 * 垂直軸目盛線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getYAxisLineColor() {
-			return Color.BLACK;
+		public Color getVerticalAxisScaleLineColor() {
+			return getDefaultAxisScaleLineColor();
 		}
 
 		/**
-		 * Y軸のストロークを取得する。
+		 * 垂直軸目盛線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
-		public Stroke getYAxisLineStroke() {
-			return new BasicStroke(1.f);
+		public Stroke getVerticalAxisScaleLineStroke() {
+			return getDefaultAxisScaleLineStroke();
 		}
 
-		/**
-		 * Y軸のカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getYAxisScaleColor() {
-			return Color.LIGHT_GRAY;
-		}
-
-		/**
-		 * Y軸のストロークを取得する。
-		 * 
-		 * @return ストローク
-		 */
-		public Stroke getYAxisScaleStroke() {
-			float dash[] = { 2.0f, 2.0f };
-			BasicStroke dsahStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f);
-			return dsahStroke;
-		}
-
+		@Override
 		public Marker getSeriesMarker(final int aIndex, final BarSeries aSeries) {
 			return null;
 		}
 
+		@Override
 		public Marker getSeriesPointMarker(final int aIndex, final BarSeries aSeries, final int aNo, final BarSeriesPoint aPoint) {
 			return null;
 		}
 
+		@Override
 		public Stroke getSeriesStroke(final int aIndex, final BarSeries aSeries) {
 			return new BasicStroke(1.f);
 		}

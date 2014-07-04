@@ -25,17 +25,20 @@ import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.charts.bar.BarAxis.BarXAxis;
-import org.azkfw.chart.charts.bar.BarAxis.BarYAxis;
+import org.azkfw.chart.charts.bar.BarAxis.BarHorizontalAxis;
+import org.azkfw.chart.charts.bar.BarAxis.BarVerticalAxis;
 import org.azkfw.chart.charts.bar.BarChartDesign.BarChartStyle;
 import org.azkfw.chart.charts.bar.BarSeries.BarSeriesPoint;
+import org.azkfw.chart.design.chart.SeriesChartStyle;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
+import org.azkfw.chart.series.Series;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.util.ObjectUtility;
+import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、棒グラフのプロットクラスです。
@@ -46,10 +49,10 @@ import org.azkfw.util.ObjectUtility;
  */
 public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 
-	/** X軸情報 */
-	private BarXAxis axisX;
-	/** Y軸情報 */
-	private BarYAxis axisY;
+	/** 水平軸情報 */
+	private BarHorizontalAxis axisHorizontal;
+	/** 垂直軸情報 */
+	private BarVerticalAxis axisVertical;
 
 	/**
 	 * コンストラクタ
@@ -57,28 +60,42 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 	public BarPlot() {
 		super(BarPlot.class);
 
-		axisX = new BarXAxis();
-		axisY = new BarYAxis();
+		axisHorizontal = new BarHorizontalAxis();
+		axisVertical = new BarVerticalAxis();
 
 		setChartDesign(BarChartDesign.DefalutDesign);
 	}
 
 	/**
-	 * X軸情報を設定する。
+	 * コンストラクタ
 	 * 
-	 * @return X軸情報
+	 * @param aDataset データセット
 	 */
-	public BarXAxis getXAxis() {
-		return axisX;
+	public BarPlot(final BarDataset aDataset) {
+		super(BarPlot.class, aDataset);
+
+		axisHorizontal = new BarHorizontalAxis();
+		axisVertical = new BarVerticalAxis();
+
+		setChartDesign(BarChartDesign.DefalutDesign);
 	}
 
 	/**
-	 * Y軸情報を設定する。
+	 * 水平軸情報を設定する。
 	 * 
-	 * @return Y軸情報
+	 * @return 水平軸情報
 	 */
-	public BarYAxis getYAxis() {
-		return axisY;
+	public BarHorizontalAxis getHorizontalAxis() {
+		return axisHorizontal;
+	}
+
+	/**
+	 * 垂直軸情報を設定する。
+	 * 
+	 * @return 垂直軸情報
+	 */
+	public BarVerticalAxis getVerticalAxis() {
+		return axisVertical;
 	}
 
 	@Override
@@ -128,85 +145,90 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 		}
 		debug(String.format("Data point size : %d", dataPointSize));
 
-		// fill background
+		// 背景描画
 		if (ObjectUtility.isNotNull(style.getBackgroundColor())) {
 			g.setColor(style.getBackgroundColor());
 			g.fillRect(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
 		}
 
-		// Draw Y axis scale
+		// 垂直軸描画
 		{
-			// Y軸目盛ラベル
-			Font font = style.getYAxisFont();
-			Color fontColor = style.getYAxisFontColor();
-			if (ObjectUtility.isAllNotNull(font, fontColor)) {
-				int fontSize = font.getSize();
-				FontMetrics fm = g.getFontMetrics(font);
-				DisplayFormat df = axisY.getDisplayFormat();
+			// 目盛ラベル描画
+			Font scaleLabelFont = style.getVerticalAxisScaleLabelFont();
+			Color scaleLabelColor = style.getVerticalAxisScaleLabelColor();
+			if (ObjectUtility.isAllNotNull(scaleLabelFont, scaleLabelColor)) {
+				int fontSize = scaleLabelFont.getSize();
+				FontMetrics fm = g.getFontMetrics(scaleLabelFont);
+				DisplayFormat df = axisVertical.getDisplayFormat();
 
-				g.setFont(font, fontColor);
+				g.setFont(scaleLabelFont, scaleLabelColor);
 				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 					String str = df.toString(value);
-					float strWidth = fm.stringWidth(str);
+					if (StringUtility.isNotEmpty(str)) {
+						float strWidth = fm.stringWidth(str);
 
-					float x = (float) (rtChart.getX() - (strWidth + fontMargin));
-					float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
-					g.drawStringA(str, x, y);
+						float x = (float) (rtChart.getX() - (strWidth + fontMargin));
+						float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
+						g.drawStringA(str, x, y);
+					}
 				}
 			}
-			// Y軸補助線
-			g.setStroke(style.getYAxisScaleStroke(), style.getYAxisScaleColor());
+			// 目盛線描画
+			Stroke scaleLineStroke = style.getVerticalAxisScaleLineStroke();
+			Color scaleLineColor = style.getVerticalAxisScaleLineColor();
+			g.setStroke(scaleLineStroke, scaleLineColor);
+			if (ObjectUtility.isAllNotNull(scaleLineStroke, scaleLineColor))
+				;
 			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 				float x = (float) (rtChart.getX());
 				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
 				g.drawLine(x, y, x + rtChart.getWidth(), y);
 			}
-			// Y軸目盛線
-			g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
-			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-				float x = (float) (rtChart.getX());
-				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
-				g.drawLine(x, y, x + 6, y);
+			// 軸線描画
+			Stroke lineStroke = style.getVerticalAxisLineStroke();
+			Color lineColor = style.getVerticalAxisLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				g.setStroke(lineStroke, lineColor);
+				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
+				// 目盛
+				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+					float x = (float) (rtChart.getX());
+					float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
+					g.drawLine(x, y, x + 6, y);
+				}
 			}
 		}
-		// Draw X axis scale
+		// 水平軸描画
 		{
 			float dataWidth = rtChart.getWidth() / dataPointSize;
 
-			// X軸目盛ラベル
-			Font font = style.getXAxisFont();
-			Color fontColor = style.getXAxisFontColor();
-			if (ObjectUtility.isAllNotNull(font, fontColor)) {
-				FontMetrics fm = g.getFontMetrics(font);
-				DisplayFormat df = axisX.getDisplayFormat();
+			// 目盛ラベル描画
+			Font scaleLabelFont = style.getHorizontalAxisScaleLabelFont();
+			Color scaleLabelColor = style.getHorizontalAxisScaleLabelColor();
+			if (ObjectUtility.isAllNotNull(scaleLabelFont, scaleLabelColor)) {
+				FontMetrics fm = g.getFontMetrics(scaleLabelFont);
+				DisplayFormat df = axisHorizontal.getDisplayFormat();
 
-				g.setFont(font, fontColor);
+				g.setFont(scaleLabelFont, scaleLabelColor);
 				for (int i = 0; i < dataPointSize; i++) {
-					String str = df.toString(i);
-					float strWidth = fm.stringWidth(str);
+					String str = df.toString(i + 1);
+					if (StringUtility.isNotEmpty(str)) {
+						float strWidth = fm.stringWidth(str);
 
-					float y = rtChart.getY() + fontMargin;
-					float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
-					g.drawStringA(str, x, y);
+						float y = rtChart.getY() + fontMargin;
+						float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
+						g.drawStringA(str, x, y);
+					}
 				}
 			}
-			// X軸目盛線
-			g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
-			for (int i = 0; i < dataPointSize; i++) {
-				if (0 != i) {
-					float y = (float) (rtChart.getY());
-					float x = (float) (rtChart.getX() + (i * dataWidth));
-					g.drawLine(x, y, x, y - 6);
-				}
+			// 軸線描画
+			Stroke lineStroke = style.getHorizontalAxisLineStroke();
+			Color lineColor = style.getHorizontalAxisLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				g.setStroke(lineStroke, lineColor);
+				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
 			}
 		}
-
-		// Y軸線
-		g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
-		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
-		// X軸線
-		g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
-		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
 
 		// Draw dataset
 		drawDataset(g, dataset, dataSize, dataPointSize, scaleValue, style, rtChart);
@@ -312,20 +334,26 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 
 		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
-		double minValue = axisY.getMinimumValue();
-		double maxValue = axisY.getMaximumValue();
-		double scale = axisY.getScale();
-		if (axisY.isMinimumValueAutoFit()) {
-			if (null != dataMinValue) {
-				minValue = dataMinValue;
-			}
-		}
-		if (axisY.isMaximumValueAutoFit()) {
+		double minValue = axisVertical.getMinimumValue();
+		double maxValue = axisVertical.getMaximumValue();
+		double scale = axisVertical.getScale();
+		if (axisVertical.isMaximumValueAutoFit()) {
 			if (null != dataMaxValue) {
 				maxValue = dataMaxValue;
 			}
 		}
-		if (axisY.isScaleAutoFit()) {
+		if (axisVertical.isMinimumValueAutoFit()) {
+			if (null != dataMinValue) {
+				minValue = dataMinValue;
+			}
+			// TODO: ゼロに近づける
+			if (minValue > 0) {
+				if (minValue <= (maxValue - minValue) / 2) {
+					minValue = 0.f;
+				}
+			}
+		}
+		if (axisVertical.isScaleAutoFit()) {
 			double dif = maxValue - minValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
@@ -339,6 +367,22 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 				scale = scaleDif * 2;
 			}
 		}
+
+		// TODO: 全て同じ数値の場合の対応
+		if (0 == scale) {
+			if (0 == minValue) {
+				minValue = 0;
+				maxValue = 1;
+				scale = 1;
+			} else {
+				int logMin = (int) Math.log10(minValue);
+				double scaleMin = Math.pow(10, logMin);
+				scale = scaleMin;
+				maxValue = minValue + scale;
+				minValue = minValue - scale;
+			}
+		}
+
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
 		debug(String.format("Y axis minimum value : %f", minValue));
 		debug(String.format("Y axis maximum value : %f", maxValue));
@@ -369,13 +413,15 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 		{
 			{
 				float maxYLabelWidth = 0.0f;
-				FontMetrics fm = g.getFontMetrics(style.getYAxisFont());
-				DisplayFormat df = axisY.getDisplayFormat();
+				FontMetrics fm = g.getFontMetrics(style.getVerticalAxisScaleLabelFont());
+				DisplayFormat df = axisVertical.getDisplayFormat();
 				for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
 					String str = df.toString(value);
-					int width = fm.stringWidth(str);
-					if (maxYLabelWidth < width) {
-						maxYLabelWidth = width;
+					if (StringUtility.isNotEmpty(str)) {
+						int width = fm.stringWidth(str);
+						if (maxYLabelWidth < width) {
+							maxYLabelWidth = width;
+						}
 					}
 				}
 				if (0 < maxYLabelWidth) {
@@ -391,15 +437,15 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 			{
 				float chartWidth = aRtChart.getWidth() - margin.getLeft();
 				float dataWidth = chartWidth / (float) dataPointSize;
-				FontMetrics fm = g.getFontMetrics(style.getXAxisFont());
-				DisplayFormat df = axisX.getDisplayFormat();
+				FontMetrics fm = g.getFontMetrics(style.getHorizontalAxisScaleLabelFont());
+				DisplayFormat df = axisHorizontal.getDisplayFormat();
 				float minLeft = 0.f;
 				float maxRight = aRtChart.getWidth();
 				for (int i = 0; i < dataPointSize; i++) {
 					String str = df.toString(i);
-					int width = fm.stringWidth(str);
-					if (0 < width) {
-						margin.setBottom(style.getXAxisFont().getSize() + aFontMargin);
+					if (StringUtility.isNotEmpty(str)) {
+						int width = fm.stringWidth(str);
+						margin.setBottom(style.getHorizontalAxisScaleLabelFont().getSize() + aFontMargin);
 
 						float x = margin.getLeft() + (i * dataWidth) + (dataWidth / 2);
 						float left = x - (width / 2);
@@ -424,13 +470,13 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 			pixPerValue = (aRtChart.getHeight() - (margin.getTop() + margin.getBottom())) / difValue;
 
 			{
-				int fontHeight = style.getYAxisFont().getSize();
-				DisplayFormat df = axisY.getDisplayFormat();
+				int fontHeight = style.getVerticalAxisScaleLabelFont().getSize();
+				DisplayFormat df = axisVertical.getDisplayFormat();
 				float minTop = 0.f;
 				for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
 					float y = (float) (aRtChart.getHeight() - margin.getBottom() - pixPerValue * (value - aScaleValue.getMin()));
 					String str = df.toString(value);
-					if (0 < str.length()) {
+					if (StringUtility.isNotEmpty(str)) {
 						y -= fontHeight / 2;
 						if (minTop > y) {
 							minTop = y;
@@ -450,5 +496,23 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 		}
 
 		return margin;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected void doDrawLegendMark(final Graphics g, final Rect aRect, final SeriesChartStyle aStyle, final int aIndex, final Series aSeries) {
+		// draw line
+		Stroke stroke = aStyle.getSeriesStroke(aIndex, aSeries);
+		Color strokeColor = aStyle.getSeriesStrokeColor(aIndex, aSeries);
+		Color fillColor = aStyle.getSeriesFillColor(aIndex, aSeries);
+
+		Rect rect = new Rect(aRect.getX() + (aRect.getWidth() - aRect.getHeight()) / 2, aRect.getY(), aRect.getHeight(), aRect.getHeight());
+		if (ObjectUtility.isNotNull(fillColor)) {
+			g.setColor(fillColor);
+			g.fillRect(rect);
+		}
+		if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+			g.setStroke(stroke, strokeColor);
+			g.drawRect(rect);
+		}
 	}
 }

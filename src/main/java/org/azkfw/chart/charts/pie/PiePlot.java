@@ -59,6 +59,19 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 	}
 
 	/**
+	 * コンストラクタ
+	 * 
+	 * @param aDataset データセット
+	 */
+	public PiePlot(final PieDataset aDataset) {
+		super(PiePlot.class, aDataset);
+
+		axis = new PieAxis();
+
+		setChartDesign(PieChartDesign.DefalutDesign);
+	}
+
+	/**
 	 * 軸情報を取得する。
 	 * 
 	 * @return 軸情報
@@ -88,6 +101,12 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 		rtChart.setY(ptChartMiddle.getY() - (pieSize / 2));
 		rtChart.setWidth(pieSize);
 		rtChart.setHeight(pieSize);
+
+		// fill background
+		if (null != style.getBackgroundColor()) {
+			g.setColor(style.getBackgroundColor());
+			g.fillArc(rtChart.getX(), rtChart.getY(), rtChart.getWidth(), rtChart.getHeight(), 0, 360);
+		}
 
 		// Draw dataset
 		drawDataset(g, dataset, style, rtChart);

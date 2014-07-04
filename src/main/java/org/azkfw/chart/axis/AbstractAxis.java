@@ -15,48 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.displayformat;
+package org.azkfw.chart.axis;
 
 /**
- * このクラスは、数値型の表示形式を実装するクラスです。
+ * このクラスは、グラフ軸情報を実装するための基底クラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/20
- * @author kawakicchi
+ * @version 1.0.0 2014/07/03
+ * @author Kawakicchi
  */
-public class NumericDisplayFormat implements DisplayFormat {
-
-	/** 小数点スケール */
-	private int decimalScale;
+public abstract class AbstractAxis {
 
 	/**
 	 * コンストラクタ
 	 */
-	public NumericDisplayFormat() {
-		decimalScale = 0;
+	public AbstractAxis() {
 	}
 
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param aScale 小数点桁数
-	 */
-	public NumericDisplayFormat(final int aDecimalScale) {
-		decimalScale = aDecimalScale;
-	}
-
-	/**
-	 * 小数点桁数を設定する。
-	 * 
-	 * @param aScale 小数点桁数
-	 */
-	public void setDecimalScale(final int aScale) {
-		decimalScale = aScale;
-	}
-
-	@Override
-	public String toString(final double aValue) {
-		String format = "%." + decimalScale + "f";
-		return String.format(format, aValue);
-	}
 }

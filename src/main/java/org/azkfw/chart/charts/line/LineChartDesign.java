@@ -27,6 +27,7 @@ import org.azkfw.chart.charts.line.LineSeries.LineSeriesPoint;
 import org.azkfw.chart.design.AbstractSeriesChartDesign;
 import org.azkfw.chart.design.chart.AbstractSeriesChartStyle;
 import org.azkfw.chart.design.legend.CustomLegendStyle;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.design.title.CustomTitleStyle;
 
 /**
@@ -46,12 +47,46 @@ public class LineChartDesign extends AbstractSeriesChartDesign<LineChartStyle, L
 	 */
 	protected LineChartDesign() {
 		setChartStyle(new LineChartStyle());
-		setTitleStyle(new CustomTitleStyle());
-		setLegendStyle(new CustomLegendStyle());
+		setTitleStyle(new LineTitleStyle());
+		setLegendStyle(new LineLegendStyle());
 	}
 
 	/**
-	 * このクラスは、折れ線グラフのスタイルを定義するクラスです。
+	 * このクラスは、折れ線グラフのタイトルスタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/07/03
+	 * @author Kawakicchi
+	 */
+	public static class LineTitleStyle extends CustomTitleStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public LineTitleStyle() {
+
+		}
+	}
+
+	/**
+	 * このクラスは、折れ線グラフの凡例スタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/07/03
+	 * @author Kawakicchi
+	 */
+	public static class LineLegendStyle extends CustomLegendStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public LineLegendStyle() {
+			setPosition(LegendDisplayPosition.Bottom);
+		}
+	}
+
+	/**
+	 * このクラスは、折れ線グラフのグラフスタイルを定義するクラスです。
 	 * 
 	 * @since 1.0.0
 	 * @version 1.0.0 2014/07/02
@@ -67,115 +102,131 @@ public class LineChartDesign extends AbstractSeriesChartDesign<LineChartStyle, L
 		}
 
 		/**
-		 * X軸のフォントを取得する。
+		 * 水平軸線のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getHorizontalAxisLineColor() {
+			return getDefaultAxisLineColor();
+		}
+
+		/**
+		 * 水平軸線のストロークを取得する。
+		 * 
+		 * @return ストローク
+		 */
+		public Stroke getHorizontalAxisLineStroke() {
+			return getDefaultAxisLineStroke();
+		}
+
+		/**
+		 * 水平軸目盛ラベルのフォントを取得する。
 		 * 
 		 * @return フォント
 		 */
-		public Font getXAxisFont() {
-			return new Font("Arial", Font.BOLD, 16);
+		public Font getHorizontalAxisScaleLabelFont() {
+			return getDefaultAxisScaleLabelFont();
 		}
 
 		/**
-		 * X軸のフォントカラーを取得する。
+		 * 水平軸目盛ラベルのカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getXAxisFontColor() {
-			return Color.BLACK;
+		public Color getHorizontalAxisScaleLabelColor() {
+			return getDefaultAxisScaleLabelColor();
 		}
 
 		/**
-		 * X軸のカラーを取得する。
+		 * 水平軸目盛線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getXAxisLineColor() {
-			return Color.BLACK;
+		public Color getHorizontalAxisScaleLineColor() {
+			return null;
 		}
 
 		/**
-		 * X軸のストロークを取得する。
+		 * 水平軸目盛線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
-		public Stroke getXAxisLineStroke() {
-			return new BasicStroke(1.f);
+		public Stroke getHorizontalAxisScaleLineStroke() {
+			return null;
 		}
 
 		/**
-		 * X軸のカラーを取得する。
+		 * 垂直軸線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getXAxisScaleColor() {
-			return Color.LIGHT_GRAY;
+		public Color getVerticalAxisLineColor() {
+			return null;
 		}
 
 		/**
-		 * X軸のストロークを取得する。
+		 * 垂直軸線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
-		public Stroke getXAxisScaleStroke() {
-			float dash[] = { 2.0f, 2.0f };
-			BasicStroke dsahStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f);
-			return dsahStroke;
+		public Stroke getVerticalAxisLineStroke() {
+			return null;
 		}
 
 		/**
-		 * Y軸のフォントを取得する。
+		 * 垂直軸目盛ラベルのフォントを取得する。
 		 * 
 		 * @return フォント
 		 */
-		public Font getYAxisFont() {
-			return new Font("Arial", Font.BOLD, 16);
+		public Font getVerticalAxisScaleLabelFont() {
+			return getDefaultAxisScaleLabelFont();
 		}
 
 		/**
-		 * Y軸のフォントカラーを取得する。
+		 * 垂直軸目盛ラベルのカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getYAxisFontColor() {
-			return Color.BLACK;
+		public Color getVerticalAxisScaleLabelColor() {
+			return getDefaultAxisScaleLabelColor();
 		}
 
 		/**
-		 * Y軸のカラーを取得する。
+		 * 垂直軸目盛線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getYAxisLineColor() {
-			return Color.BLACK;
+		public Color getVerticalAxisScaleLineColor() {
+			return getDefaultAxisScaleLineColor();
 		}
 
 		/**
-		 * Y軸のストロークを取得する。
+		 * 垂直軸目盛線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
-		public Stroke getYAxisLineStroke() {
-			return new BasicStroke(1.f);
+		public Stroke getVerticalAxisScaleLineStroke() {
+			return getDefaultAxisScaleLineStroke();
 		}
 
-		/**
-		 * Y軸のカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getYAxisScaleColor() {
-			return Color.LIGHT_GRAY;
+		@Override
+		public Stroke getSeriesStroke(final int aIndex, final LineSeries aSeries) {
+			return new BasicStroke(3.f);
 		}
 
-		/**
-		 * Y軸のストロークを取得する。
-		 * 
-		 * @return ストローク
-		 */
-		public Stroke getYAxisScaleStroke() {
-			float dash[] = { 2.0f, 2.0f };
-			BasicStroke dsahStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f);
-			return dsahStroke;
+		@Override
+		public Color getSeriesFillColor(final int aIndex, final LineSeries aSeries) {
+			return null;
+		}
+
+		@Override
+		public Marker getSeriesMarker(final int aIndex, final LineSeries aSeries) {
+			return null;
+		}
+
+		@Override
+		public Marker getSeriesPointMarker(final int aIndex, final LineSeries aSeries, final int aNo, final LineSeriesPoint aPoint) {
+			return null;
 		}
 	}
 

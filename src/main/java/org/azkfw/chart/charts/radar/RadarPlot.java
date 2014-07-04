@@ -17,8 +17,8 @@
  */
 package org.azkfw.chart.charts.radar;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.MultipleGradientPaint;
 import java.awt.Polygon;
@@ -29,6 +29,7 @@ import java.util.List;
 import org.azkfw.chart.charts.radar.RadarChartDesign.RadarChartStyle;
 import org.azkfw.chart.charts.radar.RadarSeries.RadarSeriesPoint;
 import org.azkfw.chart.design.marker.Marker;
+import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -36,6 +37,7 @@ import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
 import org.azkfw.util.ObjectUtility;
+import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、レーダーチャートのプロット情報を保持するクラスです。
@@ -54,6 +56,19 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 	 */
 	public RadarPlot() {
 		super(RadarPlot.class);
+
+		axis = new RadarAxis();
+
+		setChartDesign(RadarChartDesign.DefalutDesign);
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aDataset データセット
+	 */
+	public RadarPlot(final RadarDataset aDataset) {
+		super(RadarPlot.class, aDataset);
 
 		axis = new RadarAxis();
 
@@ -137,55 +152,102 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 			polygon = new Polygon(pxs, pys, dataPointSize + 1);
 		}
 
-		// fill background
-		if (null != style.getBackgroundColor()) {
+		// 背景描画
+		if (ObjectUtility.isNotNull(style.getBackgroundColor())) {
 			g.setColor(style.getBackgroundColor());
 			g.fillPolygon(polygon);
 		}
 
-		// Draw axis
-		g.setStroke(style.getAxisLineStroke(), style.getAxisLineColor());
-		for (int i = 0; i < dataPointSize; i++) {
-			double angle = (360.f / dataPointSize) * i + 90;
-			float x = (float) (ptChartMiddle.getX() + (pixPerValue * scaleValue.getDiff() * Math.cos(RADIANS(angle))));
-			float y = (float) (ptChartMiddle.getY() - (pixPerValue * scaleValue.getDiff() * Math.sin(RADIANS(angle))));
-			g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), x, y);
-		}
+		{ // Y軸
+			// 目盛線描画
+			Stroke scaleLineStroke = style.getAxisScaleLineStroke();
+			Color scaleLineColor = style.getAxisScaleLineColor();
+			if (ObjectUtility.isAllNotNull(scaleLineStroke, scaleLineColor)) {
+				g.setStroke(scaleLineStroke, scaleLineColor);
+				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+					float[] pxs = new float[dataPointSize + 1];
+					float[] pys = new float[dataPointSize + 1];
+					for (int i = 0; i < dataPointSize; i++) {
+						double angle = (360.f / dataPointSize) * i + 90;
+						float x = (float) (ptChartMiddle.getX() + (pixPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
+						float y = (float) (ptChartMiddle.getY() - (pixPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
+						pxs[i] = x;
+						pys[i] = y;
+					}
+					pxs[dataPointSize] = pxs[0];
+					pys[dataPointSize] = pys[0];
 
-		// Draw circle
-		g.setStroke(style.getAxisCircleStroke(), style.getAxisCircleColor());
-		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			float[] pxs = new float[dataPointSize + 1];
-			float[] pys = new float[dataPointSize + 1];
-			for (int i = 0; i < dataPointSize; i++) {
-				double angle = (360.f / dataPointSize) * i + 90;
-				float x = (float) (ptChartMiddle.getX() + (pixPerValue * (value - scaleValue.getMin()) * Math.cos(RADIANS(angle))));
-				float y = (float) (ptChartMiddle.getY() - (pixPerValue * (value - scaleValue.getMin()) * Math.sin(RADIANS(angle))));
-				pxs[i] = x;
-				pys[i] = y;
+					g.drawPolyline(pxs, pys, dataPointSize + 1);
+				}
 			}
-			pxs[dataPointSize] = pxs[0];
-			pys[dataPointSize] = pys[0];
-			g.drawPolyline(pxs, pys, dataPointSize + 1);
+			// 軸描画
+			Stroke lineStroke = style.getAxisLineStroke();
+			Color lineColor = style.getAxisLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				float y = (float) (ptChartMiddle.getY() - (pixPerValue * scaleValue.getDiff()));
+
+				g.setStroke(lineStroke, lineColor);
+				g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX(), y);
+			}
+		}
+		{ // X軸
+			// 目盛線描画
+			Stroke scaleLineStroke = style.getCircleScaleLineStroke();
+			Color scaleLineColor = style.getCircleScaleLineColor();
+			if (ObjectUtility.isAllNotNull(scaleLineStroke, scaleLineColor)) {
+				g.setStroke(scaleLineStroke, scaleLineColor);
+				for (int i = 0; i < dataPointSize; i++) {
+					double angle = (360.f / dataPointSize) * i + 90;
+					float x = (float) (ptChartMiddle.getX() + (pixPerValue * scaleValue.getDiff() * Math.cos(RADIANS(angle))));
+					float y = (float) (ptChartMiddle.getY() - (pixPerValue * scaleValue.getDiff() * Math.sin(RADIANS(angle))));
+
+					g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), x, y);
+				}
+			}
+			// 軸描画
+			Stroke lineStroke = style.getCircleLineStroke();
+			Color lineColor = style.getCircleLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				float[] pxs = new float[dataPointSize + 1];
+				float[] pys = new float[dataPointSize + 1];
+				for (int i = 0; i < dataPointSize; i++) {
+					double angle = (360.f / dataPointSize) * i + 90;
+					float x = (float) (ptChartMiddle.getX() + (pixPerValue * scaleValue.getDiff() * Math.cos(RADIANS(angle))));
+					float y = (float) (ptChartMiddle.getY() - (pixPerValue * scaleValue.getDiff() * Math.sin(RADIANS(angle))));
+					pxs[i] = x;
+					pys[i] = y;
+				}
+				pxs[dataPointSize] = pxs[0];
+				pys[dataPointSize] = pys[0];
+
+				g.setStroke(lineStroke, lineColor);
+				g.drawPolyline(pxs, pys, dataPointSize + 1);
+			}
 		}
 
 		// Draw dataset
 		drawDataset(g, dataset, dataPointSize, scaleValue, style, rtChart, polygon);
 
-		// Draw axis scale
-		int fontSize = style.getAxisFont().getSize();
-		FontMetrics fm = g.getFontMetrics(style.getAxisFont());
-		g.setColor(style.getAxisFontColor());
-		g.setFont(style.getAxisFont());
-		g.setStroke(new BasicStroke(1.f));
-		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			double rangeY = pixPerValue * (value - scaleValue.getMin());
+		// 目盛ラベル描画(Y軸)
+		Font scaleLabelFont = style.getAxisScaleLabelFont();
+		Color scaleLabelColor = style.getAxisScaleLabelColor();
+		if (ObjectUtility.isAllNotNull(scaleLabelFont, scaleLabelColor)) {
+			int fontSize = style.getAxisScaleLabelFont().getSize();
+			FontMetrics fm = g.getFontMetrics(style.getAxisScaleLabelFont());
+			DisplayFormat df = axis.getDisplayFormat();
 
-			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
-			int strWidth = fm.stringWidth(str);
-			float x = (float) (ptChartMiddle.getX() - fontMargin - (strWidth));
-			float y = (float) (ptChartMiddle.getY() - rangeY - (fontSize / 2));
-			g.drawStringA(str, x, y);
+			g.setFont(scaleLabelFont, scaleLabelColor);
+			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+				String str = df.toString(value);
+				if (StringUtility.isNotEmpty(str)) {
+					int strWidth = fm.stringWidth(str);
+					double rangeY = pixPerValue * (value - scaleValue.getMin());
+					float x = (float) (ptChartMiddle.getX() - fontMargin - (strWidth));
+					float y = (float) (ptChartMiddle.getY() - rangeY - (fontSize / 2));
+
+					g.drawStringA(str, x, y);
+				}
+			}
 		}
 
 		// Draw Legend
@@ -326,14 +388,20 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 		double minValue = axis.getMinimumValue();
 		double maxValue = axis.getMaximumValue();
 		double scale = axis.getScale();
+		if (axis.isMaximumValueAutoFit()) {
+			if (null != dataMaxValue) {
+				maxValue = dataMaxValue;
+			}
+		}
 		if (axis.isMinimumValueAutoFit()) {
 			if (null != dataMinValue) {
 				minValue = dataMinValue;
 			}
-		}
-		if (axis.isMaximumValueAutoFit()) {
-			if (null != dataMaxValue) {
-				maxValue = dataMaxValue;
+			// TODO: ゼロに近づける
+			if (minValue > 0) {
+				if (minValue <= (maxValue - minValue) / 2) {
+					minValue = 0.f;
+				}
 			}
 		}
 		if (axis.isScaleAutoFit()) {
@@ -350,6 +418,22 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 				scale = scaleDif * 2;
 			}
 		}
+
+		// TODO: 全て同じ数値の場合の対応
+		if (0 == scale) {
+			if (0 == minValue) {
+				minValue = 0;
+				maxValue = 1;
+				scale = 1;
+			} else {
+				int logMin = (int) Math.log10(minValue);
+				double scaleMin = Math.pow(10, logMin);
+				scale = scaleMin;
+				maxValue = minValue + scale;
+				minValue = minValue - scale;
+			}
+		}
+
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
 		debug(String.format("Axis minimum value : %f", minValue));
 		debug(String.format("Axis maximum value : %f", maxValue));
@@ -374,14 +458,18 @@ public class RadarPlot extends AbstractSeriesPlot<RadarDataset, RadarChartDesign
 		float minY = aRtChart.getY();
 
 		// Draw axis scale
-		int fontSize = style.getAxisFont().getSize();
-		g.setFont(style.getAxisFont());
+		DisplayFormat df = axis.getDisplayFormat();
+		int fontSize = style.getAxisScaleLabelFont().getSize();
+		g.setFont(style.getAxisScaleLabelFont());
 		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
-			double rangeY = pixPerValue * (value - aScaleValue.getMin());
+			String str = df.toString(value);
+			if (StringUtility.isNotEmpty(str)) {
+				double rangeY = pixPerValue * (value - aScaleValue.getMin());
 
-			float y = (float) (ptChartMiddle.getY() - rangeY - (fontSize / 2));
+				float y = (float) (ptChartMiddle.getY() - rangeY - (fontSize / 2));
 
-			minY = Math.min(minY, y);
+				minY = Math.min(minY, y);
+			}
 		}
 
 		if (minY < aRtChart.getY()) {

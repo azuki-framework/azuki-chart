@@ -61,12 +61,11 @@ public class CustomTitleStyle implements TitleStyle {
 		position = TitleDisplayPosition.Top;
 
 		margin = new Margin(4.f, 4.f, 4.f, 4.f);
-		padding = new Padding(8.f, 8.f, 8.f, 8.f);
+		padding = new Padding(6.f, 6.f, 6.f, 6.f);
 
-		//fontColor = new Color(0, 0, 0, 255);
-		fontColor = new Color(200, 200, 200, 255);
-		font = new Font("Arial", Font.BOLD, 26);
-		fontShadow = true;
+		fontColor = Color.DARK_GRAY;
+		font = new Font("Arial", Font.BOLD, 24);
+		fontShadow = false;
 
 		stroke = null;
 		strokeColor = null;

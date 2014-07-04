@@ -59,6 +59,15 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 	/**
 	 * コンストラクタ
 	 * 
+	 * @param aDataset データセット
+	 */
+	public AbstractSeriesPlot(final DATASET aDataset) {
+		super(aDataset);
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
 	 * @param aClass クラス
 	 */
 	public AbstractSeriesPlot(final Class<?> aClass) {
@@ -68,10 +77,30 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 	/**
 	 * コンストラクタ
 	 * 
+	 * @param aClass クラス
+	 * @param aDataset データセット
+	 */
+	public AbstractSeriesPlot(final Class<?> aClass, final DATASET aDataset) {
+		super(aClass, aDataset);
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
 	 * @param aName 名前
 	 */
 	public AbstractSeriesPlot(final String aName) {
 		super(aName);
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aName 名前
+	 * @param aDataset データセット
+	 */
+	public AbstractSeriesPlot(final String aName, final DATASET aDataset) {
+		super(aName, aDataset);
 	}
 
 	/**
@@ -205,6 +234,24 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 		return rtLegend;
 	}
 
+	@SuppressWarnings("unchecked")
+	protected void doDrawLegendMark(final Graphics g, final Rect aRect, final SeriesChartStyle aStyle, final int aIndex, final Series aSeries) {
+		// draw line
+		Stroke stroke = aStyle.getSeriesStroke(aIndex, aSeries);
+		Color strokeColor = aStyle.getSeriesStrokeColor(aIndex, aSeries);
+		if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+			g.setStroke(stroke, strokeColor);
+			g.drawLine(aRect.getX() + 3, aRect.getY() + (aRect.getHeight() / 2), aRect.getX() + aRect.getWidth() - 3,
+					aRect.getY() + (aRect.getHeight() / 2));
+		}
+		// draw marker
+		Marker marker = aStyle.getSeriesMarker(aIndex, aSeries);
+		if (ObjectUtility.isNotNull(marker)) {
+			marker.draw(g, aRect.getX() + (aRect.getWidth() - marker.getSize().getWidth()) / 2, aRect.getY()
+					+ (aRect.getHeight() - marker.getSize().getHeight()) / 2);
+		}
+	}
+
 	/**
 	 * タイトルの描画を行う。
 	 * 
@@ -256,18 +303,10 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 			if (isHorizontalLegend(pos)) {
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
-					// draw line
-					Stroke stroke = style.getSeriesStroke(i, series);
-					Color strokeColor = style.getSeriesStrokeColor(i, series);
-					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
-						g.setStroke(stroke, strokeColor);
-						g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
-					}
-					// draw marker
-					Marker marker = style.getSeriesMarker(i, series);
-					if (ObjectUtility.isNotNull(marker)) {
-						marker.draw(g, x + (fontHeight * 2 - marker.getSize().getWidth()) / 2, y + (fontHeight - marker.getSize().getHeight()) / 2);
-					}
+
+					Rect rtMark = new Rect(x, y, (fontHeight * 2), fontHeight);
+					doDrawLegendMark(g, rtMark, style, i, series);
+
 					// draw title
 					String title = series.getTitle();
 					Color fontColor = aStyle.getFontColor();
@@ -284,18 +323,10 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 			} else if (isVerticalLegend(pos)) {
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
-					// draw line
-					Stroke stroke = style.getSeriesStroke(i, series);
-					Color strokeColor = style.getSeriesStrokeColor(i, series);
-					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
-						g.setStroke(stroke, strokeColor);
-						g.drawLine(x + 3, y + (fontHeight / 2), x + (fontHeight * 2) - 3, y + (fontHeight / 2));
-					}
-					// draw marker
-					Marker marker = style.getSeriesMarker(i, series);
-					if (ObjectUtility.isNotNull(marker)) {
-						marker.draw(g, x + (fontHeight * 2 - marker.getSize().getWidth()) / 2, y + (fontHeight - marker.getSize().getHeight()) / 2);
-					}
+
+					Rect rtMark = new Rect(x, y, (fontHeight * 2), fontHeight);
+					doDrawLegendMark(g, rtMark, style, i, series);
+
 					// draw title
 					String title = series.getTitle();
 					Color fontColor = aStyle.getFontColor();

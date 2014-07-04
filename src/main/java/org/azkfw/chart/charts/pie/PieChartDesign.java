@@ -18,8 +18,6 @@
 package org.azkfw.chart.charts.pie;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.azkfw.chart.charts.pie.PieChartDesign.PieChartStyle;
 import org.azkfw.chart.design.AbstractChartDesign;
@@ -38,23 +36,6 @@ public class PieChartDesign extends AbstractChartDesign<PieChartStyle> {
 
 	/** デフォルトデザイン */
 	public static PieChartDesign DefalutDesign = new PieChartDesign();
-
-	private static List<Color> COLORS = new ArrayList<Color>();
-	static {
-		COLORS.add(new Color(60, 103, 154, 255));
-		COLORS.add(new Color(157, 61, 58, 255));
-		COLORS.add(new Color(125, 152, 68, 255));
-		COLORS.add(new Color(102, 78, 131, 255));
-		COLORS.add(new Color(56, 140, 162, 255));
-		COLORS.add(new Color(203, 120, 51, 255));
-
-		COLORS.add(new Color(74, 126, 187, 255));
-		COLORS.add(new Color(190, 75, 72, 255));
-		COLORS.add(new Color(152, 185, 84, 255));
-		COLORS.add(new Color(125, 96, 160, 255));
-		COLORS.add(new Color(70, 170, 197, 255));
-		COLORS.add(new Color(246, 146, 64, 255));
-	}
 
 	/**
 	 * コンストラクタ
@@ -109,7 +90,6 @@ public class PieChartDesign extends AbstractChartDesign<PieChartStyle> {
 	public static class PieChartStyle extends AbstractChartStyle {
 
 		public PieChartStyle() {
-			setBackgroundColor(Color.pink);
 		}
 
 		/**
@@ -119,10 +99,8 @@ public class PieChartDesign extends AbstractChartDesign<PieChartStyle> {
 		 * @return カラー
 		 */
 		public Color getDataStrokeColor(final int aIndex) {
-			Color color = null;
-			if (aIndex < COLORS.size()) {
-				color = COLORS.get(aIndex);
-			} else {
+			Color color = getColorIndex(aIndex);
+			if (null == color) {
 				color = new Color(0, 0, 0, 255);
 			}
 			return color;

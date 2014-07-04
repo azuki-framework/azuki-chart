@@ -18,13 +18,13 @@
 package org.azkfw.chart.displayformat;
 
 /**
- * このクラスは、数値型の表示形式を実装するクラスです。
+ * このクラスは、時間の表示形式を実装するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/20
+ * @version 1.0.0 2014/07/03
  * @author kawakicchi
  */
-public class NumericDisplayFormat implements DisplayFormat {
+public class TimeDisplayFormat implements DisplayFormat {
 
 	/** 小数点スケール */
 	private int decimalScale;
@@ -32,7 +32,7 @@ public class NumericDisplayFormat implements DisplayFormat {
 	/**
 	 * コンストラクタ
 	 */
-	public NumericDisplayFormat() {
+	public TimeDisplayFormat() {
 		decimalScale = 0;
 	}
 
@@ -41,7 +41,7 @@ public class NumericDisplayFormat implements DisplayFormat {
 	 * 
 	 * @param aScale 小数点桁数
 	 */
-	public NumericDisplayFormat(final int aDecimalScale) {
+	public TimeDisplayFormat(final int aDecimalScale) {
 		decimalScale = aDecimalScale;
 	}
 
@@ -56,7 +56,37 @@ public class NumericDisplayFormat implements DisplayFormat {
 
 	@Override
 	public String toString(final double aValue) {
-		String format = "%." + decimalScale + "f";
-		return String.format(format, aValue);
+		String string = null;
+
+		int sign = (aValue >= 0) ? 1 : -1;
+		double value = Math.abs(aValue);
+
+		if (value >= 24 * 60 * 60) {
+			int v = (int) (value/(60*60)); // scale hour
+			int day = (int) (v / 60);
+			int hou = v % 60;
+			String format = "%." + decimalScale + "f day";
+			string = String.format(format, sign * ((double)day + hou / 24.f));
+		} else if (value >= 60 * 60) {
+			int v = (int) (value/60); // scale min
+			int hou = (int) (v / 60);
+			int min = v % 60;
+			String format = "%." + decimalScale + "f h";
+			string = String.format(format, sign * ((double)hou + min / 60.f));
+		} else if (value >= 60) {
+			int v = (int) (value); // scale sec
+			int min = (int) (v / 60);
+			int sec = v % 60;
+			String format = "%." + decimalScale + "f min";
+			string = String.format(format, sign * ((double)min + sec / 60.f));
+		} else if (value >= 0) {
+			String format = "%." + decimalScale + "f sec";
+			string = String.format(format, sign * value);
+		} else {
+			String format = "%." + decimalScale + "f ms";
+			string = String.format(format, sign * value * 1000);
+		}
+
+		return string;
 	}
 }

@@ -25,11 +25,10 @@ import java.awt.Polygon;
 import java.awt.Stroke;
 import java.util.List;
 
-import org.azkfw.chart.charts.line.LineAxis.LineXAxis;
-import org.azkfw.chart.charts.line.LineAxis.LineYAxis;
+import org.azkfw.chart.charts.line.LineAxis.LineHorizontalAxis;
+import org.azkfw.chart.charts.line.LineAxis.LineVerticalAxis;
 import org.azkfw.chart.charts.line.LineChartDesign.LineChartStyle;
 import org.azkfw.chart.charts.line.LineSeries.LineSeriesPoint;
-import org.azkfw.chart.charts.scatter.ScatterPlot;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.plot.AbstractSeriesPlot;
@@ -38,6 +37,7 @@ import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
 import org.azkfw.util.ObjectUtility;
+import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、折れ線グラフのプロットクラスです。
@@ -48,39 +48,53 @@ import org.azkfw.util.ObjectUtility;
  */
 public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 
-	/** X軸情報 */
-	private LineXAxis axisX;
-	/** Y軸情報 */
-	private LineYAxis axisY;
+	/** 水平軸情報 */
+	private LineHorizontalAxis axisHorizontal;
+	/** 垂直軸情報 */
+	private LineVerticalAxis axisVertical;
 
 	/**
 	 * コンストラクタ
 	 */
 	public LinePlot() {
-		super(ScatterPlot.class);
+		super(LinePlot.class);
 
-		axisX = new LineXAxis();
-		axisY = new LineYAxis();
+		axisHorizontal = new LineHorizontalAxis();
+		axisVertical = new LineVerticalAxis();
 
 		setChartDesign(LineChartDesign.DefalutDesign);
 	}
 
 	/**
-	 * X軸情報を取得する。
+	 * コンストラクタ
 	 * 
-	 * @return X軸情報
+	 * @param aDataset データセット
 	 */
-	public LineXAxis getXAxis() {
-		return axisX;
+	public LinePlot(final LineDataset aDataset) {
+		super(LinePlot.class, aDataset);
+
+		axisHorizontal = new LineHorizontalAxis();
+		axisVertical = new LineVerticalAxis();
+
+		setChartDesign(LineChartDesign.DefalutDesign);
 	}
 
 	/**
-	 * Y軸情報を取得する。
+	 * 水平軸情報を取得する。
 	 * 
-	 * @return Y軸情報
+	 * @return 水平軸情報
 	 */
-	public LineYAxis getYAxis() {
-		return axisY;
+	public LineHorizontalAxis getHorizontalAxis() {
+		return axisHorizontal;
+	}
+
+	/**
+	 * 垂直軸情報を取得する。
+	 * 
+	 * @return 垂直軸情報
+	 */
+	public LineVerticalAxis getVerticalAxis() {
+		return axisVertical;
 	}
 
 	@Override
@@ -115,8 +129,8 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 		double pixPerValue = rtChart.getHeight() / difValue;
 
 		// データポイント数取得(ポイント数が最大のシリーズを採用する）
-		int dataSize = 3;
-		int dataPointSize = 5;
+		int dataSize = 1;
+		int dataPointSize = 10;
 		if (ObjectUtility.isNotNull(dataset)) {
 			if (ObjectUtility.isNotNull(dataset.getSeriesList())) {
 				dataSize = dataset.getSeriesList().size();
@@ -130,83 +144,90 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 		}
 		debug(String.format("Data point size : %d", dataPointSize));
 
-		// fill background
+		// 背景色描画
 		if (ObjectUtility.isNotNull(style.getBackgroundColor())) {
 			g.setColor(style.getBackgroundColor());
 			g.fillRect(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
 		}
 
-		// Draw Y axis scale
+		// 垂直軸描画
 		{
-			// Y軸目盛ラベル
-			Font font = style.getYAxisFont();
-			Color fontColor = style.getYAxisFontColor();
-			if (ObjectUtility.isAllNotNull(font, fontColor)) {
-				int fontSize = font.getSize();
-				FontMetrics fm = g.getFontMetrics(font);
-				DisplayFormat df = axisY.getDisplayFormat();
+			// 目盛ラベル描画
+			Font scaleLabelFont = style.getVerticalAxisScaleLabelFont();
+			Color scaleLabelColor = style.getVerticalAxisScaleLabelColor();
+			if (ObjectUtility.isAllNotNull(scaleLabelFont, scaleLabelColor)) {
+				int fontSize = scaleLabelFont.getSize();
+				FontMetrics fm = g.getFontMetrics(scaleLabelFont);
+				DisplayFormat df = axisVertical.getDisplayFormat();
 
-				g.setFont(font, fontColor);
+				g.setFont(scaleLabelFont, scaleLabelColor);
 				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 					String str = df.toString(value);
-					float strWidth = fm.stringWidth(str);
+					if (StringUtility.isNotEmpty(str)) {
+						float strWidth = fm.stringWidth(str);
 
-					float x = (float) (rtChart.getX() - (strWidth + fontMargin));
-					float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
-					g.drawStringA(str, x, y);
+						float x = (float) (rtChart.getX() - (strWidth + fontMargin));
+						float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
+						g.drawStringA(str, x, y);
+					}
 				}
 			}
-			// Y軸補助線
-			g.setStroke(style.getYAxisScaleStroke(), style.getYAxisScaleColor());
-			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-				float x = (float) (rtChart.getX());
-				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
-				g.drawLine(x, y, x + rtChart.getWidth(), y);
+			// 目盛線描画
+			Stroke scaleLineStroke = style.getVerticalAxisScaleLineStroke();
+			Color scaleLineColor = style.getVerticalAxisScaleLineColor();
+			if (ObjectUtility.isAllNotNull(scaleLineStroke, scaleLineColor)) {
+				g.setStroke(scaleLineStroke, scaleLineColor);
+				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+					float x = (float) (rtChart.getX());
+					float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
+					g.drawLine(x, y, x + rtChart.getWidth(), y);
+				}
 			}
-			// Y軸目盛線
-			g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
-			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-				float x = (float) (rtChart.getX());
-				float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
-				g.drawLine(x, y, x + 6, y);
+			// 軸線描画
+			Stroke lineStroke = style.getVerticalAxisLineStroke();
+			Color lineColor = style.getVerticalAxisLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				g.setStroke(lineStroke, lineColor);
+				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
+				// 目盛
+				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+					float x = (float) (rtChart.getX());
+					float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
+					g.drawLine(x, y, x + 6, y);
+				}
 			}
 		}
-		// Draw X axis scale
+		// 水平軸描画
 		{
 			float dataWidth = rtChart.getWidth() / dataPointSize;
-			
-			// X軸目盛ラベル
-			Font font = style.getXAxisFont();
-			Color fontColor = style.getXAxisFontColor();
-			if (ObjectUtility.isAllNotNull(font, fontColor)) {
-				FontMetrics fm = g.getFontMetrics(font);
-				DisplayFormat df = axisX.getDisplayFormat();
 
-				g.setFont(font, fontColor);
+			// 目盛ラベル描画
+			Font scaleLabelFont = style.getHorizontalAxisScaleLabelFont();
+			Color scaleLabelColor = style.getHorizontalAxisScaleLabelColor();
+			if (ObjectUtility.isAllNotNull(scaleLabelFont, scaleLabelColor)) {
+				FontMetrics fm = g.getFontMetrics(scaleLabelFont);
+				DisplayFormat df = axisHorizontal.getDisplayFormat();
+
+				g.setFont(scaleLabelFont, scaleLabelColor);
 				for (int i = 0; i < dataPointSize; i++) {
-					String str = df.toString(i);
-					float strWidth = fm.stringWidth(str);
+					String str = df.toString(i + 1);
+					if (StringUtility.isNotEmpty(str)) {
+						float strWidth = fm.stringWidth(str);
 
-					float y = rtChart.getY() + fontMargin;
-					float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
-					g.drawStringA(str, x, y);
+						float y = rtChart.getY() + fontMargin;
+						float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
+						g.drawStringA(str, x, y);
+					}
 				}
 			}
-			// X軸目盛線
-			g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
-			for (int i = 0; i < dataPointSize; i++) {
-				float y = (float) (rtChart.getY());
-				float x = (float) (rtChart.getX() + (i * dataWidth) + (dataWidth / 2));
-				g.drawLine(x, y, x, y - 6);
+			// 軸線描画
+			Stroke lineStroke = style.getHorizontalAxisLineStroke();
+			Color lineColor = style.getHorizontalAxisLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				g.setStroke(lineStroke, lineColor);
+				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
 			}
 		}
-
-		// Y軸線
-		g.setStroke(style.getYAxisLineStroke(), style.getYAxisLineColor());
-		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
-		// X軸線
-		g.setStroke(style.getXAxisLineStroke(), style.getXAxisLineColor());
-		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
 
 		// Draw dataset
 		drawDataset(g, dataset, dataPointSize, scaleValue, style, rtChart);
@@ -326,7 +347,7 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 		// データ最小値・最大値取得
 		Double dataMinValue = null;
 		Double dataMaxValue = null;
-		if (null != dataset) {
+		if (ObjectUtility.isNotNull(dataset)) {
 			for (LineSeries series : dataset.getSeriesList()) {
 				for (LineSeriesPoint point : series.getPoints()) {
 					if (null == dataMinValue) {
@@ -344,20 +365,26 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 
 		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
-		double minValue = axisY.getMinimumValue();
-		double maxValue = axisY.getMaximumValue();
-		double scale = axisY.getScale();
-		if (axisY.isMinimumValueAutoFit()) {
-			if (null != dataMinValue) {
-				minValue = dataMinValue;
-			}
-		}
-		if (axisY.isMaximumValueAutoFit()) {
+		double minValue = axisVertical.getMinimumValue();
+		double maxValue = axisVertical.getMaximumValue();
+		double scale = axisVertical.getScale();
+		if (axisVertical.isMaximumValueAutoFit()) {
 			if (null != dataMaxValue) {
 				maxValue = dataMaxValue;
 			}
 		}
-		if (axisY.isScaleAutoFit()) {
+		if (axisVertical.isMinimumValueAutoFit()) {
+			if (null != dataMinValue) {
+				minValue = dataMinValue;
+			}
+			// TODO: ゼロに近づける
+			if (minValue > 0) {
+				if (minValue <= (maxValue - minValue) / 2) {
+					minValue = 0.f;
+				}
+			}
+		}
+		if (axisVertical.isScaleAutoFit()) {
 			double dif = maxValue - minValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
@@ -371,6 +398,22 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 				scale = scaleDif * 2;
 			}
 		}
+
+		// TODO: 全て同じ数値の場合の対応
+		if (0 == scale) {
+			if (0 == minValue) {
+				minValue = 0;
+				maxValue = 1;
+				scale = 1;
+			} else {
+				int logMin = (int) Math.log10(minValue);
+				double scaleMin = Math.pow(10, logMin);
+				scale = scaleMin;
+				maxValue = minValue + scale;
+				minValue = minValue - scale;
+			}
+		}
+
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
 		debug(String.format("Y axis minimum value : %f", minValue));
 		debug(String.format("Y axis maximum value : %f", maxValue));
@@ -401,13 +444,15 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 		{
 			{
 				float maxYLabelWidth = 0.0f;
-				FontMetrics fm = g.getFontMetrics(style.getYAxisFont());
-				DisplayFormat df = axisY.getDisplayFormat();
+				FontMetrics fm = g.getFontMetrics(style.getVerticalAxisScaleLabelFont());
+				DisplayFormat df = axisVertical.getDisplayFormat();
 				for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
 					String str = df.toString(value);
-					int width = fm.stringWidth(str);
-					if (maxYLabelWidth < width) {
-						maxYLabelWidth = width;
+					if (StringUtility.isNotEmpty(str)) {
+						int width = fm.stringWidth(str);
+						if (maxYLabelWidth < width) {
+							maxYLabelWidth = width;
+						}
 					}
 				}
 				if (0 < maxYLabelWidth) {
@@ -423,15 +468,15 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 			{
 				float chartWidth = aRtChart.getWidth() - margin.getLeft();
 				float dataWidth = chartWidth / (float) dataPointSize;
-				FontMetrics fm = g.getFontMetrics(style.getXAxisFont());
-				DisplayFormat df = axisX.getDisplayFormat();
+				FontMetrics fm = g.getFontMetrics(style.getHorizontalAxisScaleLabelFont());
+				DisplayFormat df = axisHorizontal.getDisplayFormat();
 				float minLeft = 0.f;
 				float maxRight = aRtChart.getWidth();
 				for (int i = 0; i < dataPointSize; i++) {
 					String str = df.toString(i);
-					int width = fm.stringWidth(str);
-					if (0 < width) {
-						margin.setBottom(style.getXAxisFont().getSize() + aFontMargin);
+					if (StringUtility.isNotEmpty(str)) {
+						int width = fm.stringWidth(str);
+						margin.setBottom(style.getHorizontalAxisScaleLabelFont().getSize() + aFontMargin);
 
 						float x = margin.getLeft() + (i * dataWidth) + (dataWidth / 2);
 						float left = x - (width / 2);
@@ -456,13 +501,13 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 			pixPerValue = (aRtChart.getHeight() - (margin.getTop() + margin.getBottom())) / difValue;
 
 			{
-				int fontHeight = style.getYAxisFont().getSize();
-				DisplayFormat df = axisY.getDisplayFormat();
+				int fontHeight = style.getVerticalAxisScaleLabelFont().getSize();
+				DisplayFormat df = axisVertical.getDisplayFormat();
 				float minTop = 0.f;
 				for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
 					float y = (float) (aRtChart.getHeight() - margin.getBottom() - pixPerValue * (value - aScaleValue.getMin()));
 					String str = df.toString(value);
-					if (0 < str.length()) {
+					if (StringUtility.isNotEmpty(str)) {
 						y -= fontHeight / 2;
 						if (minTop > y) {
 							minTop = y;

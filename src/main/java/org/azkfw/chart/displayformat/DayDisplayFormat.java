@@ -18,45 +18,29 @@
 package org.azkfw.chart.displayformat;
 
 /**
- * このクラスは、数値型の表示形式を実装するクラスです。
+ * このクラスは、一日の表示形式を実装するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/20
+ * @version 1.0.0 2014/07/03
  * @author kawakicchi
  */
-public class NumericDisplayFormat implements DisplayFormat {
-
-	/** 小数点スケール */
-	private int decimalScale;
+public class DayDisplayFormat implements DisplayFormat {
 
 	/**
 	 * コンストラクタ
 	 */
-	public NumericDisplayFormat() {
-		decimalScale = 0;
-	}
-
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param aScale 小数点桁数
-	 */
-	public NumericDisplayFormat(final int aDecimalScale) {
-		decimalScale = aDecimalScale;
-	}
-
-	/**
-	 * 小数点桁数を設定する。
-	 * 
-	 * @param aScale 小数点桁数
-	 */
-	public void setDecimalScale(final int aScale) {
-		decimalScale = aScale;
+	public DayDisplayFormat() {
 	}
 
 	@Override
 	public String toString(final double aValue) {
-		String format = "%." + decimalScale + "f";
-		return String.format(format, aValue);
+		int hour = (int) aValue;
+		if (0 <= hour && 11 >= hour) {
+			return String.format("%d", hour);
+		} else if (12 <= hour && 23 >= hour) {
+			return String.format("%d", hour-12);
+		}
+
+		return null;
 	}
 }

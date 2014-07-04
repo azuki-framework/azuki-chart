@@ -17,7 +17,6 @@
  */
 package org.azkfw.chart.charts.scatter;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
@@ -28,6 +27,7 @@ import org.azkfw.chart.design.AbstractSeriesChartDesign;
 import org.azkfw.chart.design.chart.AbstractSeriesChartStyle;
 import org.azkfw.chart.design.legend.CustomLegendStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.design.title.CustomTitleStyle;
 import org.azkfw.chart.design.title.TitleStyle;
 
@@ -51,8 +51,8 @@ public class ScatterChartDesign extends AbstractSeriesChartDesign<ScatterChartSt
 	 */
 	protected ScatterChartDesign() {
 		setChartStyle(new ScatterChartStyle());
-		setTitleStyle(new CustomTitleStyle());
-		setLegendStyle(new CustomLegendStyle());
+		setTitleStyle(new ScatterTitleStyle());
+		setLegendStyle(new ScatterLegendStyle());
 	}
 
 	/**
@@ -67,7 +67,41 @@ public class ScatterChartDesign extends AbstractSeriesChartDesign<ScatterChartSt
 	}
 
 	/**
-	 * このクラスは、散布図のスタイルを定義するクラスです。
+	 * このクラスは、散布図のタイトルスタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/07/03
+	 * @author Kawakicchi
+	 */
+	public static class ScatterTitleStyle extends CustomTitleStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public ScatterTitleStyle() {
+
+		}
+	}
+
+	/**
+	 * このクラスは、散布図の凡例スタイルを定義するクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/07/03
+	 * @author Kawakicchi
+	 */
+	public static class ScatterLegendStyle extends CustomLegendStyle {
+
+		/**
+		 * コンストラクタ
+		 */
+		public ScatterLegendStyle() {
+			setPosition(LegendDisplayPosition.Bottom);
+		}
+	}
+
+	/**
+	 * このクラスは、散布図のグラフスタイルを定義するクラスです。
 	 * 
 	 * @since 1.0.0
 	 * @version 1.0.0 2014/06/30
@@ -83,115 +117,126 @@ public class ScatterChartDesign extends AbstractSeriesChartDesign<ScatterChartSt
 		}
 
 		/**
-		 * X軸のフォントを取得する。
-		 * 
-		 * @return フォント
-		 */
-		public Font getXAxisFont() {
-			return new Font("Arial", Font.BOLD, 16);
-		}
-
-		/**
-		 * X軸のフォントカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getXAxisFontColor() {
-			return Color.BLACK;
-		}
-
-		/**
-		 * X軸のカラーを取得する。
+		 * X軸線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
 		public Color getXAxisLineColor() {
-			return Color.BLACK;
+			return getDefaultAxisLineColor();
 		}
 
 		/**
-		 * X軸のストロークを取得する。
+		 * X軸線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
 		public Stroke getXAxisLineStroke() {
-			return new BasicStroke(1.f);
+			return getDefaultAxisLineStroke();
 		}
 
 		/**
-		 * X軸のカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getXAxisScaleColor() {
-			return Color.LIGHT_GRAY;
-		}
-
-		/**
-		 * X軸のストロークを取得する。
-		 * 
-		 * @return ストローク
-		 */
-		public Stroke getXAxisScaleStroke() {
-			float dash[] = { 2.0f, 2.0f };
-			BasicStroke dsahStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f);
-			return dsahStroke;
-		}
-
-		/**
-		 * Y軸のフォントを取得する。
+		 * X軸目盛ラベルのフォントを取得する。
 		 * 
 		 * @return フォント
 		 */
-		public Font getYAxisFont() {
-			return new Font("Arial", Font.BOLD, 16);
+		public Font getXAxisScaleLabelFont() {
+			return getDefaultAxisScaleLabelFont();
 		}
 
 		/**
-		 * Y軸のフォントカラーを取得する。
+		 * X軸目盛ラベルのカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getYAxisFontColor() {
-			return Color.BLACK;
+		public Color getXAxisScaleLabelColor() {
+			return getDefaultAxisScaleLabelColor();
 		}
 
 		/**
-		 * Y軸のカラーを取得する。
+		 * X軸目盛線のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getXAxisScaleLineColor() {
+			return getDefaultAxisScaleLineColor();
+		}
+
+		/**
+		 * X軸目盛線のストロークを取得する。
+		 * 
+		 * @return ストローク
+		 */
+		public Stroke getXAxisScaleLineStroke() {
+			return getDefaultAxisScaleLineStroke();
+		}
+
+		/**
+		 * Y軸線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
 		public Color getYAxisLineColor() {
-			return Color.BLACK;
+			return getDefaultAxisLineColor();
 		}
 
 		/**
-		 * Y軸のストロークを取得する。
+		 * Y軸線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
 		public Stroke getYAxisLineStroke() {
-			return new BasicStroke(1.f);
+			return getDefaultAxisLineStroke();
 		}
 
 		/**
-		 * Y軸のカラーを取得する。
+		 * Y軸目盛ラベルのフォントを取得する。
+		 * 
+		 * @return フォント
+		 */
+		public Font getYAxisScaleLabelFont() {
+			return getDefaultAxisScaleLabelFont();
+		}
+
+		/**
+		 * Y軸目盛ラベルのフォントカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getYAxisScaleColor() {
-			return Color.LIGHT_GRAY;
+		public Color getYAxisScaleLabelColor() {
+			return getDefaultAxisScaleLabelColor();
 		}
 
 		/**
-		 * Y軸のストロークを取得する。
+		 * Y軸目盛線のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getYAxisScaleLineColor() {
+			return getDefaultAxisScaleLineColor();
+		}
+
+		/**
+		 * Y軸目盛線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
-		public Stroke getYAxisScaleStroke() {
-			float dash[] = { 2.0f, 2.0f };
-			BasicStroke dsahStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f);
-			return dsahStroke;
+		public Stroke getYAxisScaleLineStroke() {
+			return getDefaultAxisScaleLineStroke();
+		}
+
+		@Override
+		public Color getSeriesFillColor(final int aIndex, final ScatterSeries aSeries) {
+			return null;
+		}
+
+		@Override
+		public Marker getSeriesMarker(final int aIndex, final ScatterSeries aSeries) {
+			return null;
+		}
+
+		@Override
+		public Marker getSeriesPointMarker(final int aIndex, final ScatterSeries aSeries, final int aNo, final ScatterSeriesPoint aPoint) {
+			return null;
 		}
 	}
 
@@ -211,60 +256,37 @@ public class ScatterChartDesign extends AbstractSeriesChartDesign<ScatterChartSt
 			setBackgroundColor(new Color(32, 32, 32, 255));
 		}
 
-		/**
-		 * X軸のフォントカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getXAxisFontColor() {
+		@Override
+		public Color getXAxisScaleLabelColor() {
 			return new Color(220, 220, 220, 255);
 		}
 
-		/**
-		 * X軸のカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
+		@Override
 		public Color getXAxisLineColor() {
 			return Color.LIGHT_GRAY;
 		}
 
-		/**
-		 * X軸のカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getXAxisScaleColor() {
+		@Override
+		public Color getXAxisScaleLineColor() {
 			return Color.LIGHT_GRAY;
 		}
 
-		/**
-		 * Y軸のフォントカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getYAxisFontColor() {
+		@Override
+		public Color getYAxisScaleLabelColor() {
 			return new Color(220, 220, 220, 255);
 		}
 
-		/**
-		 * Y軸のカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
+		@Override
 		public Color getYAxisLineColor() {
 			return Color.LIGHT_GRAY;
 		}
 
-		/**
-		 * Y軸のカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getYAxisScaleColor() {
+		@Override
+		public Color getYAxisScaleLineColor() {
 			return Color.LIGHT_GRAY;
 		}
 
+		@Override
 		public Color getSeriesFillColor(final int aIndex, final ScatterSeries aSeries) {
 			return null;
 		}

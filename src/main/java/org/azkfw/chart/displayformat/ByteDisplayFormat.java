@@ -18,13 +18,13 @@
 package org.azkfw.chart.displayformat;
 
 /**
- * このクラスは、数値型の表示形式を実装するクラスです。
+ * このクラスは、バイトの表示形式を実装するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/20
+ * @version 1.0.0 2014/07/03
  * @author kawakicchi
  */
-public class NumericDisplayFormat implements DisplayFormat {
+public class ByteDisplayFormat implements DisplayFormat {
 
 	/** 小数点スケール */
 	private int decimalScale;
@@ -32,7 +32,7 @@ public class NumericDisplayFormat implements DisplayFormat {
 	/**
 	 * コンストラクタ
 	 */
-	public NumericDisplayFormat() {
+	public ByteDisplayFormat() {
 		decimalScale = 0;
 	}
 
@@ -41,7 +41,7 @@ public class NumericDisplayFormat implements DisplayFormat {
 	 * 
 	 * @param aScale 小数点桁数
 	 */
-	public NumericDisplayFormat(final int aDecimalScale) {
+	public ByteDisplayFormat(final int aDecimalScale) {
 		decimalScale = aDecimalScale;
 	}
 
@@ -56,7 +56,30 @@ public class NumericDisplayFormat implements DisplayFormat {
 
 	@Override
 	public String toString(final double aValue) {
-		String format = "%." + decimalScale + "f";
-		return String.format(format, aValue);
+		String string = null;
+
+		int sign = (aValue >= 0) ? 1 : -1;
+		double value = Math.abs(aValue);
+
+		if (value >= Math.pow(10, 15)) {
+			String format = "%." + decimalScale + "f PB";
+			string = String.format(format, sign * value / (Math.pow(10, 15)));
+		} else if (value >= Math.pow(10, 12)) {
+			String format = "%." + decimalScale + "f TB";
+			string = String.format(format, sign * value / (Math.pow(10, 12)));
+		} else if (value >= Math.pow(10, 9)) {
+			String format = "%." + decimalScale + "f GB";
+			string = String.format(format, sign * value / (Math.pow(10, 9)));
+		} else if (value >= Math.pow(10, 6)) {
+			String format = "%." + decimalScale + "f MB";
+			string = String.format(format, sign * value / (Math.pow(10, 6)));
+		} else if (value >= Math.pow(10, 3)) {
+			String format = "%." + decimalScale + "f kB";
+			string = String.format(format, sign * value / (Math.pow(10, 3)));
+		} else {
+			String format = "%." + decimalScale + "f Byte";
+			string = String.format(format, sign * value);
+		}
+		return string;
 	}
 }

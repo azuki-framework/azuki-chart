@@ -21,7 +21,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
 
-import org.azkfw.chart.design.color.ColorIndex;
 import org.azkfw.chart.design.marker.CircleMarker;
 import org.azkfw.chart.design.marker.DiaMarker;
 import org.azkfw.chart.design.marker.Marker;
@@ -40,17 +39,10 @@ import org.azkfw.chart.series.SeriesPoint;
 public abstract class AbstractSeriesChartStyle<SERIES extends Series, POINT extends SeriesPoint> extends AbstractChartStyle implements
 		SeriesChartStyle<SERIES, POINT> {
 
-	private ColorIndex colorIndex;
-
 	/**
 	 * コンストラクタ
 	 */
 	public AbstractSeriesChartStyle() {
-		colorIndex = ColorIndex.ColorfulColor01;
-	}
-
-	protected final Color getColorIndex(final int aIndex) {
-		return colorIndex.get(aIndex);
 	}
 
 	/**

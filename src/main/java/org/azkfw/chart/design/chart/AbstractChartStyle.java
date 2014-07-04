@@ -19,6 +19,8 @@ package org.azkfw.chart.design.chart;
 
 import java.awt.Color;
 
+import org.azkfw.chart.design.color.ColorIndex;
+
 /**
  * このクラスは、チャートスタイルを定義するための基底クラスです。
  * 
@@ -29,15 +31,22 @@ import java.awt.Color;
 public abstract class AbstractChartStyle implements ChartStyle {
 
 	private Color backgroundColor;
-	
+
 	private boolean overflow;
+
+	private ColorIndex colorIndex;
 
 	/**
 	 * コンストラクタ
 	 */
 	public AbstractChartStyle() {
+		colorIndex = ColorIndex.ColorfulColor01;
 		backgroundColor = Color.WHITE;
 		overflow = false;
+	}
+
+	protected final Color getColorIndex(final int aIndex) {
+		return colorIndex.get(aIndex);
 	}
 
 	@Override

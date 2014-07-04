@@ -19,6 +19,7 @@ package org.azkfw.chart.design;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Stroke;
 
 import org.azkfw.chart.design.chart.ChartStyle;
@@ -36,27 +37,35 @@ import org.azkfw.graphics.Padding;
  */
 public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements ChartDesign<STYLE> {
 
+	/** デフォルト 軸ストローク */
+	private final static Stroke DEFAULT_STROKE_AXIS = new BasicStroke(1.0f);
+	/** デフォルト 軸ストロークカラー */
+	private final static Color DEFAULT_STROKE_COLOR_AXIS = Color.LIGHT_GRAY;;
+	/** デフォルト 目盛フォント */
+	private final static Font DEFAULT_FONT_SCALE = new Font("Arial", Font.BOLD, 14);
+	/** デフォルト 目盛フォントカラー */
+	private final static Color DEFAULT_FONT_COLOR_SCALE = Color.DARK_GRAY;
+	/** デフォルト 軸ストローク */
+	private final static Stroke DEFAULT_STROKE_SCALE = new BasicStroke(1.0f);
+	/** デフォルト 軸ストロークカラー */
+	private final static Color DEFAULT_STROKE_COLOR_SCALE = Color.LIGHT_GRAY;;
+
 	/** グラフスタイル */
 	private STYLE chart;
-
 	/** タイトルスタイル */
 	private TitleStyle title;
-
 	/** 凡例スタイル */
 	private LegendStyle legend;
 
 	/** 背景色 */
 	private Color backgroundColor;
-
 	/** フレームストローク */
 	private Stroke frameStroke;
-
 	/** フレームストロークカラー */
 	private Color frameStrokeColor;
 
 	/** マージン情報 */
 	private Margin margin;
-
 	/** パディング情報 */
 	private Padding padding;
 
@@ -68,16 +77,66 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 		title = null;
 		legend = null;
 
-		// backgroundColor = null;
-		backgroundColor = new Color(240, 240, 240, 255);
-		// frameStroke = null;
+		backgroundColor = Color.WHITE;
 		frameStroke = new BasicStroke(1.f);
-		// frameStrokeColor = null;
-		frameStrokeColor = Color.DARK_GRAY;
-		// margin = null;
+		frameStrokeColor = Color.LIGHT_GRAY;
+
 		margin = new Margin(4.f, 4.f, 4.f, 4.f);
-		// padding = null;
-		padding = new Padding(4.f, 4.f, 4.f, 4.f);
+		padding = new Padding(6.f, 6.f, 6.f, 6.f);
+	}
+
+	/**
+	 * デフォルトの軸線のストロークを取得する。
+	 * 
+	 * @return ストローク
+	 */
+	public final static Stroke getDefaultAxisLineStroke() {
+		return DEFAULT_STROKE_AXIS;
+	}
+
+	/**
+	 * デフォルトの軸線のカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
+	public final static Color getDefaultAxisLineColor() {
+		return DEFAULT_STROKE_COLOR_AXIS;
+	}
+
+	/**
+	 * デフォルトの軸目盛ラベルのフォントを取得する。
+	 * 
+	 * @return フォント
+	 */
+	public final static Font getDefaultAxisScaleLabelFont() {
+		return DEFAULT_FONT_SCALE;
+	}
+
+	/**
+	 * デフォルトの軸目盛ラベルのカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
+	public final static Color getDefaultAxisScaleLabelColor() {
+		return DEFAULT_FONT_COLOR_SCALE;
+	}
+
+	/**
+	 * デフォルトの軸目盛線のストロークを取得する。
+	 * 
+	 * @return ストローク
+	 */
+	public final static Stroke getDefaultAxisScaleLineStroke() {
+		return DEFAULT_STROKE_SCALE;
+	}
+
+	/**
+	 * デフォルトの軸目盛線のカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
+	public final static Color getDefaultAxisScaleLineColor() {
+		return DEFAULT_STROKE_COLOR_SCALE;
 	}
 
 	@Override

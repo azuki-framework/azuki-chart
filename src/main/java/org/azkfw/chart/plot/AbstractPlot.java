@@ -60,6 +60,17 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	/**
 	 * コンストラクタ
 	 * 
+	 * @param aDataset データセット
+	 */
+	public AbstractPlot(final DATASET aDataset) {
+		super(Plot.class);
+		dataset = aDataset;
+		design = null;
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
 	 * @param aClass クラス
 	 */
 	public AbstractPlot(final Class<?> aClass) {
@@ -71,11 +82,35 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	/**
 	 * コンストラクタ
 	 * 
+	 * @param aClass クラス
+	 * @param aDataset データセット
+	 */
+	public AbstractPlot(final Class<?> aClass, final DATASET aDataset) {
+		super(aClass);
+		dataset = aDataset;
+		design = null;
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
 	 * @param aName 名前
 	 */
 	public AbstractPlot(final String aName) {
 		super(aName);
 		dataset = null;
+		design = null;
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aName 名前
+	 * @param aDataset データセット
+	 */
+	public AbstractPlot(final String aName, final DATASET aDataset) {
+		super(aName);
+		dataset = aDataset;
 		design = null;
 	}
 

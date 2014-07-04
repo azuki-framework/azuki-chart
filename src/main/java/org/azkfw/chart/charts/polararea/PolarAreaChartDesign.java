@@ -17,7 +17,6 @@
  */
 package org.azkfw.chart.charts.polararea;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
@@ -103,77 +102,102 @@ public class PolarAreaChartDesign extends AbstractSeriesChartDesign<PolarAreaCha
 		}
 
 		/**
-		 * 軸のフォントを取得する。
-		 * 
-		 * @return フォント
-		 */
-		public Font getAxisFont() {
-			return new Font("Arial", Font.BOLD, 16);
-		}
-
-		/**
-		 * 軸のフォントカラーを取得する。
-		 * 
-		 * @return カラー
-		 */
-		public Color getAxisFontColor() {
-			return Color.BLACK;
-		}
-
-		/**
-		 * 軸のカラーを取得する。
+		 * 軸線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
 		public Color getAxisLineColor() {
-			return Color.BLACK;
+			return null;
 		}
 
 		/**
-		 * 軸のストロークを取得する。
+		 * 軸線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
 		public Stroke getAxisLineStroke() {
-			return new BasicStroke(1.f);
+			return null;
 		}
 
 		/**
-		 * 副軸のカラーを取得する。
+		 * 軸目盛ラベルのフォントを取得する。
+		 * 
+		 * @return フォント
+		 */
+		public Font getAxisScaleLabelFont() {
+			return getDefaultAxisScaleLabelFont();
+		}
+
+		/**
+		 * 軸目盛ラベルのカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getAssistAxisLineColor() {
-			return Color.LIGHT_GRAY;
+		public Color getAxisScaleLabelColor() {
+			return getDefaultAxisScaleLabelColor();
 		}
 
 		/**
-		 * 副軸のストロークを取得する。
-		 * 
-		 * @return ストローク
-		 */
-		public Stroke getAssistAxisLineStroke() {
-			return new BasicStroke(1.f);
-		}
-
-		/**
-		 * 円のカラーを取得する。
+		 * 軸目盛線のカラーを取得する。
 		 * 
 		 * @return カラー
 		 */
-		public Color getAxisCircleColor() {
-			return Color.LIGHT_GRAY;
+		public Color getAxisScaleLineColor() {
+			return getDefaultAxisScaleLineColor();
 		}
 
 		/**
-		 * 円のストロークを取得する。
+		 * 軸目盛線のストロークを取得する。
 		 * 
 		 * @return ストローク
 		 */
-		public Stroke getAxisCircleStroke() {
-			float dash[] = { 4.0f, 4.0f };
-			BasicStroke dsahStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f);
-			return dsahStroke;
+		public Stroke getAxisScaleLineStroke() {
+			return getDefaultAxisScaleLineStroke();
+		}
+
+		/**
+		 * 円線のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getCircleLineColor() {
+			return null;
+		}
+
+		/**
+		 * 円線のストロークを取得する。
+		 * 
+		 * @return ストローク
+		 */
+		public Stroke getCircleLineStroke() {
+			return null;
+		}
+
+		/**
+		 * 円目盛線のカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getCircleScaleLineColor() {
+			return getDefaultAxisScaleLineColor();
+		}
+
+		/**
+		 * 円目盛線のストロークを取得する。
+		 * 
+		 * @return ストローク
+		 */
+		public Stroke getCircleScaleLineStroke() {
+			return getDefaultAxisScaleLineStroke();
+		}
+
+		/**
+		 * 円目盛の角度を取得する。
+		 * 
+		 * @return 角度
+		 */
+		public double getCircleScaleAngle() {
+			return 30.f;
 		}
 
 		@Override
