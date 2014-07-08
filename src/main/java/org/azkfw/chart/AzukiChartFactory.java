@@ -17,6 +17,8 @@
  */
 package org.azkfw.chart;
 
+import java.util.List;
+
 import org.azkfw.chart.charts.bar.BarDataset;
 import org.azkfw.chart.charts.bar.BarPlot;
 import org.azkfw.chart.charts.line.LineDataset;
@@ -31,6 +33,7 @@ import org.azkfw.chart.charts.radar.RadarDataset;
 import org.azkfw.chart.charts.radar.RadarPlot;
 import org.azkfw.chart.charts.scatter.ScatterDataset;
 import org.azkfw.chart.charts.scatter.ScatterPlot;
+import org.azkfw.chart.charts.scatter.ScatterSeries;
 
 /**
  * このクラスは、チャート生成を行うファクトリークラスです。
@@ -198,6 +201,25 @@ public class AzukiChartFactory {
 	 */
 	public static AzukiChart createScatterChart(final ScatterDataset aDataset) {
 		ScatterPlot plot = new ScatterPlot(aDataset);
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 散布図のインスタンスを生成する。
+	 * 
+	 * @param aData データ
+	 * @return 散布図
+	 */
+	public static AzukiChart createScatterChart(final List<Double> aData) {
+		ScatterDataset dataset = new ScatterDataset();
+		ScatterSeries series = new ScatterSeries();
+		for (int i = 0; i < aData.size(); i++) {
+			series.add(i, aData.get(i));
+		}
+		dataset.addSeries(series);
+
+		ScatterPlot plot = new ScatterPlot(dataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
