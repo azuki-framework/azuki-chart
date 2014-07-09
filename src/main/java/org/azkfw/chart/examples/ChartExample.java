@@ -59,6 +59,9 @@ import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterYAxis;
 import org.azkfw.chart.charts.scatter.ScatterDataset;
 import org.azkfw.chart.charts.scatter.ScatterPlot;
 import org.azkfw.chart.charts.scatter.ScatterSeries;
+import org.azkfw.chart.charts.spectrum.SpectrumDataset;
+import org.azkfw.chart.charts.spectrum.SpectrumMatrixData;
+import org.azkfw.chart.charts.spectrum.SpectrumPlot;
 import org.azkfw.chart.displayformat.MonthDisplayFormat;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.util.AzukiChartUtility;
@@ -139,6 +142,7 @@ public class ChartExample {
 		PolarAreaDataset dsPolarArea = createPolarAreaDataset();
 		PieDataset dsPie = createPieDataset();
 		RadarDataset dsRadar = createRadarDataset();
+		SpectrumDataset dsSpectrum = createSpectrumDataset();
 		gra.drawLineChart((LinePlot) AzukiChartFactory.createLineChart(dsLine).getPlot(), new Rect(0, 0, 600, 400));
 		gra.drawBarChart((BarPlot) AzukiChartFactory.createBarChart(dsBar).getPlot(), new Rect(0, 400, 600, 400));
 		gra.drawScatterChart((ScatterPlot) AzukiChartFactory.createScatterChart(dsScatter).getPlot(), new Rect(0, 800, 600, 400));
@@ -146,6 +150,7 @@ public class ChartExample {
 		gra.drawPolarAreaChart((PolarAreaPlot) AzukiChartFactory.createPolarAreaChart(dsPolarArea).getPlot(), new Rect(600, 400, 400, 400));
 		gra.drawPieChart((PiePlot) AzukiChartFactory.createPieChart(dsPie).getPlot(), new Rect(600, 800, 400, 400));
 		gra.drawRadarChart((RadarPlot) AzukiChartFactory.createRadarChart(dsRadar).getPlot(), new Rect(1000, 0, 400, 400));
+		gra.drawSpectrumChart((SpectrumPlot) AzukiChartFactory.createSpectrumChart(dsSpectrum).getPlot(), new Rect(1000, 400, 400, 400));
 
 		try {
 			ImageIO.write(image, "png", aFile);
@@ -374,6 +379,18 @@ public class ChartExample {
 		dataset.addData(new PieData("America", 30.f));
 		dataset.addData(new PieData("England", 15.f));
 		dataset.addData(new PieData("Germany", 5.f));
+
+		return dataset;
+	}
+
+	private static SpectrumDataset createSpectrumDataset() {
+		SpectrumDataset dataset = new SpectrumDataset("Sample Spectrum Chart", 200, 200);
+
+		for (int row = 0; row < 200; row++) {
+			for (int col = 0; col < 200; col++) {
+				dataset.put(row, col, new SpectrumMatrixData(Math.random()));
+			}
+		}
 
 		return dataset;
 	}

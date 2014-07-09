@@ -34,6 +34,8 @@ import org.azkfw.chart.charts.radar.RadarPlot;
 import org.azkfw.chart.charts.scatter.ScatterDataset;
 import org.azkfw.chart.charts.scatter.ScatterPlot;
 import org.azkfw.chart.charts.scatter.ScatterSeries;
+import org.azkfw.chart.charts.spectrum.SpectrumDataset;
+import org.azkfw.chart.charts.spectrum.SpectrumPlot;
 
 /**
  * このクラスは、チャート生成を行うファクトリークラスです。
@@ -220,6 +222,29 @@ public class AzukiChartFactory {
 		dataset.addSeries(series);
 
 		ScatterPlot plot = new ScatterPlot(dataset);
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * スペクトログラムのインスタンスを生成する。
+	 * 
+	 * @return スペクトログラム
+	 */
+	public static AzukiChart createSpectrumChart() {
+		SpectrumPlot plot = new SpectrumPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * スペクトログラムのインスタンスを生成する。
+	 * 
+	 * @param aDataset データセット
+	 * @return スペクトログラム
+	 */
+	public static AzukiChart createSpectrumChart(final SpectrumDataset aDataset) {
+		SpectrumPlot plot = new SpectrumPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}

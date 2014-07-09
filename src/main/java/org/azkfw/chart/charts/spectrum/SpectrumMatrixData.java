@@ -15,50 +15,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.charts.spectrum;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.series.Series;
+import org.azkfw.chart.matrix.MatrixData;
 
 /**
- * このクラスは、シリーズデータセット機能の実装を行うための基底クラスです。
+ * このクラスは、スペクトログラムのマトリクスデータクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/07/09
  * @author Kawakicchi
  */
-public abstract class AbstractSeriesDataset<T extends Series> extends AbstractDataset implements SeriesDataset<T> {
+public class SpectrumMatrixData implements MatrixData {
 
-	/** シリーズ一覧 */
-	private List<T> seriesList;
+	/**
+	 * 値
+	 */
+	private double value;
 
 	/**
 	 * コンストラクタ
 	 */
-	public AbstractSeriesDataset() {
-		super();
-		seriesList = new ArrayList<T>();
+	public SpectrumMatrixData() {
+		value = 0.0;
 	}
 
 	/**
 	 * コンストラクタ
 	 * 
-	 * @param aTitle タイトル
+	 * @param aValue
 	 */
-	public AbstractSeriesDataset(final String aTitle) {
-		super(aTitle);
-		seriesList = new ArrayList<T>();
+	public SpectrumMatrixData(final double aValue) {
+		value = aValue;
 	}
 
-	@Override
-	public void addSeries(final T aSeries) {
-		seriesList.add(aSeries);
+	/**
+	 * 値を設定する。
+	 * 
+	 * @param aValue 値
+	 */
+	public void setValue(final double aValue) {
+		value = aValue;
 	}
 
-	@Override
-	public List<T> getSeriesList() {
-		return seriesList;
+	/**
+	 * 値を取得する。
+	 * 
+	 * @return 値
+	 */
+	public double getValue() {
+		return value;
 	}
 }

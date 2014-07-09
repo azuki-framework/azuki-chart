@@ -15,31 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.charts.spectrum;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.series.Series;
+import org.azkfw.chart.dataset.AbstractMatrixDataset;
 
 /**
- * このクラスは、シリーズデータセット機能の実装を行うための基底クラスです。
+ * このクラスは、スペクトログラムのデータセット情報を保持するクラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/07/09
  * @author Kawakicchi
  */
-public abstract class AbstractSeriesDataset<T extends Series> extends AbstractDataset implements SeriesDataset<T> {
-
-	/** シリーズ一覧 */
-	private List<T> seriesList;
+public class SpectrumDataset extends AbstractMatrixDataset<SpectrumMatrixData> {
 
 	/**
 	 * コンストラクタ
 	 */
-	public AbstractSeriesDataset() {
+	public SpectrumDataset() {
 		super();
-		seriesList = new ArrayList<T>();
 	}
 
 	/**
@@ -47,18 +40,28 @@ public abstract class AbstractSeriesDataset<T extends Series> extends AbstractDa
 	 * 
 	 * @param aTitle タイトル
 	 */
-	public AbstractSeriesDataset(final String aTitle) {
+	public SpectrumDataset(final String aTitle) {
 		super(aTitle);
-		seriesList = new ArrayList<T>();
 	}
 
-	@Override
-	public void addSeries(final T aSeries) {
-		seriesList.add(aSeries);
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aRow 初期確保行数
+	 * @param aCol 初期確保列数
+	 */
+	public SpectrumDataset(final int aRow, final int aCol) {
+		super(aRow, aCol);
 	}
 
-	@Override
-	public List<T> getSeriesList() {
-		return seriesList;
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aRow 初期確保行数
+	 * @param aCol 初期確保列数
+	 */
+	public SpectrumDataset(final String aTitle, final int aRow, final int aCol) {
+		super(aTitle, aRow, aCol);
 	}
 }

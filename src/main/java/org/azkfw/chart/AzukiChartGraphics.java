@@ -26,6 +26,7 @@ import org.azkfw.chart.charts.polar.PolarPlot;
 import org.azkfw.chart.charts.polararea.PolarAreaPlot;
 import org.azkfw.chart.charts.radar.RadarPlot;
 import org.azkfw.chart.charts.scatter.ScatterPlot;
+import org.azkfw.chart.charts.spectrum.SpectrumPlot;
 import org.azkfw.graphics.AzukiGraphics2D;
 import org.azkfw.graphics.Rect;
 
@@ -114,6 +115,16 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aRect 描画範囲
 	 */
 	public void drawScatterChart(final ScatterPlot aPlot, final Rect aRect) {
+		aPlot.draw(this, aRect);
+	}
+
+	/**
+	 * スペクトログラムを描画する。
+	 * 
+	 * @param aPlot スペクトログラムプロット情報
+	 * @param aRect 描画範囲
+	 */
+	public void drawSpectrumChart(final SpectrumPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 }
