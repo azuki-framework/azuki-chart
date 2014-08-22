@@ -22,18 +22,22 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Polygon;
+import java.awt.Stroke;
 import java.util.List;
 
+import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterXAxis;
+import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterYAxis;
+import org.azkfw.chart.charts.scatter.ScatterChartDesign.ScatterChartStyle;
+import org.azkfw.chart.charts.scatter.ScatterSeries.ScatterSeriesPoint;
+import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
-import org.azkfw.chart.looks.legend.LegendDesign;
-import org.azkfw.chart.looks.legend.LegendDesign.LegendPosition;
-import org.azkfw.chart.looks.marker.Marker;
-import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
-import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
+import org.azkfw.util.ObjectUtility;
+import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、散布図のプロットクラスです。
@@ -42,45 +46,37 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class ScatterPlot extends AbstractPlot {
+public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChartDesign> {
 
 	/** X軸情報 */
 	private ScatterXAxis axisX;
 	/** Y軸情報 */
 	private ScatterYAxis axisY;
 
-	/** データセット */
-	private ScatterDataset dataset;
-
-	/** Looks */
-	private ScatterLooks looks;
-
 	/**
 	 * コンストラクタ
 	 */
 	public ScatterPlot() {
+		super(ScatterPlot.class);
+
 		axisX = new ScatterXAxis();
 		axisY = new ScatterYAxis();
-		dataset = null;
-		looks = new ScatterLooks();
+
+		setChartDesign(ScatterChartDesign.DefalutDesign);
 	}
 
 	/**
-	 * ルックス情報を設定する。
-	 * 
-	 * @param aLooks ルックス情報
-	 */
-	public void setLooks(final ScatterLooks aLooks) {
-		looks = aLooks;
-	}
-
-	/**
-	 * データセットを設定する。
+	 * コンストラクタ
 	 * 
 	 * @param aDataset データセット
 	 */
-	public void setDataset(final ScatterDataset aDataset) {
-		dataset = aDataset;
+	public ScatterPlot(final ScatterDataset aDataset) {
+		super(ScatterPlot.class, aDataset);
+
+		axisX = new ScatterXAxis();
+		axisY = new ScatterYAxis();
+
+		setChartDesign(ScatterChartDesign.DefalutDesign);
 	}
 
 	/**
@@ -103,12 +99,16 @@ public class ScatterPlot extends AbstractPlot {
 
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
+		ScatterDataset dataset = getDataset();
+		ScatterChartDesign design = getChartDesign();
+		ScatterChartStyle style = design.getChartStyle();
+
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), looks.getTitleDesign(), rtChartPre);
+		Rect rtTitle = fitTitle(g, rtChartPre);
 		// 凡例適用
-		Rect rtLegend = fitLegend(g, rtChartPre);
+		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
 
 		// スケール調整
 		ScaleValue[] svs = getXYScaleValue();
@@ -120,98 +120,149 @@ public class ScatterPlot extends AbstractPlot {
 		Margin margin = fitChart(g, rtChartPre, xScaleValue, yScaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
-		// スケール計算
-		double xDifValue = xScaleValue.getDiff();
-		double yDifValue = yScaleValue.getDiff();
-		double pixXPerValue = (rtChartPre.getWidth() - margin.getHorizontalSize()) / xDifValue;
-		double pixYPerValue = (rtChartPre.getHeight() - margin.getVerticalSize()) / yDifValue;
-
 		Rect rtChart = new Rect();
 		rtChart.setX(rtChartPre.getX() + margin.getLeft());
 		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom()); // ★注意：Yは原点から
 		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
 		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
 
-		// fill background
-		if (null != looks.getBackgroundColor()) {
-			g.setColor(looks.getBackgroundColor());
+		// スケール計算
+		double xDifValue = xScaleValue.getDiff();
+		double yDifValue = yScaleValue.getDiff();
+		double pixXPerValue = (rtChart.getWidth()) / xDifValue;
+		double pixYPerValue = (rtChart.getHeight()) / yDifValue;
+
+		// 背景描画
+		if (ObjectUtility.isNotNull(style.getBackgroundColor())) {
+			g.setColor(style.getBackgroundColor());
 			g.fillRect(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
 		}
 
-		// Draw Y axis scale
+		// Y軸描画
 		{
-			int fontSize = looks.getYAxisFont().getSize();
-			FontMetrics fm = g.getFontMetrics(looks.getYAxisFont());
-			DisplayFormat df = axisY.getDisplayFormat();
-			g.setColor(looks.getYAxisFontColor());
-			g.setFont(looks.getYAxisFont());
-			for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
-				String str = df.toString(value);
-				float strWidth = fm.stringWidth(str);
-				float yLabel = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
-				float xLabel = (float) (rtChart.getX() - strWidth - fontMargin);
-				g.drawStringA(str, xLabel, yLabel - (fontSize / 2));
+			// 目盛ラベル
+			Font scaleLabelFont = style.getYAxisScaleLabelFont();
+			Color scaleLabelColor = style.getYAxisScaleLabelColor();
+			if (ObjectUtility.isAllNotNull(scaleLabelFont, scaleLabelColor)) {
+				int fontSize = scaleLabelFont.getSize();
+				FontMetrics fm = g.getFontMetrics(scaleLabelFont);
+				DisplayFormat df = axisY.getDisplayFormat();
+
+				g.setFont(scaleLabelFont, scaleLabelColor);
+				for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
+					String str = df.toString(value);
+					if (StringUtility.isNotEmpty(str)) {
+						float strWidth = fm.stringWidth(str);
+
+						float x = (float) (rtChart.getX() - strWidth - fontMargin);
+						float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
+						g.drawStringA(str, x, y - (fontSize / 2));
+					}
+				}
 			}
-			g.setColor(looks.getYAxisScaleColor());
-			g.setStroke(looks.getYAxisScaleStroke());
-			for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
-				float yLine = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
-				float xLine = (float) (rtChart.getX());
-				g.drawLine(xLine, yLine, xLine + rtChart.getWidth(), yLine);
+			// 目盛線描画
+			Stroke scaleLineStroke = style.getYAxisScaleLineStroke();
+			Color scaleLineColor = style.getYAxisScaleLineColor();
+			if (ObjectUtility.isAllNotNull(scaleLineStroke, scaleLineColor)) {
+				g.setStroke(scaleLineStroke, scaleLineColor);
+				for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
+					float x = (float) (rtChart.getX());
+					float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
+					g.drawLine(x, y, x + rtChart.getWidth(), y);
+				}
 			}
-			g.setColor(looks.getYAxisLineColor());
-			g.setStroke(looks.getYAxisLineStroke());
-			for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
-				float yLine = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
-				float xLine = (float) (rtChart.getX());
-				g.drawLine(xLine, yLine, xLine + 6, yLine);
+			// 軸線描画
+			Stroke lineStroke = style.getYAxisLineStroke();
+			Color lineColor = style.getYAxisLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				g.setStroke(lineStroke, lineColor);
+				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
+				// 目盛
+				for (double value = yScaleValue.getMin(); value <= yScaleValue.getMax(); value += yScaleValue.getScale()) {
+					float x = (float) (rtChart.getX());
+					float y = (float) (rtChart.getY() - ((value - yScaleValue.getMin()) * pixYPerValue));
+					g.drawLine(x, y, x + 6, y);
+				}
 			}
 		}
-		// Draw X axis scale
+		// X軸描画
 		{
-			FontMetrics fm = g.getFontMetrics(looks.getXAxisFont());
-			DisplayFormat df = axisX.getDisplayFormat();
-			g.setColor(looks.getXAxisFontColor());
-			g.setFont(looks.getXAxisFont());
-			for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
-				String str = df.toString(value);
-				float strWidth = fm.stringWidth(str);
-				float yLabel = (float) (rtChart.getY() + fontMargin);
-				float xLabel = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue) - (strWidth / 2));
-				g.drawStringA(str, xLabel, yLabel);
+			// 目盛ラベル
+			Font scaleLabelFont = style.getXAxisScaleLabelFont();
+			Color scaleLabelColor = style.getXAxisScaleLabelColor();
+			if (ObjectUtility.isAllNotNull(scaleLabelFont, scaleLabelColor)) {
+				FontMetrics fm = g.getFontMetrics(scaleLabelFont);
+				DisplayFormat df = axisX.getDisplayFormat();
+
+				g.setFont(scaleLabelFont, scaleLabelColor);
+				for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
+					String str = df.toString(value);
+					if (StringUtility.isNotEmpty(str)) {
+						float strWidth = fm.stringWidth(str);
+
+						float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue) - (strWidth / 2));
+						float y = (float) (rtChart.getY() + fontMargin);
+						g.drawStringA(str, x, y);
+					}
+				}
 			}
-			g.setColor(looks.getXAxisScaleColor());
-			g.setStroke(looks.getXAxisScaleStroke());
-			for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
-				float yLine = (float) (rtChart.getY());
-				float xLine = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
-				g.drawLine(xLine, yLine, xLine, yLine - rtChart.getHeight());
+			// 目盛線描画
+			Stroke scaleLineStroke = style.getXAxisScaleLineStroke();
+			Color scaleLineColor = style.getXAxisScaleLineColor();
+			if (ObjectUtility.isAllNotNull(scaleLineStroke, scaleLineColor)) {
+				g.setStroke(scaleLineStroke, scaleLineColor);
+				for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
+					float y = (float) (rtChart.getY());
+					float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
+					g.drawLine(x, y, x, y - rtChart.getHeight());
+				}
 			}
-			g.setColor(looks.getXAxisLineColor());
-			g.setStroke(looks.getXAxisLineStroke());
-			for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
-				float yLine = (float) (rtChart.getY());
-				float xLine = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
-				g.drawLine(xLine, yLine, xLine, yLine - 6);
+			// 軸描画
+			Stroke lineStroke = style.getXAxisLineStroke();
+			Color lineColor = style.getXAxisLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				g.setStroke(lineStroke, lineColor);
+				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
+				for (double value = xScaleValue.getMin(); value <= xScaleValue.getMax(); value += xScaleValue.getScale()) {
+					float y = (float) (rtChart.getY());
+					float x = (float) (rtChart.getX() + ((value - xScaleValue.getMin()) * pixXPerValue));
+					g.drawLine(x, y, x, y - 6);
+				}
 			}
 		}
 
-		// Draw Y axis
-		g.setColor(looks.getYAxisLineColor());
-		g.setStroke(looks.getYAxisLineStroke());
-		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
-		// Draw X axis
-		g.setColor(looks.getXAxisLineColor());
-		g.setStroke(looks.getXAxisLineStroke());
-		g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
+		// Draw dataset
+		drawDataset(g, dataset, xScaleValue, yScaleValue, style, rtChart);
 
-		if (null != dataset) {
-			List<ScatterSeries> seriesList = dataset.getSeriesList();
+		// Draw Legend
+		if (ObjectUtility.isNotNull(rtLegend)) {
+			drawLegend(g, design.getLegendStyle(), rtLegend);
+		}
+		// Draw title
+		if (ObjectUtility.isNotNull(rtTitle)) {
+			drawTitle(g, rtTitle);
+		}
+
+		return true;
+	}
+
+	private void drawDataset(final Graphics g, final ScatterDataset aDataset, final ScaleValue aXScaleValue, final ScaleValue aYScaleValue,
+			final ScatterChartStyle aStyle, final Rect aRect) {
+		if (ObjectUtility.isNotNull(aDataset)) {
+			// スケール計算
+			double xDifValue = aXScaleValue.getDiff();
+			double yDifValue = aYScaleValue.getDiff();
+			double pixXPerValue = (aRect.getWidth()) / xDifValue;
+			double pixYPerValue = (aRect.getHeight()) / yDifValue;
+
+			List<ScatterSeries> seriesList = aDataset.getSeriesList();
 			for (int index = 0; index < seriesList.size(); index++) {
 				ScatterSeries series = seriesList.get(index);
 				List<ScatterSeriesPoint> points = series.getPoints();
 
-				g.setClip(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
+				if (!aStyle.isOverflow()) {
+					g.setClip(aRect.getX(), aRect.getY() - aRect.getHeight(), aRect.getWidth(), aRect.getHeight());
+				}
 
 				// Draw series fill
 				{
@@ -219,53 +270,62 @@ public class ScatterPlot extends AbstractPlot {
 					int yps[] = new int[points.size() + 2];
 					for (int j = 0; j < points.size(); j++) {
 						ScatterSeriesPoint point = points.get(j);
-						xps[j + 1] = (int) (rtChart.getX() + ((point.getX() - xScaleValue.getMin()) * pixXPerValue));
-						yps[j + 1] = (int) (rtChart.getY() - ((point.getY() - yScaleValue.getMin()) * pixYPerValue));
+						xps[j + 1] = (int) (aRect.getX() + ((point.getX() - aXScaleValue.getMin()) * pixXPerValue));
+						yps[j + 1] = (int) (aRect.getY() - ((point.getY() - aYScaleValue.getMin()) * pixYPerValue));
 					}
-					xps[0] = (int) (rtChart.getX());
-					yps[0] = (int) (rtChart.getY());
-					xps[points.size() + 1] = (int) (rtChart.getX() + rtChart.getWidth());
-					yps[points.size() + 1] = (int) (rtChart.getY());
+					xps[0] = (int) (xps[1]);
+					yps[0] = (int) (aRect.getY());
+					xps[points.size() + 1] = (int) (xps[points.size()]);
+					yps[points.size() + 1] = (int) (aRect.getY());
 
-					Color color = looks.getSeriesFillColor(index, series);
-					GradientPaint paint = new GradientPaint(0f, rtChart.getY() - rtChart.getHeight(), color, 0f, rtChart.getY(), new Color(
-							color.getRed(), color.getGreen(), color.getBlue(), 0));
-					g.setPaint(paint);
-					g.fillPolygon(new Polygon(xps, yps, points.size() + 2));
+					Color fillColor = aStyle.getSeriesFillColor(index, series);
+					if (ObjectUtility.isNotNull(fillColor)) {
+						GradientPaint paint = new GradientPaint(0f, aRect.getY() - aRect.getHeight(), fillColor, 0f, aRect.getY(), new Color(
+								fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0));
+						g.setPaint(paint);
+						g.fillPolygon(new Polygon(xps, yps, points.size() + 2));
+					}
 				}
 
 				// Draw series line
 				{
-					float xps[] = new float[points.size()];
-					float yps[] = new float[points.size()];
-					for (int j = 0; j < points.size(); j++) {
-						ScatterSeriesPoint point = points.get(j);
-						xps[j] = (int) (rtChart.getX() + ((point.getX() - xScaleValue.getMin()) * pixXPerValue));
-						yps[j] = (int) (rtChart.getY() - ((point.getY() - yScaleValue.getMin()) * pixYPerValue));
+					Stroke stroke = aStyle.getSeriesStroke(index, series);
+					Color strokeColor = aStyle.getSeriesStrokeColor(index, series);
+					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+						float xps[] = new float[points.size()];
+						float yps[] = new float[points.size()];
+						for (int j = 0; j < points.size(); j++) {
+							ScatterSeriesPoint point = points.get(j);
+							xps[j] = (int) (aRect.getX() + ((point.getX() - aXScaleValue.getMin()) * pixXPerValue));
+							yps[j] = (int) (aRect.getY() - ((point.getY() - aYScaleValue.getMin()) * pixYPerValue));
+						}
+						g.setStroke(stroke, strokeColor);
+						g.drawPolyline(xps, yps, points.size());
 					}
-					g.setColor(looks.getSeriesStrokeColor(index, series));
-					g.setStroke(looks.getSeriesStroke(index, series));
-					g.drawPolyline(xps, yps, points.size());
 				}
 
-				g.clearClip();
+				if (!aStyle.isOverflow()) {
+					g.clearClip();
+				}
 
 				// Draw series marker
 				{
-					Marker seriesMarker = looks.getSeriesMarker(index, series);
+					Marker seriesMarker = aStyle.getSeriesMarker(index, series);
 					for (int j = 0; j < points.size(); j++) {
 						ScatterSeriesPoint point = points.get(j);
 
-						if (point.getX() < xScaleValue.getMin() || point.getX() > xScaleValue.getMax() || point.getY() < yScaleValue.getMin()
-								|| point.getY() > yScaleValue.getMax()) {
-							continue;
+						if (!aStyle.isOverflow()) {
+							if (point.getX() < aXScaleValue.getMin() || point.getX() > aXScaleValue.getMax() || point.getY() < aYScaleValue.getMin()
+									|| point.getY() > aYScaleValue.getMax()) {
+								continue;
+							}
 						}
 
-						Marker pointMarker = looks.getSeriesPointMarker(index, series, j, point);
-						Marker marker = (null != pointMarker) ? pointMarker : seriesMarker;
-						if (null != marker) {
-							int xMarker = (int) (rtChart.getX() + ((point.getX() - xScaleValue.getMin()) * pixXPerValue));
-							int yMarker = (int) (rtChart.getY() - ((point.getY() - yScaleValue.getMin()) * pixYPerValue));
+						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
+						Marker marker = (Marker) getNotNullObject(pointMarker, seriesMarker);
+						if (ObjectUtility.isNotNull(marker)) {
+							float xMarker = (float) (aRect.getX() + ((point.getX() - aXScaleValue.getMin()) * pixXPerValue));
+							float yMarker = (float) (aRect.getY() - ((point.getY() - aYScaleValue.getMin()) * pixYPerValue));
 							Size size = marker.getSize();
 
 							int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
@@ -280,20 +340,11 @@ public class ScatterPlot extends AbstractPlot {
 			}
 
 		}
-
-		// Draw Legend
-		if (null != rtLegend) {
-			drawLegend(g, rtLegend);
-		}
-		// Draw title
-		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), looks.getTitleDesign(), rtTitle);
-		}
-
-		return true;
 	}
 
 	private ScaleValue[] getXYScaleValue() {
+		ScatterDataset dataset = getDataset();
+
 		// データ最小値・最大値取得
 		Double xDataMinValue = null;
 		Double xDataMaxValue = null;
@@ -326,28 +377,52 @@ public class ScatterPlot extends AbstractPlot {
 		double xMinValue = axisX.getMinimumValue();
 		double xMaxValue = axisX.getMaximumValue();
 		double xScale = axisX.getScale();
+		if (axisX.isMaximumValueAutoFit()) {
+			if (null != xDataMaxValue) {
+				xMaxValue = xDataMaxValue;
+			}
+		}
 		if (axisX.isMinimumValueAutoFit()) {
 			if (null != xDataMinValue) {
 				xMinValue = xDataMinValue;
 			}
-		}
-		if (axisX.isMaximumValueAutoFit()) {
-			if (null != xDataMaxValue) {
-				xMaxValue = xDataMaxValue;
+			// TODO: ゼロに近づける
+			if (xMinValue > 0) {
+				if (xMinValue <= (xMaxValue - xMinValue) / 2) {
+					xMinValue = 0.f;
+				}
 			}
 		}
 		if (axisX.isScaleAutoFit()) {
 			double dif = xMaxValue - xMinValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				xScale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				xScale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				xScale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				xScale = scaleDif;
 			} else {
-				xScale = scaleDif / 10;
+				xScale = scaleDif * 2;
 			}
 		}
+
+		// TODO: 全て同じ数値の場合の対応
+		if (0 == xScale) {
+			if (0 == xMinValue) {
+				xMinValue = 0;
+				xMaxValue = 1;
+				xScale = 1;
+			} else {
+				int logMin = (int) Math.log10(xMinValue);
+				double scaleMin = Math.pow(10, logMin);
+				xScale = scaleMin;
+				xMaxValue = xMinValue + xScale;
+				xMinValue = xMinValue - xScale;
+			}
+		}
+
 		ScaleValue xScaleValue = new ScaleValue(xMinValue, xMaxValue, xScale);
 		debug(String.format("X axis minimum value : %f", xMinValue));
 		debug(String.format("X axis maximum value : %f", xMaxValue));
@@ -356,28 +431,46 @@ public class ScatterPlot extends AbstractPlot {
 		double yMinValue = axisY.getMinimumValue();
 		double yMaxValue = axisY.getMaximumValue();
 		double yScale = axisY.getScale();
-		if (axisY.isMinimumValueAutoFit()) {
-			if (null != yDataMinValue) {
-				yMinValue = yDataMinValue;
-			}
-		}
 		if (axisY.isMaximumValueAutoFit()) {
 			if (null != yDataMaxValue) {
 				yMaxValue = yDataMaxValue;
+			}
+		}
+		if (axisY.isMinimumValueAutoFit()) {
+			if (null != yDataMinValue) {
+				yMinValue = yDataMinValue;
 			}
 		}
 		if (axisY.isScaleAutoFit()) {
 			double dif = yMaxValue - yMinValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				yScale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				yScale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				yScale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				yScale = scaleDif;
 			} else {
-				yScale = scaleDif / 10;
+				yScale = scaleDif * 2;
 			}
 		}
+
+		// TODO: 全て同じ数値の場合の対応
+		if (0 == yScale) {
+			if (0 == yMinValue) {
+				yMinValue = 0;
+				yMaxValue = 1;
+				yScale = 1;
+			} else {
+				int logMin = (int) Math.log10(yMinValue);
+				double scaleMin = Math.pow(10, logMin);
+				yScale = scaleMin;
+				yMaxValue = yMinValue + yScale;
+				yMinValue = yMinValue - yScale;
+			}
+		}
+
 		ScaleValue yScaleValue = new ScaleValue(yMinValue, yMaxValue, yScale);
 		debug(String.format("Y axis minimum value : %f", yMinValue));
 		debug(String.format("Y axis maximum value : %f", yMaxValue));
@@ -389,148 +482,11 @@ public class ScatterPlot extends AbstractPlot {
 		return result;
 	}
 
-	private Rect fitLegend(final Graphics g, Rect rtChart) {
-		Rect rtLegend = null;
-		if (null != looks.getLegendDesign() && null != dataset && null != dataset.getSeriesList() && 0 < dataset.getSeriesList().size()) {
-			LegendDesign design = looks.getLegendDesign();
-			if (design.isDisplay()) {
-				rtLegend = new Rect();
-
-				Margin margin = design.getMargin();
-				Padding padding = design.getPadding();
-
-				Font font = design.getFont();
-				FontMetrics fm = g.getFontMetrics(font);
-				LegendPosition pos = design.getPosition();
-
-				// get size
-				if (LegendPosition.Top == pos || LegendPosition.Bottom == pos) {
-					for (int i = 0; i < dataset.getSeriesList().size(); i++) {
-						ScatterSeries series = dataset.getSeriesList().get(i);
-
-						int strWidth = fm.stringWidth(series.getTitle());
-						rtLegend.setHeight(font.getSize());
-						rtLegend.addWidth((font.getSize() * 2) + strWidth);
-						if (0 < i) {
-							rtLegend.addWidth(design.getSpace());
-						}
-					}
-				} else if (LegendPosition.Left == pos || LegendPosition.Right == pos) {
-					for (int i = 0; i < dataset.getSeriesList().size(); i++) {
-						ScatterSeries series = dataset.getSeriesList().get(i);
-
-						int strWidth = fm.stringWidth(series.getTitle());
-						rtLegend.addHeight(font.getSize());
-						rtLegend.setWidth(Math.max(rtLegend.getWidth(), (font.getSize() * 2) + strWidth));
-						if (0 < i) {
-							rtLegend.addHeight(design.getSpace());
-						}
-					}
-				}
-				if (null != margin) { // Add margin
-					rtLegend.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
-				}
-				if (null != padding) { // Add padding
-					rtLegend.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
-				}
-
-				// get point and resize chart
-				if (LegendPosition.Top == pos) {
-					rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY());
-
-					rtChart.addY(rtLegend.getHeight());
-					rtChart.subtractHeight(rtLegend.getHeight());
-				} else if (LegendPosition.Bottom == pos) {
-					rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY() + rtChart.getHeight()
-							- rtLegend.getHeight());
-
-					rtChart.subtractHeight(rtLegend.getHeight());
-				} else if (LegendPosition.Left == pos) {
-					rtLegend.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
-
-					rtChart.addX(rtLegend.getWidth());
-					rtChart.subtractWidth(rtLegend.getWidth());
-				} else if (LegendPosition.Right == pos) {
-					rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
-							rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
-
-					rtChart.subtractWidth(rtLegend.getWidth());
-				}
-			}
-		}
-		return rtLegend;
-	}
-
-	private void drawLegend(final Graphics g, final Rect aRect) {
-		LegendDesign design = looks.getLegendDesign();
-
-		Margin mgn = (null != design.getMargin()) ? design.getMargin() : new Margin();
-		// fill background
-		if (null != design.getBackgroundColor()) {
-			g.setColor(design.getBackgroundColor());
-			g.fillRect((int) (aRect.getX() + mgn.getLeft()), (int) (aRect.getY() + mgn.getTop()), (int) (aRect.getWidth() - mgn.getHorizontalSize()),
-					(int) (aRect.getHeight() - mgn.getVerticalSize()));
-		}
-		// draw stroke
-		if (null != design.getStroke() && null != design.getStrokeColor()) {
-			g.setStroke(design.getStroke());
-			g.setColor(design.getStrokeColor());
-			g.drawRect((int) (aRect.getX() + mgn.getLeft()), (int) (aRect.getY() + mgn.getTop()), (int) (aRect.getWidth() - mgn.getHorizontalSize()),
-					(int) (aRect.getHeight() - mgn.getVerticalSize()));
-		}
-
-		Padding padding = (null != design.getPadding()) ? design.getPadding() : new Padding();
-		Font font = design.getFont();
-		FontMetrics fm = g.getFontMetrics(font);
-		int fontHeight = font.getSize();
-		if (design.getPosition() == LegendPosition.Top || design.getPosition() == LegendPosition.Bottom) {
-			List<ScatterSeries> seriesList = dataset.getSeriesList();
-			int xLegend = (int) (aRect.getX() + mgn.getLeft() + padding.getLeft());
-			int yLegend = (int) (aRect.getY() + mgn.getTop() + padding.getTop());
-			for (int i = 0; i < seriesList.size(); i++) {
-				ScatterSeries series = seriesList.get(i);
-				// draw line
-				g.setStroke(looks.getSeriesStroke(i, series), looks.getSeriesStrokeColor(i, series));
-				g.drawLine(xLegend + 3, yLegend + (fontHeight / 2), xLegend + (fontHeight * 2) - 3, yLegend + (fontHeight / 2));
-				// draw marker
-				Marker marker = looks.getSeriesMarker(i, series);
-				if (null != marker) {
-					marker.draw(g, xLegend + (fontHeight * 2 - marker.getSize().getWidth()) / 2, yLegend
-							+ (fontHeight - marker.getSize().getHeight()) / 2);
-				}
-				// draw title
-				int strWidth = fm.stringWidth(series.getTitle());
-				g.setFont(font, design.getFontColor());
-				g.drawStringA(series.getTitle(), (fontHeight * 2) + xLegend, yLegend);
-
-				xLegend += design.getSpace() + (fontHeight * 2) + strWidth;
-			}
-		} else if (design.getPosition() == LegendPosition.Left || design.getPosition() == LegendPosition.Right) {
-			List<ScatterSeries> seriesList = dataset.getSeriesList();
-			int xLegend = (int) (aRect.getX() + mgn.getLeft() + padding.getLeft());
-			int yLegend = (int) (aRect.getY() + mgn.getTop() + padding.getTop());
-			for (int i = 0; i < seriesList.size(); i++) {
-				ScatterSeries series = seriesList.get(i);
-				// draw line
-				g.setStroke(looks.getSeriesStroke(i, series), looks.getSeriesStrokeColor(i, series));
-				g.drawLine(xLegend + 3, yLegend + (fontHeight / 2), xLegend + (fontHeight * 2) - 3, yLegend + (fontHeight / 2));
-				// draw marker
-				Marker marker = looks.getSeriesMarker(i, series);
-				if (null != marker) {
-					marker.draw(g, xLegend + (fontHeight * 2 - marker.getSize().getWidth()) / 2, yLegend
-							+ (fontHeight - marker.getSize().getHeight()) / 2);
-				}
-				// draw title
-				g.setFont(font, design.getFontColor());
-				g.drawStringA(series.getTitle(), (fontHeight * 2) + xLegend, yLegend);
-
-				yLegend += design.getSpace() + fontHeight;
-			}
-		}
-	}
-
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aXScaleValue, final ScaleValue aYScaleValue,
 			final float aFontMargin) {
+		ScatterChartDesign design = getChartDesign();
+		ScatterChartStyle style = design.getChartStyle();
+
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
 
 		double xDifValue = aXScaleValue.getDiff();
@@ -542,13 +498,15 @@ public class ScatterPlot extends AbstractPlot {
 		{
 			{
 				float maxYLabelWidth = 0.0f;
-				FontMetrics fm = g.getFontMetrics(looks.getYAxisFont());
+				FontMetrics fm = g.getFontMetrics(style.getYAxisScaleLabelFont());
 				DisplayFormat df = axisY.getDisplayFormat();
 				for (double value = aYScaleValue.getMin(); value <= aYScaleValue.getMax(); value += aYScaleValue.getScale()) {
 					String str = df.toString(value);
-					int width = fm.stringWidth(str);
-					if (maxYLabelWidth < width) {
-						maxYLabelWidth = width;
+					if (StringUtility.isNotEmpty(str)) {
+						int width = fm.stringWidth(str);
+						if (maxYLabelWidth < width) {
+							maxYLabelWidth = width;
+						}
 					}
 				}
 				if (0 < maxYLabelWidth) {
@@ -563,15 +521,15 @@ public class ScatterPlot extends AbstractPlot {
 			pixYPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / yDifValue;
 
 			{
-				FontMetrics fm = g.getFontMetrics(looks.getXAxisFont());
+				FontMetrics fm = g.getFontMetrics(style.getXAxisScaleLabelFont());
 				DisplayFormat df = axisX.getDisplayFormat();
 				float minLeft = 0.f;
 				float maxRight = aRtChart.getWidth();
 				for (double value = aXScaleValue.getMin(); value <= aXScaleValue.getMax(); value += aXScaleValue.getScale()) {
 					String str = df.toString(value);
-					int width = fm.stringWidth(str);
-					if (0 < width) {
-						margin.setBottom(looks.getXAxisFont().getSize() + aFontMargin);
+					if (StringUtility.isNotEmpty(str)) {
+						int width = fm.stringWidth(str);
+						margin.setBottom(style.getXAxisScaleLabelFont().getSize() + aFontMargin);
 
 						float x = (float) (margin.getLeft() + ((value - aXScaleValue.getMin()) * pixXPerValue));
 						float left = x - (width / 2);
@@ -597,13 +555,13 @@ public class ScatterPlot extends AbstractPlot {
 			pixYPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / yDifValue;
 
 			{
-				int fontHeight = looks.getYAxisFont().getSize();
+				int fontHeight = style.getYAxisScaleLabelFont().getSize();
 				DisplayFormat df = axisY.getDisplayFormat();
 				float minTop = 0.f;
 				for (double value = aYScaleValue.getMin(); value <= aYScaleValue.getMax(); value += aYScaleValue.getScale()) {
 					float y = (float) (aRtChart.getHeight() - margin.getBottom() - pixYPerValue * (value - aYScaleValue.getMin()));
 					String str = df.toString(value);
-					if (0 < str.length()) {
+					if (StringUtility.isNotEmpty(str)) {
 						y -= fontHeight / 2;
 						if (minTop > y) {
 							minTop = y;

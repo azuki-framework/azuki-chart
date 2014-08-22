@@ -20,6 +20,9 @@ package org.azkfw.chart.charts.bar;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.azkfw.chart.series.AbstractSeries;
+import org.azkfw.chart.series.SeriesPoint;
+
 /**
  * このクラスは、棒グラフのシリーズ情報を保持したクラスです。
  * 
@@ -27,12 +30,7 @@ import java.util.List;
  * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class BarSeries {
-
-	/**
-	 * タイトル
-	 */
-	private String title;
+public class BarSeries extends AbstractSeries {
 
 	/**
 	 * ポイント
@@ -43,7 +41,7 @@ public class BarSeries {
 	 * コンストラクタ
 	 */
 	public BarSeries() {
-		title = null;
+		super();
 		points = new ArrayList<BarSeriesPoint>();
 	}
 
@@ -53,7 +51,7 @@ public class BarSeries {
 	 * @param aTitle タイトル
 	 */
 	public BarSeries(final String aTitle) {
-		title = aTitle;
+		super(aTitle);
 		points = new ArrayList<BarSeriesPoint>();
 	}
 
@@ -64,26 +62,8 @@ public class BarSeries {
 	 * @param aPoints ポイント
 	 */
 	public BarSeries(final String aTitle, final List<BarSeriesPoint> aPoints) {
-		title = aTitle;
+		super(aTitle);
 		points = new ArrayList<>(aPoints);
-	}
-
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public void setTitle(final String aTitle) {
-		title = aTitle;
-	}
-
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public String getTitle() {
-		return title;
 	}
 
 	/**
@@ -113,4 +93,46 @@ public class BarSeries {
 	public List<BarSeriesPoint> getPoints() {
 		return points;
 	}
+
+	/**
+	 * このクラスは、棒グラフのポイント情報を保持したクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/25
+	 * @author Kawakicchi
+	 */
+	public static class BarSeriesPoint implements SeriesPoint {
+
+		/**
+		 * 値
+		 */
+		private double value;
+
+		/**
+		 * コンストラクタ
+		 */
+		public BarSeriesPoint() {
+			value = 1.0;
+		}
+
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param aRange 値
+		 */
+		public BarSeriesPoint(final double aValue) {
+			value = aValue;
+		}
+
+		/**
+		 * 値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getValue() {
+			return value;
+		}
+
+	}
+
 }

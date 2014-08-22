@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.charts.pie;
 
+import org.azkfw.chart.axis.AbstractAxis;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.displayformat.StringDisplayFormat;
 
@@ -27,7 +28,7 @@ import org.azkfw.chart.displayformat.StringDisplayFormat;
  * @version 1.0.0 2014/06/26
  * @author Kawakicchi
  */
-public class PieAxis {
+public class PieAxis extends AbstractAxis {
 
 	/** 表示形式 */
 	private DisplayFormat displayFormat;
@@ -44,7 +45,7 @@ public class PieAxis {
 	 * 
 	 * @param aDisplayFormat 表示形式
 	 */
-	public void setDisplayFormat(final DisplayFormat aDisplayFormat) {
+	public final void setDisplayFormat(final DisplayFormat aDisplayFormat) {
 		displayFormat = aDisplayFormat;
 	}
 
@@ -53,7 +54,7 @@ public class PieAxis {
 	 * 
 	 * @return 表示形式
 	 */
-	public DisplayFormat getDisplayFormat() {
+	public final DisplayFormat getDisplayFormat() {
 		return displayFormat;
 	}
 }

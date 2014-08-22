@@ -29,18 +29,26 @@ public class NumericDisplayFormat implements DisplayFormat {
 	/** 小数点スケール */
 	private int decimalScale;
 
+	/**
+	 * コンストラクタ
+	 */
 	public NumericDisplayFormat() {
 		decimalScale = 0;
 	}
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aScale 小数点桁数
+	 */
 	public NumericDisplayFormat(final int aDecimalScale) {
 		decimalScale = aDecimalScale;
 	}
 
 	/**
-	 * 少雨数点
+	 * 小数点桁数を設定する。
 	 * 
-	 * @param aScale
+	 * @param aScale 小数点桁数
 	 */
 	public void setDecimalScale(final int aScale) {
 		decimalScale = aScale;

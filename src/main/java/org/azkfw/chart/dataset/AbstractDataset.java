@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.dataset;
 
+
 /**
  * このクラスは、データセット機能の実装を行うための基底クラスです。
  * 
@@ -45,20 +46,12 @@ public abstract class AbstractDataset implements Dataset {
 		title = aTitle;
 	}
 
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
+	@Override
 	public final void setTitle(final String aTitle) {
 		title = aTitle;
 	}
 
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
+	@Override
 	public final String getTitle() {
 		return title;
 	}

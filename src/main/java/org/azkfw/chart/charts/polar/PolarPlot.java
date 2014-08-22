@@ -17,22 +17,27 @@
  */
 package org.azkfw.chart.charts.polar;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.MultipleGradientPaint;
+import java.awt.RadialGradientPaint;
+import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
 import java.util.List;
 
-import org.azkfw.chart.looks.legend.LegendDesign;
-import org.azkfw.chart.looks.legend.LegendDesign.LegendPosition;
-import org.azkfw.chart.looks.marker.Marker;
-import org.azkfw.chart.plot.AbstractPlot;
+import org.azkfw.chart.charts.polar.PolarChartDesign.PolarChartStyle;
+import org.azkfw.chart.charts.polar.PolarSeries.PolarSeriesPoint;
+import org.azkfw.chart.design.marker.Marker;
+import org.azkfw.chart.displayformat.DisplayFormat;
+import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
-import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
 import org.azkfw.graphics.Size;
+import org.azkfw.util.ObjectUtility;
+import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、極座標グラフのプロット情報を保持するクラスです。
@@ -41,42 +46,33 @@ import org.azkfw.graphics.Size;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarPlot extends AbstractPlot {
+public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign> {
 
 	/** 軸情報 */
 	private PolarAxis axis;
-
-	/** データセット */
-	private PolarDataset dataset;
-
-	/** Looks */
-	private PolarLooks looks;
 
 	/**
 	 * コンストラクタ
 	 */
 	public PolarPlot() {
+		super(PolarPlot.class);
+
 		axis = new PolarAxis();
-		dataset = null;
-		looks = new PolarLooks();
+
+		setChartDesign(PolarChartDesign.DefalutDesign);
 	}
 
 	/**
-	 * ルックス情報を設定する。
-	 * 
-	 * @param aLooks ルックス情報
-	 */
-	public void setLooks(final PolarLooks aLooks) {
-		looks = aLooks;
-	}
-
-	/**
-	 * データセットを設定する。
+	 * コンストラクタ
 	 * 
 	 * @param aDataset データセット
 	 */
-	public void setDataset(final PolarDataset aDataset) {
-		dataset = aDataset;
+	public PolarPlot(final PolarDataset aDataset) {
+		super(PolarPlot.class, aDataset);
+
+		axis = new PolarAxis();
+
+		setChartDesign(PolarChartDesign.DefalutDesign);
 	}
 
 	/**
@@ -90,17 +86,16 @@ public class PolarPlot extends AbstractPlot {
 
 	@Override
 	protected boolean doDraw(final Graphics g, final Rect aRect) {
-		//Size szChart = null;
-		//Point ptChartMiddle = null;
-		//szChart = new Size(aRect.getWidth(), aRect.getHeight());
-		//ptChartMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
+		PolarDataset dataset = getDataset();
+		PolarChartDesign design = getChartDesign();
+		PolarChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
 		// タイトル適用
-		Rect rtTitle = fitTitle(g, dataset.getTitle(), looks.getTitleDesign(), rtChartPre);
+		Rect rtTitle = fitTitle(g, rtChartPre);
 		// 凡例適用
-		Rect rtLegend = fitLegend(g, rtChartPre);
+		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
@@ -110,11 +105,6 @@ public class PolarPlot extends AbstractPlot {
 		Margin margin = fitChart(g, rtChartPre, scaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
-		// スケール計算
-		double difValue = scaleValue.getDiff();
-		double pixXPerValue = ((rtChartPre.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
-		double pixYPerValue = ((rtChartPre.getHeight() - margin.getVerticalSize()) / 2.f) / difValue;
-
 		Rect rtChart = new Rect();
 		rtChart.setX(rtChartPre.getX() + margin.getLeft());
 		rtChart.setY(rtChartPre.getY() + margin.getTop());
@@ -123,132 +113,209 @@ public class PolarPlot extends AbstractPlot {
 
 		Point ptChartMiddle = new Point(rtChart.getX() + (rtChart.getWidth() / 2.f), rtChart.getY() + (rtChart.getHeight() / 2.f));
 
-		// Draw assist axis
-		if (axis.isAssistAxis()) {
-			g.setStroke(looks.getAssistAxisLineStroke(), looks.getAssistAxisLineColor());
-			for (double angle = 0.0; angle < 360.f; angle += axis.getAssistAxisAngle()) {
-				if (0.0 == angle || 90.0 == angle || 180.0 == angle || 270.0 == angle) {
-					// TODO: 主軸がある時のみ描画しない処理を追加
-					continue;
+		// 円に調整
+		float minRange = Math.min(rtChart.getWidth(), rtChartPre.getHeight());
+		rtChart.setX(ptChartMiddle.getX() - (minRange / 2));
+		rtChart.setY(ptChartMiddle.getY() - (minRange / 2));
+		rtChart.setWidth(minRange);
+		rtChart.setHeight(minRange);
+
+		// スケール計算(円のためX,Yどちらでもいい)
+		double difValue = scaleValue.getDiff();
+		double pixPerValue = (rtChart.getWidth() / 2.f) / difValue;
+
+		// 背景描画
+		if (ObjectUtility.isNotNull(style.getBackgroundColor())) {
+			g.setColor(style.getBackgroundColor());
+			g.fillArc(rtChart.getX(), rtChart.getY(), rtChart.getWidth(), rtChart.getHeight(), 0, 360);
+		}
+
+		{ // Y軸
+			// 目盛線描画
+			Stroke scaleLineStroke = style.getAxisScaleLineStroke();
+			Color scaleLineColor = style.getAxisScaleLineColor();
+			if (ObjectUtility.isAllNotNull(scaleLineStroke, scaleLineColor)) {
+				g.setStroke(scaleLineStroke, scaleLineColor);
+				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+					float range = (float) (pixPerValue * (value - scaleValue.getMin()));
+
+					g.drawArc(ptChartMiddle.getX() - range, ptChartMiddle.getY() - range, range * 2.f, range * 2.f, 0, 360);
 				}
-				float x = (float) (ptChartMiddle.getX() + (pixXPerValue * scaleValue.getMax() * Math.cos(RADIANS(angle))));
-				float y = (float) (ptChartMiddle.getY() - (pixYPerValue * scaleValue.getMax() * Math.sin(RADIANS(angle))));
-				g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), x, y);
 			}
-		}
+			// 軸線描画
+			Stroke lineStroke = style.getAxisLineStroke();
+			Color lineColor = style.getAxisLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				g.setStroke(lineStroke, lineColor);
+				g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX() + (rtChart.getWidth() / 2.f), ptChartMiddle.getY());
+				// 目盛
+				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+					float range = (float) (pixPerValue * (value - scaleValue.getMin()));
 
-		// Draw axis
-		g.setStroke(looks.getAxisLineStroke(), looks.getAxisLineColor());
-		g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX() - (rtChart.getWidth() / 2.f), ptChartMiddle.getY());
-		g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX() + (rtChart.getWidth() / 2.f), ptChartMiddle.getY());
-		g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX(), ptChartMiddle.getY() - (rtChart.getHeight() / 2.f));
-		g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), ptChartMiddle.getX(), ptChartMiddle.getY() + (rtChart.getHeight() / 2.f));
-
-		// Draw circle
-		g.setStroke(looks.getAxisCircleStroke(), looks.getAxisCircleColor());
-		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			float rangeX = (float) (pixXPerValue * (value - scaleValue.getMin()));
-			float rangeY = (float) (pixYPerValue * (value - scaleValue.getMin()));
-
-			g.drawArc(ptChartMiddle.getX() - rangeX, ptChartMiddle.getY() - rangeY, rangeX * 2.f, rangeY * 2.f, 0, 360);
-		}
-
-		// Draw axis scale
-		g.setStroke(looks.getAxisLineStroke(), looks.getAxisLineColor());
-		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			float range = (float) (pixXPerValue * (value - scaleValue.getMin()));
-
-			g.drawLine(ptChartMiddle.getX() + range, ptChartMiddle.getY(), ptChartMiddle.getX() + range, ptChartMiddle.getY() + fontMargin);
-		}
-
-		// Draw series
-		List<PolarSeries> seriesList = dataset.getSeriesList();
-		for (int index = 0; index < seriesList.size(); index++) {
-			PolarSeries series = seriesList.get(index);
-
-			List<PolarSeriesPoint> points = series.getPoints();
-			float[] pxs = new float[points.size() + 1];
-			float[] pys = new float[points.size() + 1];
-			for (int i = 0; i < points.size(); i++) {
-				PolarSeriesPoint point = points.get(i);
-
-				float x = (float) (ptChartMiddle.getX() + pixXPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
-				float y = (float) (ptChartMiddle.getY() - pixYPerValue * point.getRange() * Math.sin(RADIANS(point.getAngle())));
-				pxs[i] = (int) pixelLimit(x);
-				pys[i] = (int) pixelLimit(y);
-			}
-			pxs[points.size()] = pxs[0];
-			pys[points.size()] = pys[0];
-
-			// Draw series fill
-			Color fillColor = looks.getSeriesFillColor(index, series);
-			if (null != fillColor) {
-				g.setColor(fillColor);
-				g.fillPolygon(pxs, pys, points.size() + 1);
-			}
-			// Draw series line
-			Color strokeColor = looks.getSeriesStrokeColor(index, series);
-			if (null != strokeColor) {
-				g.setStroke(looks.getSeriesStroke(index, series), strokeColor);
-				g.drawPolygon(pxs, pys, points.size() + 1);
-			}
-
-			// Draw series marker
-			{
-				Marker seriesMarker = looks.getSeriesMarker(index, series);
-				for (int j = 0; j < points.size(); j++) {
-					PolarSeriesPoint point = points.get(j);
-
-					if (point.getRange() < scaleValue.getMin() || point.getRange() > scaleValue.getMax()) {
-						continue;
-					}
-
-					Marker pointMarker = looks.getSeriesPointMarker(index, series, j, point);
-					Marker marker = (null != pointMarker) ? pointMarker : seriesMarker;
-					if (null != marker) {
-						float x = (float) (ptChartMiddle.getX() + pixXPerValue * point.getRange() * Math.cos(RADIANS(point.getAngle())));
-						float y = (float) (ptChartMiddle.getY() - pixYPerValue * point.getRange() * Math.sin(RADIANS(point.getAngle())));
-						x = (int) pixelLimit(x);
-						y = (int) pixelLimit(y);
-
-						Size size = marker.getSize();
-
-						int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
-						int my = (0 == (int) size.getHeight() % 2) ? 0 : 1;
-						marker.draw(g, x - (size.getWidth() / 2) + mx, y - (size.getHeight() / 2) + my);
-					}
-
+					g.drawLine(ptChartMiddle.getX() + range, ptChartMiddle.getY(), ptChartMiddle.getX() + range, ptChartMiddle.getY() + fontMargin);
 				}
+			}
+		}
+		{ // X軸
+			// 目盛線描画
+			Stroke scaleLineStroke = style.getCircleScaleLineStroke();
+			Color scaleLineColor = style.getCircleScaleLineColor();
+			if (ObjectUtility.isAllNotNull(scaleLineStroke, scaleLineColor)) {
+				g.setStroke(scaleLineStroke, scaleLineColor);
+				for (double angle = 0.0; angle < 360.f; angle += style.getCircleScaleAngle()) {
+					float x = (float) (ptChartMiddle.getX() + ((scaleValue.getDiff()) * pixPerValue * Math.cos(RADIANS(angle))));
+					float y = (float) (ptChartMiddle.getY() - ((scaleValue.getDiff()) * pixPerValue * Math.sin(RADIANS(angle))));
 
+					g.drawLine(ptChartMiddle.getX(), ptChartMiddle.getY(), x, y);
+				}
+			}
+			// 軸線描画
+			Stroke lineStroke = style.getCircleLineStroke();
+			Color lineColor = style.getCircleLineColor();
+			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
+				float range = (float) (pixPerValue * scaleValue.getDiff());
+
+				g.setStroke(lineStroke, lineColor);
+				g.drawArc(ptChartMiddle.getX() - range, ptChartMiddle.getY() - range, range * 2.f, range * 2.f, 0, 360);
 			}
 		}
 
-		// Draw axis scale
-		FontMetrics fm = g.getFontMetrics(looks.getAxisFont());
-		g.setColor(looks.getAxisFontColor());
-		g.setFont(looks.getAxisFont());
-		g.setStroke(new BasicStroke(1.f));
-		for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
-			float range = (float) (pixXPerValue * (value - scaleValue.getMin()));
+		// Draw dataset
+		drawDataset(g, dataset, scaleValue, style, rtChart);
 
-			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
-			int strWidth = fm.stringWidth(str);
-			g.drawStringA(str, ptChartMiddle.getX() + range - (strWidth / 2), ptChartMiddle.getY() + fontMargin);
+		// 目盛描画(Y軸)
+		Font scaleLabelFont = style.getAxisScaleLabelFont();
+		Color scaleLabelColor = style.getAxisScaleLabelColor();
+		if (ObjectUtility.isAllNotNull(scaleLabelFont, scaleLabelColor)) {
+			FontMetrics fm = g.getFontMetrics(style.getAxisScaleLabelFont());
+			DisplayFormat df = axis.getDisplayFormat();
+			g.setFont(scaleLabelFont, scaleLabelColor);
+			for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
+				String str = df.toString(value);
+				if (StringUtility.isNotEmpty(str)) {
+					int strWidth = fm.stringWidth(str);
+					float range = (float) (pixPerValue * (value - scaleValue.getMin()));
+
+					g.drawStringA(str, ptChartMiddle.getX() + range - (strWidth / 2), ptChartMiddle.getY() + fontMargin);
+				}
+			}
 		}
 
 		// Draw Legend
-		if (null != rtLegend) {
-			drawLegend(g, rtLegend);
+		if (ObjectUtility.isNotNull(rtLegend)) {
+			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
-		if (null != rtTitle) {
-			drawTitle(g, dataset.getTitle(), looks.getTitleDesign(), rtTitle);
+		if (ObjectUtility.isNotNull(rtTitle)) {
+			drawTitle(g, rtTitle);
 		}
 
 		return true;
 	}
 
+	private void drawDataset(final Graphics g, final PolarDataset aDataset, final ScaleValue aScaleValue, final PolarChartStyle aStyle,
+			final Rect aRect) {
+		if (ObjectUtility.isNotNull(aDataset)) {
+			// 中心座標取得
+			Point ptMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
+			// スケール計算(円のためX,Yどちらでもいい)
+			double difValue = aScaleValue.getDiff();
+			double pixPerValue = (aRect.getWidth() / 2.f) / difValue;
+
+			Ellipse2D ellipse = null;
+			if (!aStyle.isOverflow()) {
+				ellipse = new Ellipse2D.Double(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
+			}
+
+			float maxRange = (float) ((aScaleValue.getMax() - aScaleValue.getMin()) * pixPerValue);
+
+			// Draw series
+			List<PolarSeries> seriesList = aDataset.getSeriesList();
+			for (int index = 0; index < seriesList.size(); index++) {
+				PolarSeries series = seriesList.get(index);
+
+				List<PolarSeriesPoint> points = series.getPoints();
+				float[] pxs = new float[points.size() + 1];
+				float[] pys = new float[points.size() + 1];
+				for (int i = 0; i < points.size(); i++) {
+					PolarSeriesPoint point = points.get(i);
+					double value = point.getRange();
+
+					float x = (float) (ptMiddle.getX() + pixPerValue * (value - aScaleValue.getMin()) * Math.cos(RADIANS(point.getAngle())));
+					float y = (float) (ptMiddle.getY() - pixPerValue * (value - aScaleValue.getMin()) * Math.sin(RADIANS(point.getAngle())));
+					pxs[i] = (int) pixelLimit(x);
+					pys[i] = (int) pixelLimit(y);
+				}
+				pxs[points.size()] = pxs[0];
+				pys[points.size()] = pys[0];
+
+				if (!aStyle.isOverflow()) {
+					g.setClip(ellipse);
+				}
+
+				// Draw series fill
+				Color fillColor = aStyle.getSeriesFillColor(index, series);
+				if (ObjectUtility.isNotNull(fillColor)) {
+					float[] dist = { 0.0f, 1.0f };
+					Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
+					RadialGradientPaint gradient = new RadialGradientPaint(ptMiddle.getX(), ptMiddle.getY(), maxRange, dist, colors,
+							MultipleGradientPaint.CycleMethod.NO_CYCLE);
+					g.setPaint(gradient);
+
+					// g.setColor(fillColor);
+					g.fillPolygon(pxs, pys, points.size() + 1);
+				}
+				// Draw series line
+				Stroke stroke = aStyle.getSeriesStroke(index, series);
+				Color strokeColor = aStyle.getSeriesStrokeColor(index, series);
+				if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+					g.setStroke(stroke, strokeColor);
+					g.drawPolygon(pxs, pys, points.size() + 1);
+				}
+
+				if (!aStyle.isOverflow()) {
+					g.clearClip();
+				}
+
+				// Draw series marker
+				{
+					Marker seriesMarker = aStyle.getSeriesMarker(index, series);
+					for (int j = 0; j < points.size(); j++) {
+						PolarSeriesPoint point = points.get(j);
+
+						if (!aStyle.isOverflow()) {
+							if (point.getRange() < aScaleValue.getMin() || point.getRange() > aScaleValue.getMax()) {
+								continue;
+							}
+						}
+
+						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
+						Marker marker = (Marker) getNotNullObject(pointMarker, seriesMarker);
+						if (ObjectUtility.isNotNull(marker)) {
+							double value = point.getRange();
+							float x = (float) (ptMiddle.getX() + pixPerValue * (value - aScaleValue.getMin()) * Math.cos(RADIANS(point.getAngle())));
+							float y = (float) (ptMiddle.getY() - pixPerValue * (value - aScaleValue.getMin()) * Math.sin(RADIANS(point.getAngle())));
+							x = pixelLimit(x);
+							y = pixelLimit(y);
+
+							Size size = marker.getSize();
+
+							int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
+							int my = (0 == (int) size.getHeight() % 2) ? 0 : 1;
+							marker.draw(g, x - (size.getWidth() / 2) + mx, y - (size.getHeight() / 2) + my);
+						}
+
+					}
+
+				}
+			}
+		}
+
+	}
+
 	private ScaleValue getScaleValue() {
+		PolarDataset dataset = getDataset();
+
 		// データ最小値・最大値取得
 		Double dataMinValue = null;
 		Double dataMaxValue = null;
@@ -273,28 +340,51 @@ public class PolarPlot extends AbstractPlot {
 		double minValue = axis.getMinimumValue();
 		double maxValue = axis.getMaximumValue();
 		double scale = axis.getScale();
+		if (axis.isMaximumValueAutoFit()) {
+			if (null != dataMaxValue) {
+				maxValue = dataMaxValue;
+			}
+		}
 		if (axis.isMinimumValueAutoFit()) {
 			if (null != dataMinValue) {
 				minValue = dataMinValue;
 			}
-		}
-		if (axis.isMaximumValueAutoFit()) {
-			if (null != dataMaxValue) {
-				maxValue = dataMaxValue;
+			// TODO: ゼロに近づける
+			if (minValue > 0) {
+				if (minValue <= (maxValue - minValue) / 2) {
+					minValue = 0.f;
+				}
 			}
 		}
 		if (axis.isScaleAutoFit()) {
 			double dif = maxValue - minValue;
 			int logDif = (int) (Math.log10(dif));
 			double scaleDif = Math.pow(10, logDif);
-			if (dif >= scaleDif * 5) {
-				scale = scaleDif;
-			} else if (dif >= scaleDif * 2) {
+			if (dif <= scaleDif * 1) {
+				scale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
 				scale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				scale = scaleDif;
 			} else {
-				scale = scaleDif / 10;
+				scale = scaleDif * 2;
 			}
 		}
+		// TODO: 全て同じ数値の場合の対応
+		if (0 == scale) {
+			if (0 == minValue) {
+				minValue = 0;
+				maxValue = 1;
+				scale = 1;
+			} else {
+				int logMin = (int) Math.log10(minValue);
+				double scaleMin = Math.pow(10, logMin);
+				scale = scaleMin;
+				maxValue = minValue + scale;
+				minValue = minValue - scale;
+			}
+		}
+
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
 		debug(String.format("Axis minimum value : %f", minValue));
 		debug(String.format("Axis maximum value : %f", maxValue));
@@ -303,175 +393,40 @@ public class PolarPlot extends AbstractPlot {
 		return scaleValue;
 	}
 
-	private Rect fitLegend(final Graphics g, Rect rtChart) {
-		Rect rtLegend = null;
-		if (null != looks.getLegendDesign() && null != dataset && null != dataset.getSeriesList() && 0 < dataset.getSeriesList().size()) {
-			LegendDesign design = looks.getLegendDesign();
-			if (design.isDisplay()) {
-				rtLegend = new Rect();
-
-				Margin margin = design.getMargin();
-				Padding padding = design.getPadding();
-
-				Font font = design.getFont();
-				FontMetrics fm = g.getFontMetrics(font);
-				LegendPosition pos = design.getPosition();
-
-				// get size
-				if (LegendPosition.Top == pos || LegendPosition.Bottom == pos) {
-					for (int i = 0; i < dataset.getSeriesList().size(); i++) {
-						PolarSeries series = dataset.getSeriesList().get(i);
-
-						int strWidth = fm.stringWidth(series.getTitle());
-						rtLegend.setHeight(font.getSize());
-						rtLegend.addWidth((font.getSize() * 2) + strWidth);
-						if (0 < i) {
-							rtLegend.addWidth(design.getSpace());
-						}
-					}
-				} else if (LegendPosition.Left == pos || LegendPosition.Right == pos) {
-					for (int i = 0; i < dataset.getSeriesList().size(); i++) {
-						PolarSeries series = dataset.getSeriesList().get(i);
-
-						int strWidth = fm.stringWidth(series.getTitle());
-						rtLegend.addHeight(font.getSize());
-						rtLegend.setWidth(Math.max(rtLegend.getWidth(), (font.getSize() * 2) + strWidth));
-						if (0 < i) {
-							rtLegend.addHeight(design.getSpace());
-						}
-					}
-				}
-				if (null != margin) { // Add margin
-					rtLegend.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
-				}
-				if (null != padding) { // Add padding
-					rtLegend.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
-				}
-
-				// get point and resize chart
-				if (LegendPosition.Top == pos) {
-					rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY());
-
-					rtChart.addY(rtLegend.getHeight());
-					rtChart.subtractHeight(rtLegend.getHeight());
-				} else if (LegendPosition.Bottom == pos) {
-					rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY() + rtChart.getHeight()
-							- rtLegend.getHeight());
-
-					rtChart.subtractHeight(rtLegend.getHeight());
-				} else if (LegendPosition.Left == pos) {
-					rtLegend.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
-
-					rtChart.addX(rtLegend.getWidth());
-					rtChart.subtractWidth(rtLegend.getWidth());
-				} else if (LegendPosition.Right == pos) {
-					rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
-							rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
-
-					rtChart.subtractWidth(rtLegend.getWidth());
-				}
-			}
-		}
-		return rtLegend;
-	}
-
-	private void drawLegend(final Graphics g, final Rect aRect) {
-		LegendDesign design = looks.getLegendDesign();
-
-		Margin mgn = (null != design.getMargin()) ? design.getMargin() : new Margin();
-		// fill background
-		if (null != design.getBackgroundColor()) {
-			g.setColor(design.getBackgroundColor());
-			g.fillRect((int) (aRect.getX() + mgn.getLeft()), (int) (aRect.getY() + mgn.getTop()), (int) (aRect.getWidth() - mgn.getHorizontalSize()),
-					(int) (aRect.getHeight() - mgn.getVerticalSize()));
-		}
-		// draw stroke
-		if (null != design.getStroke() && null != design.getStrokeColor()) {
-			g.setStroke(design.getStroke());
-			g.setColor(design.getStrokeColor());
-			g.drawRect((int) (aRect.getX() + mgn.getLeft()), (int) (aRect.getY() + mgn.getTop()), (int) (aRect.getWidth() - mgn.getHorizontalSize()),
-					(int) (aRect.getHeight() - mgn.getVerticalSize()));
-		}
-
-		Padding padding = (null != design.getPadding()) ? design.getPadding() : new Padding();
-		Font font = design.getFont();
-		FontMetrics fm = g.getFontMetrics(font);
-		int fontHeight = font.getSize();
-		if (design.getPosition() == LegendPosition.Top || design.getPosition() == LegendPosition.Bottom) {
-			List<PolarSeries> seriesList = dataset.getSeriesList();
-			int xLegend = (int) (aRect.getX() + mgn.getLeft() + padding.getLeft());
-			int yLegend = (int) (aRect.getY() + mgn.getTop() + padding.getTop());
-			for (int i = 0; i < seriesList.size(); i++) {
-				PolarSeries series = seriesList.get(i);
-				// draw line
-				g.setStroke(looks.getSeriesStroke(i, series), looks.getSeriesStrokeColor(i, series));
-				g.drawLine(xLegend + 3, yLegend + (fontHeight / 2), xLegend + (fontHeight * 2) - 3, yLegend + (fontHeight / 2));
-				// draw marker
-				Marker marker = looks.getSeriesMarker(i, series);
-				if (null != marker) {
-					marker.draw(g, xLegend + (fontHeight * 2 - marker.getSize().getWidth()) / 2, yLegend
-							+ (fontHeight - marker.getSize().getHeight()) / 2);
-				}
-				// draw title
-				int strWidth = fm.stringWidth(series.getTitle());
-				g.setFont(font, design.getFontColor());
-				g.drawStringA(series.getTitle(), (fontHeight * 2) + xLegend, yLegend);
-
-				xLegend += design.getSpace() + (fontHeight * 2) + strWidth;
-			}
-		} else if (design.getPosition() == LegendPosition.Left || design.getPosition() == LegendPosition.Right) {
-			List<PolarSeries> seriesList = dataset.getSeriesList();
-			int xLegend = (int) (aRect.getX() + mgn.getLeft() + padding.getLeft());
-			int yLegend = (int) (aRect.getY() + mgn.getTop() + padding.getTop());
-			for (int i = 0; i < seriesList.size(); i++) {
-				PolarSeries series = seriesList.get(i);
-				// draw line
-				g.setStroke(looks.getSeriesStroke(i, series), looks.getSeriesStrokeColor(i, series));
-				g.drawLine(xLegend + 3, yLegend + (fontHeight / 2), xLegend + (fontHeight * 2) - 3, yLegend + (fontHeight / 2));
-				// draw marker
-				Marker marker = looks.getSeriesMarker(i, series);
-				if (null != marker) {
-					marker.draw(g, xLegend + (fontHeight * 2 - marker.getSize().getWidth()) / 2, yLegend
-							+ (fontHeight - marker.getSize().getHeight()) / 2);
-				}
-				// draw title
-				g.setFont(font, design.getFontColor());
-				g.drawStringA(series.getTitle(), (fontHeight * 2) + xLegend, yLegend);
-
-				yLegend += design.getSpace() + fontHeight;
-			}
-		}
-	}
-
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
+		PolarChartDesign design = getChartDesign();
+		PolarChartStyle style = design.getChartStyle();
+
 		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
-//
-//		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
-//
-//		double difValue = aScaleValue.getDiff();
-//
-//		// スケール計算(プレ)
-//		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
-//
-//		float maxX = aRtChart.getX() + aRtChart.getWidth();
-//
-//		// Draw axis scale
-//		FontMetrics fm = g.getFontMetrics(looks.getAxisFont());
-//		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
-//			float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
-//
-//			String str = (null != axis.getDisplayFormat()) ? axis.getDisplayFormat().toString(value) : Double.toString(value);
-//			int strWidth = fm.stringWidth(str);
-//
-//			float x = ptChartMiddle.getX() + range + (strWidth / 2);
-//
-//			maxX = Math.max(maxX, x);
-//		}
-//
-//		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
-//			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
-//		}
-//
+
+		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
+
+		double difValue = aScaleValue.getDiff();
+
+		// スケール計算(プレ)
+		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
+
+		float maxX = aRtChart.getX() + aRtChart.getWidth();
+
+		// Draw axis scale
+		FontMetrics fm = g.getFontMetrics(style.getAxisScaleLabelFont());
+		DisplayFormat df = axis.getDisplayFormat();
+		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
+			String str = df.toString(value);
+			if (StringUtility.isNotEmpty(str)) {
+				int strWidth = fm.stringWidth(str);
+
+				float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
+				float x = ptChartMiddle.getX() + range + (strWidth / 2);
+
+				maxX = Math.max(maxX, x);
+			}
+		}
+
+		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
+			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
+		}
+
 		return margin;
 	}
 

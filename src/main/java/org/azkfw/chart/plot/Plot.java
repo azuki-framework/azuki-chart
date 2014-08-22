@@ -18,6 +18,7 @@
 package org.azkfw.chart.plot;
 
 import org.azkfw.graphics.Graphics;
+import org.azkfw.graphics.Rect;
 
 /**
  * このインターフェースは、グラフプロット機能を表現したインターフェースです。
@@ -27,6 +28,8 @@ import org.azkfw.graphics.Graphics;
  * @author Kawakicchi
  */
 public interface Plot {
+
+	public boolean draw(final Graphics g, final Rect aRect);
 
 	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height);
 }

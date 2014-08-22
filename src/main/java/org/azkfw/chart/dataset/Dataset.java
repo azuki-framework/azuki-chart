@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.dataset;
 
+
 /**
  * このインターフェースは、データセット機能を表現したインターフェースです。
  * 
@@ -25,5 +26,19 @@ package org.azkfw.chart.dataset;
  * @author Kawakicchi
  */
 public interface Dataset {
+
+	/**
+	 * タイトルを設定する。
+	 * 
+	 * @param aTitle タイトル
+	 */
+	public void setTitle(final String aTitle);
+
+	/**
+	 * タイトルを取得する。
+	 * 
+	 * @return タイトル
+	 */
+	public String getTitle();
 
 }

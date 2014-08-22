@@ -20,6 +20,9 @@ package org.azkfw.chart.charts.polararea;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.azkfw.chart.series.AbstractSeries;
+import org.azkfw.chart.series.SeriesPoint;
+
 /**
  * このクラスは、鶏頭図のシリーズクラスです。
  * 
@@ -27,12 +30,7 @@ import java.util.List;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarAreaSeries {
-
-	/**
-	 * タイトル
-	 */
-	private String title;
+public class PolarAreaSeries extends AbstractSeries {
 
 	/**
 	 * ポイント
@@ -43,7 +41,7 @@ public class PolarAreaSeries {
 	 * コンストラクタ
 	 */
 	public PolarAreaSeries() {
-		title = null;
+		super();
 		points = new ArrayList<PolarAreaSeriesPoint>();
 	}
 
@@ -53,7 +51,7 @@ public class PolarAreaSeries {
 	 * @param aTitle タイトル
 	 */
 	public PolarAreaSeries(final String aTitle) {
-		title = aTitle;
+		super(aTitle);
 		points = new ArrayList<PolarAreaSeriesPoint>();
 	}
 
@@ -64,26 +62,8 @@ public class PolarAreaSeries {
 	 * @param aPoints ポイント
 	 */
 	public PolarAreaSeries(final String aTitle, final List<PolarAreaSeriesPoint> aPoints) {
-		title = aTitle;
+		super(aTitle);
 		points = new ArrayList<>(aPoints);
-	}
-
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public void setTitle(final String aTitle) {
-		title = aTitle;
-	}
-
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public String getTitle() {
-		return title;
 	}
 
 	/**
@@ -113,4 +93,46 @@ public class PolarAreaSeries {
 	public List<PolarAreaSeriesPoint> getPoints() {
 		return points;
 	}
+
+	/**
+	 * このクラスは、鶏頭図のポイントクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/19
+	 * @author Kawakicchi
+	 */
+	public class PolarAreaSeriesPoint implements SeriesPoint {
+
+		/**
+		 * 値
+		 */
+		private double range;
+
+		/**
+		 * コンストラクタ
+		 */
+		public PolarAreaSeriesPoint() {
+			range = 1.0;
+		}
+
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param aRange 値
+		 */
+		public PolarAreaSeriesPoint(final double aRange) {
+			range = aRange;
+		}
+
+		/**
+		 * 値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getRange() {
+			return range;
+		}
+
+	}
+
 }

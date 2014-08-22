@@ -17,8 +17,9 @@
  */
 package org.azkfw.chart.charts.polar;
 
+import org.azkfw.chart.axis.AbstractAxis;
 import org.azkfw.chart.displayformat.DisplayFormat;
-import org.azkfw.chart.displayformat.StringDisplayFormat;
+import org.azkfw.chart.displayformat.NumericDisplayFormat;
 
 /**
  * このクラスは、極座標グラフの軸情報を保持するクラスです。
@@ -27,129 +28,162 @@ import org.azkfw.chart.displayformat.StringDisplayFormat;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarAxis {
+public class PolarAxis extends AbstractAxis {
+
+	/** 表示形式 */
+	private DisplayFormat displayFormat;
 
 	/** 最小値 */
 	private double minValue;
 	/** 最小値自動設定 */
 	private boolean minValueAutoFit;
-
 	/** 最大値 */
 	private double maxValue;
 	/** 最大値自動設定 */
 	private boolean maxValueAutoFit;
-
-	/** 目盛 */
+	/** 目盛値 */
 	private double scale;
-	/** 目盛自動設定 */
+	/** 目盛値自動設定 */
 	private boolean scaleAutoFit;
-	/** 補助目盛 */
-	private double assistScale;
-
-	private boolean assistAxis;
-	private double assistAxisAngle;
-
-	/** 表示形式 */
-	private DisplayFormat displayFormat;
 
 	/**
 	 * コンストラクタ
 	 */
 	public PolarAxis() {
+		displayFormat = new NumericDisplayFormat(1);
+
 		minValue = 0.0;
 		minValueAutoFit = true;
-
 		maxValue = 1.0;
 		maxValueAutoFit = true;
-
 		scale = 0.2;
 		scaleAutoFit = true;
-
-		assistScale = 0.1;
-
-		assistAxis = true;
-		assistAxisAngle = 30.f;
-
-		displayFormat = new StringDisplayFormat();
 	}
 
-	public void setMinimumValue(final double aValue) {
-		minValue = aValue;
-	}
-
-	public double getMinimumValue() {
-		return minValue;
-	}
-
-	public void setMinumumValueAutoFit(final boolean aAutoFit) {
-		minValueAutoFit = aAutoFit;
-	}
-
-	public boolean isMinimumValueAutoFit() {
-		return minValueAutoFit;
-	}
-
-	public void setMaximumValue(final double aValue) {
-		maxValue = aValue;
-	}
-
-	public double getMaximumValue() {
-		return maxValue;
-	}
-
-	public void setMaximumValueAutoFit(final boolean aAutoFit) {
-		maxValueAutoFit = aAutoFit;
-	}
-
-	public boolean isMaximumValueAutoFit() {
-		return maxValueAutoFit;
-	}
-
-	public void setScale(final double aScale) {
-		scale = aScale;
-	}
-
-	public double getScale() {
-		return scale;
-	}
-
-	public void setScaleAutoFit(final boolean aAutoFit) {
-		scaleAutoFit = aAutoFit;
-	}
-
-	public boolean isScaleAutoFit() {
-		return scaleAutoFit;
-	}
-
-	public void setAssistScale(final double aScale) {
-		assistScale = aScale;
-	}
-
-	public double getAssistScale() {
-		return assistScale;
-	}
-
-	public void setAssistAxis(final boolean aAssist) {
-		assistAxis = aAssist;
-	}
-
-	public boolean isAssistAxis() {
-		return assistAxis;
-	}
-
-	public void setAssistAxisAngle(final double aAngle) {
-		assistAxisAngle = aAngle;
-	}
-
-	public double getAssistAxisAngle() {
-		return assistAxisAngle;
-	}
-
-	public void setDisplayFormat(final DisplayFormat aDisplayFormat) {
+	/**
+	 * 表示形式を設定する。
+	 * 
+	 * @param aDisplayFormat 表示形式
+	 */
+	public final void setDisplayFormat(final DisplayFormat aDisplayFormat) {
 		displayFormat = aDisplayFormat;
 	}
 
-	public DisplayFormat getDisplayFormat() {
+	/**
+	 * 表示形式を取得する。
+	 * 
+	 * @return 表示形式
+	 */
+	public final DisplayFormat getDisplayFormat() {
 		return displayFormat;
 	}
+
+	/**
+	 * 最小値を設定する。
+	 * 
+	 * @param aValue 最小値
+	 */
+	public final void setMinimumValue(final double aValue) {
+		minValue = aValue;
+	}
+
+	/**
+	 * 最小値を取得する。
+	 * 
+	 * @return 最小値
+	 */
+	public final double getMinimumValue() {
+		return minValue;
+	}
+
+	/**
+	 * 最小値の自動設定を設定する。
+	 * 
+	 * @param aAutoFit 自動設定
+	 */
+	public final void setMinimumValueAutoFit(final boolean aAutoFit) {
+		minValueAutoFit = aAutoFit;
+	}
+
+	/**
+	 * 最小値が自動設定か判断する。
+	 * 
+	 * @return 判断結果
+	 */
+	public final boolean isMinimumValueAutoFit() {
+		return minValueAutoFit;
+	}
+
+	/**
+	 * 最大値を設定する。
+	 * 
+	 * @param aValue 最大値
+	 */
+	public final void setMaximumValue(final double aValue) {
+		maxValue = aValue;
+	}
+
+	/**
+	 * 最大値を取得する。
+	 * 
+	 * @return 最大値
+	 */
+	public final double getMaximumValue() {
+		return maxValue;
+	}
+
+	/**
+	 * 最大値の自動設定を設定する。
+	 * 
+	 * @param aAutoFit
+	 */
+	public final void setMaximumValueAutoFit(final boolean aAutoFit) {
+		maxValueAutoFit = aAutoFit;
+	}
+
+	/**
+	 * 最大値が自動設定が判断する。
+	 * 
+	 * @return 判断結果
+	 */
+	public final boolean isMaximumValueAutoFit() {
+		return maxValueAutoFit;
+	}
+
+	/**
+	 * 目盛値を設定する。
+	 * 
+	 * @param aScale 目盛値
+	 */
+	public final void setScale(final double aScale) {
+		scale = aScale;
+	}
+
+	/**
+	 * 目盛値を取得する。
+	 * 
+	 * @return 目盛値
+	 */
+	public final double getScale() {
+		return scale;
+	}
+
+	/**
+	 * 目盛値の自動設定を設定する。
+	 * 
+	 * @param aAutoFit 自動設定
+	 */
+	public final void setScaleAutoFit(final boolean aAutoFit) {
+		scaleAutoFit = aAutoFit;
+	}
+
+	/**
+	 * 目盛値が自動設定か判断する。
+	 * 
+	 * @return 判断結果
+	 */
+	public final boolean isScaleAutoFit() {
+		return scaleAutoFit;
+	}
+
 }

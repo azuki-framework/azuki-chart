@@ -17,10 +17,7 @@
  */
 package org.azkfw.chart.charts.scatter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.dataset.AbstractDataset;
+import org.azkfw.chart.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、散布図のデータセット情報を保持するクラスです。
@@ -29,17 +26,13 @@ import org.azkfw.chart.dataset.AbstractDataset;
  * @version 1.0.0 2014/06/25
  * @author Kawakicchi
  */
-public class ScatterDataset extends AbstractDataset {
-
-	/** シリーズリスト */
-	private List<ScatterSeries> seriesList;
+public class ScatterDataset extends AbstractSeriesDataset<ScatterSeries> {
 
 	/**
 	 * コンストラクタ
 	 */
 	public ScatterDataset() {
 		super();
-		seriesList = new ArrayList<ScatterSeries>();
 	}
 
 	/**
@@ -49,24 +42,5 @@ public class ScatterDataset extends AbstractDataset {
 	 */
 	public ScatterDataset(final String aTitle) {
 		super(aTitle);
-		seriesList = new ArrayList<ScatterSeries>();
-	}
-
-	/**
-	 * シリーズを追加する。
-	 * 
-	 * @param aSeries シリーズ
-	 */
-	public void addSeries(final ScatterSeries aSeries) {
-		seriesList.add(aSeries);
-	}
-
-	/**
-	 * シリーズリストを取得する。
-	 * 
-	 * @return シリーズリスト
-	 */
-	public List<ScatterSeries> getSeriesList() {
-		return seriesList;
 	}
 }

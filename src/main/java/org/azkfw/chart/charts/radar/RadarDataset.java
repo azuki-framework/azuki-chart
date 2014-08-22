@@ -17,10 +17,7 @@
  */
 package org.azkfw.chart.charts.radar;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.dataset.AbstractDataset;
+import org.azkfw.chart.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、レーダーチャートのデータセット情報を保持するクラスです。
@@ -29,17 +26,13 @@ import org.azkfw.chart.dataset.AbstractDataset;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class RadarDataset extends AbstractDataset {
-
-	/** シリーズリスト */
-	private List<RadarSeries> seriesList;
+public class RadarDataset extends AbstractSeriesDataset<RadarSeries> {
 
 	/**
 	 * コンストラクタ
 	 */
 	public RadarDataset() {
 		super();
-		seriesList = new ArrayList<RadarSeries>();
 	}
 
 	/**
@@ -49,24 +42,5 @@ public class RadarDataset extends AbstractDataset {
 	 */
 	public RadarDataset(final String aTitle) {
 		super(aTitle);
-		seriesList = new ArrayList<RadarSeries>();
-	}
-
-	/**
-	 * シリーズを追加する。
-	 * 
-	 * @param aSeries シリーズ
-	 */
-	public void addSeries(final RadarSeries aSeries) {
-		seriesList.add(aSeries);
-	}
-
-	/**
-	 * シリーズリストを取得する。
-	 * 
-	 * @return シリーズリスト
-	 */
-	public List<RadarSeries> getSeriesList() {
-		return seriesList;
 	}
 }

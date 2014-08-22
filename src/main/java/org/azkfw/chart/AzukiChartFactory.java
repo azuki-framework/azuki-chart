@@ -17,14 +17,25 @@
  */
 package org.azkfw.chart;
 
-import org.azkfw.chart.charts.area.AreaPlot;
+import java.util.List;
+
+import org.azkfw.chart.charts.bar.BarDataset;
 import org.azkfw.chart.charts.bar.BarPlot;
+import org.azkfw.chart.charts.line.LineDataset;
 import org.azkfw.chart.charts.line.LinePlot;
+import org.azkfw.chart.charts.pie.PieDataset;
 import org.azkfw.chart.charts.pie.PiePlot;
+import org.azkfw.chart.charts.polar.PolarDataset;
 import org.azkfw.chart.charts.polar.PolarPlot;
+import org.azkfw.chart.charts.polararea.PolarAreaDataset;
 import org.azkfw.chart.charts.polararea.PolarAreaPlot;
+import org.azkfw.chart.charts.radar.RadarDataset;
 import org.azkfw.chart.charts.radar.RadarPlot;
+import org.azkfw.chart.charts.scatter.ScatterDataset;
 import org.azkfw.chart.charts.scatter.ScatterPlot;
+import org.azkfw.chart.charts.scatter.ScatterSeries;
+import org.azkfw.chart.charts.spectrum.SpectrumDataset;
+import org.azkfw.chart.charts.spectrum.SpectrumPlot;
 
 /**
  * このクラスは、チャート生成を行うファクトリークラスです。
@@ -47,6 +58,18 @@ public class AzukiChartFactory {
 	}
 
 	/**
+	 * 棒グラフのインスタンスを生成する。
+	 * 
+	 * @param aDataset データセット
+	 * @return 棒グラフ
+	 */
+	public static AzukiChart createBarChart(final BarDataset aDataset) {
+		BarPlot plot = new BarPlot(aDataset);
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
 	 * 折れ線グラフのインスタンスを生成する。
 	 * 
 	 * @return 折れ線グラフ
@@ -58,23 +81,13 @@ public class AzukiChartFactory {
 	}
 
 	/**
-	 * 散布図のインスタンスを生成する。
+	 * 折れ線グラフのインスタンスを生成する。
 	 * 
-	 * @return 散布図
+	 * @param aDataset データセット
+	 * @return 折れ線グラフ
 	 */
-	public static AzukiChart createScatterChart() {
-		ScatterPlot plot = new ScatterPlot();
-		AzukiChart chart = new AzukiChart(plot);
-		return chart;
-	}
-
-	/**
-	 * エリアグラフのインスタンスを生成する。
-	 * 
-	 * @return エリアグラフ
-	 */
-	public static AzukiChart createAreaChart() {
-		AreaPlot plot = new AreaPlot();
+	public static AzukiChart createLineChart(final LineDataset aDataset) {
+		LinePlot plot = new LinePlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -91,12 +104,59 @@ public class AzukiChartFactory {
 	}
 
 	/**
+	 * 円グラフのインスタンスを生成する。
+	 * 
+	 * @param aDataset データセット
+	 * @return 円グラフ
+	 */
+	public static AzukiChart createPieChart(final PieDataset aDataset) {
+		PiePlot plot = new PiePlot(aDataset);
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
 	 * 極座標グラフのインスタンスを生成する。
 	 * 
 	 * @return 極座標グラフ
 	 */
 	public static AzukiChart createPolarChart() {
 		PolarPlot plot = new PolarPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 極座標グラフのインスタンスを生成する。
+	 * 
+	 * @param aDataset データセット
+	 * @return 極座標グラフ
+	 */
+	public static AzukiChart createPolarChart(final PolarDataset aDataset) {
+		PolarPlot plot = new PolarPlot(aDataset);
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 鶏頭図のインスタンスを生成する。
+	 * 
+	 * @return 鶏頭図
+	 */
+	public static AzukiChart createPolarAreaChart() {
+		PolarAreaPlot plot = new PolarAreaPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 鶏頭図のインスタンスを生成する。
+	 * 
+	 * @param aDataset データセット
+	 * @return 鶏頭図
+	 */
+	public static AzukiChart createPolarAreaChart(final PolarAreaDataset aDataset) {
+		PolarAreaPlot plot = new PolarAreaPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -113,12 +173,78 @@ public class AzukiChartFactory {
 	}
 
 	/**
-	 * 鶏頭図のインスタンスを生成する。
+	 * レーダーチャートのインスタンスを生成する。
 	 * 
-	 * @return 鶏頭図
+	 * @param aDataset データセット
+	 * @return レーダーチャート
 	 */
-	public static AzukiChart createPolarAreaChart() {
-		PolarAreaPlot plot = new PolarAreaPlot();
+	public static AzukiChart createRadarChart(final RadarDataset aDataset) {
+		RadarPlot plot = new RadarPlot(aDataset);
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 散布図のインスタンスを生成する。
+	 * 
+	 * @return 散布図
+	 */
+	public static AzukiChart createScatterChart() {
+		ScatterPlot plot = new ScatterPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 散布図のインスタンスを生成する。
+	 * 
+	 * @param aDataset データセット
+	 * @return 散布図
+	 */
+	public static AzukiChart createScatterChart(final ScatterDataset aDataset) {
+		ScatterPlot plot = new ScatterPlot(aDataset);
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * 散布図のインスタンスを生成する。
+	 * 
+	 * @param aData データ
+	 * @return 散布図
+	 */
+	public static AzukiChart createScatterChart(final List<Double> aData) {
+		ScatterDataset dataset = new ScatterDataset();
+		ScatterSeries series = new ScatterSeries();
+		for (int i = 0; i < aData.size(); i++) {
+			series.add(i, aData.get(i));
+		}
+		dataset.addSeries(series);
+
+		ScatterPlot plot = new ScatterPlot(dataset);
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * スペクトログラムのインスタンスを生成する。
+	 * 
+	 * @return スペクトログラム
+	 */
+	public static AzukiChart createSpectrumChart() {
+		SpectrumPlot plot = new SpectrumPlot();
+		AzukiChart chart = new AzukiChart(plot);
+		return chart;
+	}
+
+	/**
+	 * スペクトログラムのインスタンスを生成する。
+	 * 
+	 * @param aDataset データセット
+	 * @return スペクトログラム
+	 */
+	public static AzukiChart createSpectrumChart(final SpectrumDataset aDataset) {
+		SpectrumPlot plot = new SpectrumPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}

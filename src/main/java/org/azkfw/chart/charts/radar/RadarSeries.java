@@ -20,6 +20,9 @@ package org.azkfw.chart.charts.radar;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.azkfw.chart.series.AbstractSeries;
+import org.azkfw.chart.series.SeriesPoint;
+
 /**
  * このクラスは、レーダーチャートのシリーズクラスです。
  * 
@@ -27,12 +30,7 @@ import java.util.List;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class RadarSeries {
-
-	/**
-	 * タイトル
-	 */
-	private String title;
+public class RadarSeries extends AbstractSeries {
 
 	/**
 	 * ポイント
@@ -43,7 +41,7 @@ public class RadarSeries {
 	 * コンストラクタ
 	 */
 	public RadarSeries() {
-		title = null;
+		super();
 		points = new ArrayList<RadarSeriesPoint>();
 	}
 
@@ -53,7 +51,7 @@ public class RadarSeries {
 	 * @param aTitle タイトル
 	 */
 	public RadarSeries(final String aTitle) {
-		title = aTitle;
+		super(aTitle);
 		points = new ArrayList<RadarSeriesPoint>();
 	}
 
@@ -64,26 +62,8 @@ public class RadarSeries {
 	 * @param aPoints ポイント
 	 */
 	public RadarSeries(final String aTitle, final List<RadarSeriesPoint> aPoints) {
-		title = aTitle;
+		super(aTitle);
 		points = new ArrayList<>(aPoints);
-	}
-
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public void setTitle(final String aTitle) {
-		title = aTitle;
-	}
-
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public String getTitle() {
-		return title;
 	}
 
 	/**
@@ -113,4 +93,46 @@ public class RadarSeries {
 	public List<RadarSeriesPoint> getPoints() {
 		return points;
 	}
+
+	/**
+	 * このクラスは、レーダーチャートのポイントクラスです。
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/19
+	 * @author Kawakicchi
+	 */
+	public static class RadarSeriesPoint implements SeriesPoint {
+
+		/**
+		 * 値
+		 */
+		private double value;
+
+		/**
+		 * コンストラクタ
+		 */
+		public RadarSeriesPoint() {
+			value = 1.0;
+		}
+
+		/**
+		 * コンストラクタ
+		 * 
+		 * @param aValue 値
+		 */
+		public RadarSeriesPoint(final double aValue) {
+			value = aValue;
+		}
+
+		/**
+		 * 値を取得する。
+		 * 
+		 * @return 値
+		 */
+		public double getValue() {
+			return value;
+		}
+
+	}
+
 }
