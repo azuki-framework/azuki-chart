@@ -21,54 +21,49 @@ import java.awt.Color;
 
 import org.azkfw.chart.AzukiChart;
 import org.azkfw.chart.AzukiChartFactory;
-import org.azkfw.chart.charts.line.LineAxis.LineHorizontalAxis;
-import org.azkfw.chart.charts.line.LineAxis.LineVerticalAxis;
-import org.azkfw.chart.charts.line.LineDataset;
-import org.azkfw.chart.charts.line.LinePlot;
-import org.azkfw.chart.charts.line.LineSeries;
+import org.azkfw.chart.charts.bar.BarAxis.BarHorizontalAxis;
+import org.azkfw.chart.charts.bar.BarAxis.BarVerticalAxis;
+import org.azkfw.chart.charts.bar.BarDataset;
+import org.azkfw.chart.charts.bar.BarPlot;
+import org.azkfw.chart.charts.bar.BarSeries;
 import org.azkfw.chart.displayformat.MonthDisplayFormat;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.util.AzukiChartUtility;
 
 /**
- * このクラスは、折れ線グラフの実例を行うクラスです。
+ * このクラスは、棒グラフの実例を行うクラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/11/06
  * @author Kawakicchi
  */
-public class LineChartExample {
+public class BarChartExample {
 
 	public static void main(final String[] args) {
-		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Line Chart");
+		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Bar Chart");
 	}
 
-	public static LineDataset createDataset() {
-		LineDataset dataset = new LineDataset("Line Chart");
+	public static BarDataset createDataset() {
+		BarDataset dataset = new BarDataset("Bar Chart");
 
-		LineSeries seriesAve = new LineSeries("Average");
-		LineSeries seriesMax = new LineSeries("Maximum");
-		LineSeries seriesMin = new LineSeries("Mininum");
+		BarSeries seriesAve = new BarSeries("Average");
+		BarSeries seriesMax = new BarSeries("Maximum");
+		BarSeries seriesMin = new BarSeries("Mininum");
 		seriesAve.add(50.f);
 		seriesMax.add(100.f);
 		seriesMin.add(10.f);
-
 		seriesAve.add(70.f);
-		seriesMax.add(100.f);
-		seriesMin.add(70.f);
-
-		seriesAve.add(100.f);
-		seriesMax.add(45.f);
-		seriesMin.add(50.f);
-
-		seriesAve.add(100.f);
-		seriesMax.add(60.f);
-		seriesMin.add(50.f);
-
-		seriesAve.add(100.f);
 		seriesMax.add(70.f);
+		seriesMin.add(70.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
 		seriesMin.add(50.f);
-
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
+		seriesAve.add(100.f);
+		seriesMax.add(200.f);
+		seriesMin.add(50.f);
 		dataset.addSeries(seriesAve);
 		dataset.addSeries(seriesMax);
 		dataset.addSeries(seriesMin);
@@ -76,19 +71,19 @@ public class LineChartExample {
 		return dataset;
 	}
 
-	public static LinePlot createPlot(final LineDataset aDataset) {
-		AzukiChart chart = AzukiChartFactory.createLineChart(aDataset);
+	public static BarPlot createPlot(final BarDataset aDataset) {
+		AzukiChart chart = AzukiChartFactory.createBarChart(aDataset);
 		chart.setBackgoundColor(Color.WHITE);
 
-		LinePlot plot = (LinePlot) chart.getPlot();
+		BarPlot plot = (BarPlot) chart.getPlot();
 
-		LineVerticalAxis yAxis = plot.getVerticalAxis();
+		BarVerticalAxis yAxis = plot.getVerticalAxis();
 		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
 		yAxis.setMinimumValueAutoFit(false);
 		yAxis.setMinimumValue(0.f);
 		// yAxis.setMaximumValueAutoFit(false);
 		// yAxis.setMaximumValue(150.f);
-		LineHorizontalAxis xAxis = plot.getHorizontalAxis();
+		BarHorizontalAxis xAxis = plot.getHorizontalAxis();
 		xAxis.setDisplayFormat(new MonthDisplayFormat());
 
 		return plot;
