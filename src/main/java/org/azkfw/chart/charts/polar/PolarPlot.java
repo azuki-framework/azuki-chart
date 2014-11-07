@@ -28,9 +28,9 @@ import java.util.List;
 
 import org.azkfw.chart.charts.polar.PolarChartDesign.PolarChartStyle;
 import org.azkfw.chart.charts.polar.PolarSeries.PolarSeriesPoint;
+import org.azkfw.chart.core.plot.AbstractSeriesPlot;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
-import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;

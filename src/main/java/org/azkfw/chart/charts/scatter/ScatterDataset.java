@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.charts.scatter;
 
-import org.azkfw.chart.dataset.AbstractSeriesDataset;
+import org.azkfw.chart.core.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、散布図のデータセット情報を保持するクラスです。

@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.design.chart;
 
-import org.azkfw.chart.matrix.MatrixData;
+import org.azkfw.chart.core.dataset.matrix.MatrixData;
 
 /**
  * このインターフェースは、マトリクスチャートスタイルを定義するインターフェースです。

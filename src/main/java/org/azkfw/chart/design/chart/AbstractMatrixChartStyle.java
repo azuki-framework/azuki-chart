@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.design.chart;
 
-import org.azkfw.chart.matrix.MatrixData;
+import org.azkfw.chart.core.dataset.matrix.MatrixData;
 
 /**
  * このクラスは、マトリクスチャートスタイルを定義するための基底クラスです。

@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.charts.spectrum;
 
-import org.azkfw.chart.axis.AbstractAxis;
+import org.azkfw.chart.core.axis.AbstractAxis;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.chart.displayformat.StringDisplayFormat;
 

@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.plot;
+package org.azkfw.chart.core.plot;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-import org.azkfw.chart.dataset.Dataset;
+import org.azkfw.chart.core.dataset.Dataset;
 import org.azkfw.chart.design.ChartDesign;
 import org.azkfw.chart.design.title.TitleStyle;
 import org.azkfw.chart.design.title.TitleStyle.TitleDisplayPosition;

@@ -15,44 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
-
+package org.azkfw.chart.core.axis;
 
 /**
- * このクラスは、データセット機能の実装を行うための基底クラスです。
+ * このインターフェースは、グラフ軸情報を定義したインターフェースです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/11/07
  * @author Kawakicchi
  */
-public abstract class AbstractDataset implements Dataset {
+public interface Axis {
 
-	/** タイトル */
-	private String title;
-
-	/**
-	 * コンストラクタ
-	 */
-	public AbstractDataset() {
-		title = null;
-	}
-
-	/**
-	 * コンストラクタ
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public AbstractDataset(final String aTitle) {
-		title = aTitle;
-	}
-
-	@Override
-	public final void setTitle(final String aTitle) {
-		title = aTitle;
-	}
-
-	@Override
-	public final String getTitle() {
-		return title;
-	}
 }

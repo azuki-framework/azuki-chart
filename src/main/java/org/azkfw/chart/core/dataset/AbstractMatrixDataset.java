@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.core.dataset;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.matrix.MatrixData;
+import org.azkfw.chart.core.dataset.matrix.MatrixData;
 
 /**
  * このクラスは、マトリクスデータセット機能の実装を行うための基底クラスです。

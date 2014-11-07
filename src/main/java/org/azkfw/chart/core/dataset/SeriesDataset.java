@@ -15,21 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.axis;
+package org.azkfw.chart.core.dataset;
+
+import java.util.List;
+
+import org.azkfw.chart.core.dataset.series.Series;
 
 /**
- * このクラスは、グラフ軸情報を実装するための基底クラスです。
+ * このインターフェースは、シリーズデータセット機能を表現したインターフェースです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/07/03
+ * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public abstract class AbstractAxis {
+public interface SeriesDataset<T extends Series> extends Dataset {
 
 	/**
-	 * コンストラクタ
+	 * シリーズを追加する。
+	 * 
+	 * @param aSeries シリーズ
 	 */
-	public AbstractAxis() {
-	}
+	public void addSeries(final T aSeries);
 
+	/**
+	 * シリーズ一覧を取得する。
+	 * 
+	 * @return シリーズ一覧
+	 */
+	public List<T> getSeriesList();
 }

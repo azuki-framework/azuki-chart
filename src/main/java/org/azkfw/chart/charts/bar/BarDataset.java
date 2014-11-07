@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.charts.bar;
 
-import org.azkfw.chart.dataset.AbstractSeriesDataset;
+import org.azkfw.chart.core.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、棒グラフのデータセット情報を保持するクラスです。

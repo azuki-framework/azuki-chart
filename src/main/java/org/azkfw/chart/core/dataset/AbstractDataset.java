@@ -15,24 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.radar;
+package org.azkfw.chart.core.dataset;
 
-import org.azkfw.chart.core.dataset.AbstractSeriesDataset;
 
 /**
- * このクラスは、レーダーチャートのデータセット情報を保持するクラスです。
+ * このクラスは、データセット機能の実装を行うための基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class RadarDataset extends AbstractSeriesDataset<RadarSeries> {
+public abstract class AbstractDataset implements Dataset {
+
+	/** タイトル */
+	private String title;
 
 	/**
 	 * コンストラクタ
 	 */
-	public RadarDataset() {
-		super();
+	public AbstractDataset() {
+		title = null;
 	}
 
 	/**
@@ -40,7 +42,17 @@ public class RadarDataset extends AbstractSeriesDataset<RadarSeries> {
 	 * 
 	 * @param aTitle タイトル
 	 */
-	public RadarDataset(final String aTitle) {
-		super(aTitle);
+	public AbstractDataset(final String aTitle) {
+		title = aTitle;
+	}
+
+	@Override
+	public final void setTitle(final String aTitle) {
+		title = aTitle;
+	}
+
+	@Override
+	public final String getTitle() {
+		return title;
 	}
 }

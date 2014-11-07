@@ -15,28 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.series;
 
 /**
- * このインターフェースは、シリーズデータを表現するインファーフェースです。
- * 
- * @since 1.0.0
- * @version 1.0.0 2014/06/28
- * @author Kawakicchi
+ * グラフ軸関連のクラスおよびインタフェースを提供します。
  */
-public interface Series {
+package org.azkfw.chart.core.axis;
 
-	/**
-	 * タイトルを設定する。
-	 * 
-	 * @param aTitle タイトル
-	 */
-	public void setTitle(final String aTitle);
-
-	/**
-	 * タイトルを取得する。
-	 * 
-	 * @return タイトル
-	 */
-	public String getTitle();
-}

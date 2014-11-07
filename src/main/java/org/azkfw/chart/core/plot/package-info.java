@@ -15,15 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.series;
 
 /**
- * このインターフェースは、シリーズポイントデータを表現するインファーフェースです。
- * 
- * @since 1.0.0
- * @version 1.0.0 2014/06/28
- * @author Kawakicchi
+ * グラフプロット関連のクラスおよびインタフェースを提供します。
  */
-public interface SeriesPoint {
+package org.azkfw.chart.core.plot;
 
-}

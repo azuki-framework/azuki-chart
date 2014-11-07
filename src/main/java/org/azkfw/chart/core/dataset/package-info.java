@@ -17,7 +17,7 @@
  */
 
 /**
- * グラフ軸関連のクラスおよびインタフェースを提供します。
+ * グラフデータセット関連のクラスおよびインタフェースを提供します。
  */
-package org.azkfw.chart.axis;
+package org.azkfw.chart.core.dataset;
 

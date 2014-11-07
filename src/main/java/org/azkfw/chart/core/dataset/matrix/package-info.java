@@ -15,15 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.matrix;
 
 /**
- * このクラスは、マトリクスデータを表現するインファーフェースです。
- * 
- * @since 1.0.0
- * @version 1.0.0 2014/07/09
- * @author Kawakicchi
+ * マトリクスデータ関連のクラスおよびインタフェースを提供します。
  */
-public interface MatrixData {
+package org.azkfw.chart.core.dataset.matrix;
 
-}

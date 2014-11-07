@@ -20,7 +20,7 @@ package org.azkfw.chart;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import org.azkfw.chart.plot.Plot;
+import org.azkfw.chart.core.plot.Plot;
 import org.azkfw.graphics.AzukiGraphics2D;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Rect;

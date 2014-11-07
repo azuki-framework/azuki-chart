@@ -20,7 +20,7 @@ package org.azkfw.chart.charts.spectrum;
 import java.awt.Color;
 
 import org.azkfw.chart.charts.spectrum.SpectrumChartDesign.SpectrumChartStyle;
-import org.azkfw.chart.plot.AbstractMatrixPlot;
+import org.azkfw.chart.core.plot.AbstractMatrixPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;

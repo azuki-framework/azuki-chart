@@ -20,9 +20,9 @@ package org.azkfw.chart.design.chart;
 import java.awt.Color;
 import java.awt.Stroke;
 
+import org.azkfw.chart.core.dataset.series.Series;
+import org.azkfw.chart.core.dataset.series.SeriesPoint;
 import org.azkfw.chart.design.marker.Marker;
-import org.azkfw.chart.series.Series;
-import org.azkfw.chart.series.SeriesPoint;
 
 /**
  * このインターフェースは、シリーズチャートスタイルを定義するインターフェースです。

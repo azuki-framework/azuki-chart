@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.charts.polar;
 
-import org.azkfw.chart.dataset.AbstractSeriesDataset;
+import org.azkfw.chart.core.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、極座標グラフのデータセット情報を保持するクラスです。

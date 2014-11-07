@@ -20,8 +20,8 @@ package org.azkfw.chart.charts.scatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.series.AbstractSeries;
-import org.azkfw.chart.series.SeriesPoint;
+import org.azkfw.chart.core.dataset.series.AbstractSeries;
+import org.azkfw.chart.core.dataset.series.SeriesPoint;
 
 /**
  * このクラスは、散布図のシリーズ情報を保持したクラスです。

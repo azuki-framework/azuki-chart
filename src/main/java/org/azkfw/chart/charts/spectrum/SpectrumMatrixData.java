@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.charts.spectrum;
 
-import org.azkfw.chart.matrix.MatrixData;
+import org.azkfw.chart.core.dataset.matrix.MatrixData;
 
 /**
  * このクラスは、スペクトログラムのマトリクスデータクラスです。

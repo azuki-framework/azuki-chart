@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.plot;
+package org.azkfw.chart.core.plot;
 
-import org.azkfw.chart.dataset.MatrixDataset;
+import org.azkfw.chart.core.dataset.MatrixDataset;
 import org.azkfw.chart.design.MatrixChartDesign;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.graphics.Graphics;

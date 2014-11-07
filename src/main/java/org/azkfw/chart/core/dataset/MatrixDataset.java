@@ -15,50 +15,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.core.dataset;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.azkfw.chart.series.Series;
+import org.azkfw.chart.core.dataset.matrix.MatrixData;
 
 /**
- * このクラスは、シリーズデータセット機能の実装を行うための基底クラスです。
+ * このインターフェースは、マトリクスデータセット機能を表現したインターフェースです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/19
+ * @version 1.0.0 2014/07/09
  * @author Kawakicchi
  */
-public abstract class AbstractSeriesDataset<T extends Series> extends AbstractDataset implements SeriesDataset<T> {
-
-	/** シリーズ一覧 */
-	private List<T> seriesList;
+public interface MatrixDataset<DATA extends MatrixData> extends Dataset {
 
 	/**
-	 * コンストラクタ
-	 */
-	public AbstractSeriesDataset() {
-		super();
-		seriesList = new ArrayList<T>();
-	}
-
-	/**
-	 * コンストラクタ
+	 * 行数を取得する。
 	 * 
-	 * @param aTitle タイトル
+	 * @return 行数
 	 */
-	public AbstractSeriesDataset(final String aTitle) {
-		super(aTitle);
-		seriesList = new ArrayList<T>();
-	}
+	public int getRowSize();
 
-	@Override
-	public void addSeries(final T aSeries) {
-		seriesList.add(aSeries);
-	}
+	/**
+	 * 列数を取得する。
+	 * 
+	 * @return 列数
+	 */
+	public int getColSize();
 
-	@Override
-	public List<T> getSeriesList() {
-		return seriesList;
-	}
+	/**
+	 * データを設定する。
+	 * 
+	 * @param aRow 行
+	 * @param aCol 列
+	 * @param aData データ
+	 */
+	public void put(final int aRow, final int aCol, final DATA aData);
+
+	/**
+	 * データを取得する。
+	 * 
+	 * @param aRow　行
+	 * @param aCol 列
+	 * @return データ
+	 */
+	public DATA get(final int aRow, final int aCol);
+
 }

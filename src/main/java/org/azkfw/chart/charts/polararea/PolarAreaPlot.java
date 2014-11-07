@@ -28,8 +28,8 @@ import java.util.List;
 
 import org.azkfw.chart.charts.polararea.PolarAreaChartDesign.PolarAreaChartStyle;
 import org.azkfw.chart.charts.polararea.PolarAreaSeries.PolarAreaSeriesPoint;
+import org.azkfw.chart.core.plot.AbstractSeriesPlot;
 import org.azkfw.chart.displayformat.DisplayFormat;
-import org.azkfw.chart.plot.AbstractSeriesPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Point;

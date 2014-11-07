@@ -21,13 +21,13 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
 
+import org.azkfw.chart.core.dataset.series.Series;
+import org.azkfw.chart.core.dataset.series.SeriesPoint;
 import org.azkfw.chart.design.marker.CircleMarker;
 import org.azkfw.chart.design.marker.DiaMarker;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.design.marker.SquareMarker;
 import org.azkfw.chart.design.marker.TriangleMarker;
-import org.azkfw.chart.series.Series;
-import org.azkfw.chart.series.SeriesPoint;
 
 /**
  * このクラスは、シリーズチャートスタイルを定義するための基底クラスです。

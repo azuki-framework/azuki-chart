@@ -17,9 +17,9 @@
  */
 package org.azkfw.chart.design;
 
+import org.azkfw.chart.core.dataset.series.Series;
+import org.azkfw.chart.core.dataset.series.SeriesPoint;
 import org.azkfw.chart.design.chart.SeriesChartStyle;
-import org.azkfw.chart.series.Series;
-import org.azkfw.chart.series.SeriesPoint;
 
 /**
  * このインターフェースは、シリーズグラフデザインを定義する為のインターフェースです。

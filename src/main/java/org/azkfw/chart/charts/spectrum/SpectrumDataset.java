@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.charts.spectrum;
 
-import org.azkfw.chart.dataset.AbstractMatrixDataset;
+import org.azkfw.chart.core.dataset.AbstractMatrixDataset;
 
 /**
  * このクラスは、スペクトログラムのデータセット情報を保持するクラスです。

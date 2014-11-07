@@ -15,32 +15,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.core.dataset;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.series.Series;
+import org.azkfw.chart.core.dataset.series.Series;
 
 /**
- * このインターフェースは、シリーズデータセット機能を表現したインターフェースです。
+ * このクラスは、シリーズデータセット機能の実装を行うための基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public interface SeriesDataset<T extends Series> extends Dataset {
+public abstract class AbstractSeriesDataset<T extends Series> extends AbstractDataset implements SeriesDataset<T> {
+
+	/** シリーズ一覧 */
+	private List<T> seriesList;
 
 	/**
-	 * シリーズを追加する。
-	 * 
-	 * @param aSeries シリーズ
+	 * コンストラクタ
 	 */
-	public void addSeries(final T aSeries);
+	public AbstractSeriesDataset() {
+		super();
+		seriesList = new ArrayList<T>();
+	}
 
 	/**
-	 * シリーズ一覧を取得する。
+	 * コンストラクタ
 	 * 
-	 * @return シリーズ一覧
+	 * @param aTitle タイトル
 	 */
-	public List<T> getSeriesList();
+	public AbstractSeriesDataset(final String aTitle) {
+		super(aTitle);
+		seriesList = new ArrayList<T>();
+	}
+
+	@Override
+	public void addSeries(final T aSeries) {
+		seriesList.add(aSeries);
+	}
+
+	@Override
+	public List<T> getSeriesList() {
+		return seriesList;
+	}
 }

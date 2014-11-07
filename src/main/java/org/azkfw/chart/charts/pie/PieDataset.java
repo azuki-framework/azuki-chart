@@ -20,7 +20,7 @@ package org.azkfw.chart.charts.pie;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.dataset.AbstractDataset;
+import org.azkfw.chart.core.dataset.AbstractDataset;
 
 /**
  * このクラスは、円グラフのデータセット情報を保持するクラスです。

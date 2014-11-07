@@ -23,9 +23,9 @@ import java.awt.FontMetrics;
 import java.util.List;
 
 import org.azkfw.chart.charts.pie.PieChartDesign.PieChartStyle;
+import org.azkfw.chart.core.plot.AbstractPlot;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.legend.LegendStyle.LegendDisplayPosition;
-import org.azkfw.chart.plot.AbstractPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;

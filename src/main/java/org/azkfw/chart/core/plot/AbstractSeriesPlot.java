@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.plot;
+package org.azkfw.chart.core.plot;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -23,13 +23,13 @@ import java.awt.FontMetrics;
 import java.awt.Stroke;
 import java.util.List;
 
-import org.azkfw.chart.dataset.SeriesDataset;
+import org.azkfw.chart.core.dataset.SeriesDataset;
+import org.azkfw.chart.core.dataset.series.Series;
 import org.azkfw.chart.design.SeriesChartDesign;
 import org.azkfw.chart.design.chart.SeriesChartStyle;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.legend.LegendStyle.LegendDisplayPosition;
 import org.azkfw.chart.design.marker.Marker;
-import org.azkfw.chart.series.Series;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;

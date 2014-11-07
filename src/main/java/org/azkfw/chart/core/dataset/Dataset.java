@@ -15,49 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.dataset;
+package org.azkfw.chart.core.dataset;
 
-import org.azkfw.chart.matrix.MatrixData;
 
 /**
- * このインターフェースは、マトリクスデータセット機能を表現したインターフェースです。
+ * このインターフェースは、データセット機能を表現したインターフェースです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/07/09
+ * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public interface MatrixDataset<DATA extends MatrixData> extends Dataset {
+public interface Dataset {
 
 	/**
-	 * 行数を取得する。
+	 * タイトルを設定する。
 	 * 
-	 * @return 行数
+	 * @param aTitle タイトル
 	 */
-	public int getRowSize();
+	public void setTitle(final String aTitle);
 
 	/**
-	 * 列数を取得する。
+	 * タイトルを取得する。
 	 * 
-	 * @return 列数
+	 * @return タイトル
 	 */
-	public int getColSize();
-
-	/**
-	 * データを設定する。
-	 * 
-	 * @param aRow 行
-	 * @param aCol 列
-	 * @param aData データ
-	 */
-	public void put(final int aRow, final int aCol, final DATA aData);
-
-	/**
-	 * データを取得する。
-	 * 
-	 * @param aRow　行
-	 * @param aCol 列
-	 * @return データ
-	 */
-	public DATA get(final int aRow, final int aCol);
+	public String getTitle();
 
 }

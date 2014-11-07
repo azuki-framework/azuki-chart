@@ -17,7 +17,7 @@
  */
 package org.azkfw.chart.charts.line;
 
-import org.azkfw.chart.dataset.AbstractSeriesDataset;
+import org.azkfw.chart.core.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、折れ線グラフのデータセット情報を保持するクラスです。

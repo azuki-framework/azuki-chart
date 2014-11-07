@@ -20,7 +20,7 @@ package org.azkfw.chart.charts.polararea;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.azkfw.chart.dataset.AbstractSeriesDataset;
+import org.azkfw.chart.core.dataset.AbstractSeriesDataset;
 
 /**
  * このクラスは、鶏頭図のデータセット情報を保持するクラスです。
