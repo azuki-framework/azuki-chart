@@ -60,17 +60,6 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	/**
 	 * コンストラクタ
 	 * 
-	 * @param aDataset データセット
-	 */
-	public AbstractPlot(final DATASET aDataset) {
-		super(Plot.class);
-		dataset = aDataset;
-		design = null;
-	}
-
-	/**
-	 * コンストラクタ
-	 * 
 	 * @param aClass クラス
 	 */
 	public AbstractPlot(final Class<?> aClass) {
@@ -115,6 +104,17 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	}
 
 	/**
+	 * コンストラクタ
+	 * 
+	 * @param aDataset データセット
+	 */
+	public AbstractPlot(final DATASET aDataset) {
+		super(Plot.class);
+		dataset = aDataset;
+		design = null;
+	}
+
+	/**
 	 * データセットを設定する。
 	 * 
 	 * @param aDataset データセット
@@ -151,44 +151,44 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	}
 
 	@Override
-	public final boolean draw(final Graphics g, final Rect aRect) {
-		return draw(g, aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
+	public final boolean draw(final Graphics g, final int x, final int y, final int width, final int height) {
+		return draw(g, new Rect(x, y, width, height));
 	}
 
 	@Override
 	public final boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
+		return draw(g, new Rect(x, y, width, height));
+	}
+
+	@Override
+	public final boolean draw(final Graphics g, final Rect aRect) {
 		boolean result = false;
 
-		Rect rtPlot = new Rect(x, y, width, height);
+		Rect rtGraph = new Rect(aRect);
 		if (null != design) {
 			Margin margin = design.getMargin();
 			if (null != margin) {
-				rtPlot.addX(margin.getLeft());
-				rtPlot.addY(margin.getTop());
-				rtPlot.subtractWidth(margin.getHorizontalSize());
-				rtPlot.subtractHeight(margin.getVerticalSize());
+				rtGraph.addPosition(margin.getLeft(), margin.getTop());
+				rtGraph.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
 			}
 
 			if (null != design.getBackgroundColor()) {
 				g.setColor(design.getBackgroundColor());
-				g.fillRect(rtPlot);
+				g.fillRect(rtGraph);
 			}
 			if (null != design.getFrameStroke() && null != design.getFrameStrokeColor()) {
 				g.setStroke(design.getFrameStroke(), design.getFrameStrokeColor());
-				g.drawRect(rtPlot);
+				g.drawRect(rtGraph);
 			}
 
 			Padding padding = design.getPadding();
 			if (null != padding) {
-				rtPlot.addX(padding.getLeft());
-				rtPlot.addY(padding.getTop());
-				rtPlot.subtractWidth(padding.getHorizontalSize());
-				rtPlot.subtractHeight(padding.getVerticalSize());
+				rtGraph.addPosition(padding.getLeft(), padding.getTop());
+				rtGraph.subtractSize(padding.getHorizontalSize(), padding.getVerticalSize());
 			}
 		}
 
-		result = doDraw(g, rtPlot);
-
+		result = doDraw(g, rtGraph);
 		return result;
 	}
 
@@ -209,7 +209,7 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 	 * 
 	 * @param g Graphics
 	 * @param rtChart チャートRect（更新される）
-	 * @return タイトルRect
+	 * @return タイトルRect。タイトルを表示しない場合は、<code>null</code>を返す。
 	 */
 	protected final Rect fitTitle(final Graphics g, Rect rtChart) {
 		Rect rtTitle = null;
@@ -221,48 +221,46 @@ public abstract class AbstractPlot<DATASET extends Dataset, DESIGN extends Chart
 		TitleStyle styleTitle = design.getTitleStyle();
 		String title = dataset.getTitle();
 
-		if (null != styleTitle && StringUtility.isNotEmpty(title)) {
-			if (styleTitle.isDisplay()) {
-				rtTitle = new Rect();
+		if (null != styleTitle && styleTitle.isDisplay() && StringUtility.isNotEmpty(title)) {
+			rtTitle = new Rect();
 
-				Margin margin = styleTitle.getMargin();
-				Padding padding = styleTitle.getPadding();
+			Margin margin = styleTitle.getMargin();
+			Padding padding = styleTitle.getPadding();
 
-				Font font = styleTitle.getFont();
-				FontMetrics fm = g.getFontMetrics(font);
-				TitleDisplayPosition pos = styleTitle.getPosition();
+			Font font = styleTitle.getFont();
+			FontMetrics fm = g.getFontMetrics(font);
+			TitleDisplayPosition pos = styleTitle.getPosition();
 
-				// get size
-				rtTitle.setSize(fm.stringWidth(title), font.getSize());
-				if (null != margin) { // Add margin
-					rtTitle.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
-				}
-				if (null != padding) { // Add padding
-					rtTitle.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
-				}
+			// get size
+			rtTitle.setSize(fm.stringWidth(title), font.getSize());
+			if (null != margin) { // Add margin
+				rtTitle.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
+			}
+			if (null != padding) { // Add padding
+				rtTitle.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
+			}
 
-				// get point and resize chart
-				if (TitleDisplayPosition.Top == pos) {
-					rtTitle.setPosition(rtChart.getX() + ((rtChart.getWidth() - rtTitle.getWidth()) / 2), rtChart.getY());
+			// get point and resize chart
+			if (TitleDisplayPosition.Top == pos) {
+				rtTitle.setPosition(rtChart.getX() + ((rtChart.getWidth() - rtTitle.getWidth()) / 2), rtChart.getY());
 
-					rtChart.addY(rtTitle.getHeight());
-					rtChart.subtractHeight(rtTitle.getHeight());
-				} else if (TitleDisplayPosition.Bottom == pos) {
-					rtTitle.setPosition(rtChart.getX() + ((rtChart.getWidth() - rtTitle.getWidth()) / 2), rtChart.getY() + rtChart.getHeight()
-							- rtTitle.getHeight());
+				rtChart.addY(rtTitle.getHeight());
+				rtChart.subtractHeight(rtTitle.getHeight());
+			} else if (TitleDisplayPosition.Bottom == pos) {
+				rtTitle.setPosition(rtChart.getX() + ((rtChart.getWidth() - rtTitle.getWidth()) / 2),
+						rtChart.getY() + rtChart.getHeight() - rtTitle.getHeight());
 
-					rtChart.subtractHeight(rtTitle.getHeight());
-				} else if (TitleDisplayPosition.Left == pos) {
-					rtTitle.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtTitle.getHeight()) / 2));
+				rtChart.subtractHeight(rtTitle.getHeight());
+			} else if (TitleDisplayPosition.Left == pos) {
+				rtTitle.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtTitle.getHeight()) / 2));
 
-					rtChart.addX(rtTitle.getWidth());
-					rtChart.subtractWidth(rtTitle.getWidth());
-				} else if (TitleDisplayPosition.Right == pos) {
-					rtTitle.setPosition(rtChart.getX() + rtChart.getWidth() - rtTitle.getWidth(),
-							rtChart.getY() + ((rtChart.getHeight() - rtTitle.getHeight()) / 2));
+				rtChart.addX(rtTitle.getWidth());
+				rtChart.subtractWidth(rtTitle.getWidth());
+			} else if (TitleDisplayPosition.Right == pos) {
+				rtTitle.setPosition(rtChart.getX() + rtChart.getWidth() - rtTitle.getWidth(),
+						rtChart.getY() + ((rtChart.getHeight() - rtTitle.getHeight()) / 2));
 
-					rtChart.subtractWidth(rtTitle.getWidth());
-				}
+				rtChart.subtractWidth(rtTitle.getWidth());
 			}
 		}
 		return rtTitle;

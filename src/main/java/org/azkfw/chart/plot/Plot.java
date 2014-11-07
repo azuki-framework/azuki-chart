@@ -29,7 +29,37 @@ import org.azkfw.graphics.Rect;
  */
 public interface Plot {
 
+	/**
+	 * グラフィクスに描画する。
+	 * 
+	 * @param g グラフィクス
+	 * @param x 描画範囲（X座標）
+	 * @param y 描画範囲（Y座標）
+	 * @param width 描画範囲（横幅）
+	 * @param height 描画範囲（縦幅）
+	 * @return 描画結果
+	 */
+	public boolean draw(final Graphics g, final int x, final int y, final int width, final int height);
+
+	/**
+	 * グラフィクスに描画する。
+	 * 
+	 * @param g グラフィクス
+	 * @param x 描画範囲（X座標）
+	 * @param y 描画範囲（Y座標）
+	 * @param width 描画範囲（横幅）
+	 * @param height 描画範囲（縦幅）
+	 * @return 描画結果
+	 */
+	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height);
+
+	/**
+	 * グラフィクスに描画する。
+	 * 
+	 * @param g グラフィクス
+	 * @param aRect 描画範囲
+	 * @return 描画結果
+	 */
 	public boolean draw(final Graphics g, final Rect aRect);
 
-	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height);
 }
