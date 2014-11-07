@@ -18,12 +18,18 @@
 package org.azkfw.chart.core.element;
 
 /**
- * このクラスは、エレメント機能を実装する為の基底クラスです。
+ * このクラスは、凡例エレメント機能を実装する為の基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/11/07
  * @author Kawakicchi
  */
-public abstract class AbstractElement implements Element {
+public abstract class LegendElement extends AbstractElement {
+
+	/**
+	 * コンストラクタ
+	 */
+	public LegendElement() {
+	}
 
 }

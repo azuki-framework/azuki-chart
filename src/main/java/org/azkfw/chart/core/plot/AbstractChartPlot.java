@@ -18,6 +18,7 @@
 package org.azkfw.chart.core.plot;
 
 import org.azkfw.chart.core.dataset.Dataset;
+import org.azkfw.chart.core.element.LegendElement;
 import org.azkfw.chart.core.element.TitleElement;
 import org.azkfw.chart.design.ChartDesign;
 import org.azkfw.chart.design.title.TitleStyle;
@@ -155,7 +156,40 @@ public abstract class AbstractChartPlot<DATASET extends Dataset, DESIGN extends 
 			}
 		}
 
+		// エレメント作成 ////////////////////////////////
+		TitleElement elementTitle = null;
+		LegendElement elementLegend = null;
+		if (ObjectUtility.isAllNotNull(dataset, design)) {
+			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
+			elementLegend = createLegendElement();
+		}
+		/////////////////////////////////////////////
+
+		// エレメント配備 ////////////////////////////////
+		// タイトル配備
+		Rect rtTitle = null;
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			rtTitle = elementTitle.deploy(g, rtGraph);
+		}
+		// 凡例適用
+		Rect rtLegend = null;
+		if (ObjectUtility.isNotNull(elementLegend)) {
+			rtLegend = elementLegend.deploy(g, rtGraph);
+		}
+		/////////////////////////////////////////////
+
 		result = doDrawChart(g, rtGraph);
+
+		// エレメント描画 ////////////////////////////////
+		// Draw Legend
+		if (ObjectUtility.isNotNull(elementLegend)) {
+			elementLegend.draw(g, rtLegend);
+		}
+		// Draw title
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			elementTitle.draw(g, rtTitle);
+		}
+		/////////////////////////////////////////////
 
 		return result;
 	}
@@ -190,6 +224,10 @@ public abstract class AbstractChartPlot<DATASET extends Dataset, DESIGN extends 
 	protected TitleElement createTitleElement(final String aTitle, final TitleStyle aStyle) {
 		TitleElement element = new TitleElement(aTitle, aStyle);
 		return element;
+	}
+
+	protected LegendElement createLegendElement() {
+		return null;
 	}
 
 	protected static float pixelLimit(final float aValue) {

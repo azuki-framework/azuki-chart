@@ -20,7 +20,6 @@ package org.azkfw.chart.charts.spectrum;
 import java.awt.Color;
 
 import org.azkfw.chart.charts.spectrum.SpectrumChartDesign.SpectrumChartStyle;
-import org.azkfw.chart.core.element.TitleElement;
 import org.azkfw.chart.core.plot.AbstractMatrixChartPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Point;
@@ -78,30 +77,11 @@ public class SpectrumChartPlot extends AbstractMatrixChartPlot<SpectrumDataset, 
 		SpectrumChartDesign design = getChartDesign();
 		SpectrumChartStyle style = design.getChartStyle();
 
-		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
-
-		// エレメント作成 ////////////////////////////////
-		TitleElement elementTitle = null;
-		if (ObjectUtility.isAllNotNull(dataset, design)) {
-			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
-		}
-		/////////////////////////////////////////////
-
-		// エレメント配備 ////////////////////////////////
-		// タイトル配備
-		Rect rtTitle = null;
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			rtTitle = elementTitle.deploy(g, rtChartPre);
-		}
-		// 凡例適用
-		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
-		/////////////////////////////////////////////
-
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
 
-		float pieSize = Math.min(rtChartPre.getWidth(), rtChartPre.getHeight());
-		Point ptChartMiddle = new Point(rtChartPre.getX() + (rtChartPre.getWidth() / 2.f), rtChartPre.getY() + (rtChartPre.getHeight() / 2.f));
+		float pieSize = Math.min(aRect.getWidth(), aRect.getHeight());
+		Point ptChartMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
 
 		Rect rtChart = new Rect();
 		rtChart.setX(ptChartMiddle.getX() - (pieSize / 2));
@@ -117,17 +97,6 @@ public class SpectrumChartPlot extends AbstractMatrixChartPlot<SpectrumDataset, 
 
 		// Draw dataset
 		drawDataset(g, dataset, scaleValue, style, rtChart);
-
-		// エレメント描画 ////////////////////////////////
-		// Draw Legend
-		if (ObjectUtility.isNotNull(rtLegend)) {
-			drawLegend(g, design.getLegendStyle(), rtLegend);
-		}
-		// Draw title
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			elementTitle.draw(g, rtTitle);
-		}
-		/////////////////////////////////////////////
 
 		return true;
 	}

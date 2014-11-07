@@ -18,23 +18,16 @@
 package org.azkfw.chart.charts.pie;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.util.List;
 
 import org.azkfw.chart.charts.pie.PieChartDesign.PieChartStyle;
-import org.azkfw.chart.core.element.TitleElement;
+import org.azkfw.chart.core.element.LegendElement;
+import org.azkfw.chart.core.element.PieLegendElement;
 import org.azkfw.chart.core.plot.AbstractChartPlot;
-import org.azkfw.chart.design.legend.LegendStyle;
-import org.azkfw.chart.design.legend.LegendStyle.LegendDisplayPosition;
 import org.azkfw.graphics.Graphics;
-import org.azkfw.graphics.Margin;
-import org.azkfw.graphics.Padding;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
-import org.azkfw.util.ListUtility;
 import org.azkfw.util.ObjectUtility;
-import org.azkfw.util.StringUtility;
 
 /**
  * このクラスは、円グラフのプロットクラスです。
@@ -82,32 +75,19 @@ public class PieChartPlot extends AbstractChartPlot<PieDataset, PieChartDesign> 
 	}
 
 	@Override
+	protected LegendElement createLegendElement() {
+		LegendElement element = new PieLegendElement(getDataset(), getChartDesign());
+		return element;
+	}
+
+	@Override
 	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		PieDataset dataset = getDataset();
 		PieChartDesign design = getChartDesign();
 		PieChartStyle style = design.getChartStyle();
 
-		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
-
-		// エレメント作成 ////////////////////////////////
-		TitleElement elementTitle = null;
-		if (ObjectUtility.isAllNotNull(dataset, design)) {
-			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
-		}
-		/////////////////////////////////////////////
-
-		// エレメント配備 ////////////////////////////////
-		// タイトル配備
-		Rect rtTitle = null;
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			rtTitle = elementTitle.deploy(g, rtChartPre);
-		}
-		// 凡例適用
-		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
-		/////////////////////////////////////////////
-
-		float pieSize = Math.min(rtChartPre.getWidth(), rtChartPre.getHeight());
-		Point ptChartMiddle = new Point(rtChartPre.getX() + (rtChartPre.getWidth() / 2.f), rtChartPre.getY() + (rtChartPre.getHeight() / 2.f));
+		float pieSize = Math.min(aRect.getWidth(), aRect.getHeight());
+		Point ptChartMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
 
 		Rect rtChart = new Rect();
 		rtChart.setX(ptChartMiddle.getX() - (pieSize / 2));
@@ -123,17 +103,6 @@ public class PieChartPlot extends AbstractChartPlot<PieDataset, PieChartDesign> 
 
 		// Draw dataset
 		drawDataset(g, dataset, style, rtChart);
-
-		// エレメント描画 ////////////////////////////////
-		// Draw Legend
-		if (ObjectUtility.isNotNull(rtLegend)) {
-			drawLegend(g, design.getLegendStyle(), rtLegend);
-		}
-		// Draw title
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			elementTitle.draw(g, rtTitle);
-		}
-		/////////////////////////////////////////////
 
 		return true;
 	}
@@ -179,284 +148,5 @@ public class PieChartPlot extends AbstractChartPlot<PieDataset, PieChartDesign> 
 				angle += acrAngle;
 			}
 		}
-	}
-
-	/**
-	 * 凡例のフィット処理を行なう。
-	 * <p>
-	 * チャートRectで適切な位置に凡例を配置するように設定する。
-	 * </p>
-	 * 
-	 * @param g Graphics
-	 * @param aStyle 凡例スタイル
-	 * @param rtChart チャートRect（更新される）
-	 * @return 凡例Rect
-	 */
-	private Rect fitLegend(final Graphics g, final LegendStyle aStyle, Rect rtChart) {
-		Rect rtLegend = null;
-
-		PieDataset dataset = getDataset();
-
-		if (!ObjectUtility.isAllNotNull(aStyle, dataset)) {
-			return rtLegend;
-		}
-		if (ListUtility.isEmpty(dataset.getDataList())) {
-			return rtLegend;
-		}
-
-		if (aStyle.isDisplay()) {
-			rtLegend = new Rect();
-
-			Margin margin = aStyle.getMargin();
-			Padding padding = aStyle.getPadding();
-
-			int fontHeight = 16;
-			FontMetrics fm = null;
-			Font font = aStyle.getFont();
-			if (ObjectUtility.isNotNull(font)) {
-				fm = g.getFontMetrics(font);
-				fontHeight = fm.getAscent() - fm.getDescent();
-			}
-
-			LegendDisplayPosition pos = aStyle.getPosition();
-
-			// get size
-			if (isHorizontalLegend(pos)) {
-				for (int i = 0; i < dataset.getDataList().size(); i++) {
-					PieData data = dataset.getDataList().get(i);
-
-					String title = data.getTitle();
-					Color fontColor = aStyle.getFontColor();
-					int strWidth = 16; // XXX: タイトルがない場合とりあえず16pixelあける
-					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
-						strWidth = fm.stringWidth(title);
-					}
-
-					rtLegend.setHeight(fontHeight);
-					rtLegend.addWidth((fontHeight * 2) + strWidth);
-					if (0 < i) {
-						rtLegend.addWidth(aStyle.getSpace());
-					}
-				}
-			} else if (isVerticalLegend(pos)) {
-				for (int i = 0; i < dataset.getDataList().size(); i++) {
-					PieData data = dataset.getDataList().get(i);
-
-					String title = data.getTitle();
-					Color fontColor = aStyle.getFontColor();
-					int strWidth = 16; // XXX: タイトルがない場合とりあえず16pixelあける
-					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
-						strWidth = fm.stringWidth(title);
-					}
-
-					rtLegend.addHeight(fontHeight);
-					rtLegend.setWidth(Math.max(rtLegend.getWidth(), (fontHeight * 2) + strWidth));
-					if (0 < i) {
-						rtLegend.addHeight(aStyle.getSpace());
-					}
-				}
-			}
-			if (ObjectUtility.isNotNull(margin)) { // Add margin
-				rtLegend.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
-			}
-			if (ObjectUtility.isNotNull(padding)) { // Add padding
-				rtLegend.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
-			}
-
-			// get point and resize chart
-			if (LegendDisplayPosition.Top == pos) {
-				rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY());
-
-				rtChart.addY(rtLegend.getHeight());
-				rtChart.subtractHeight(rtLegend.getHeight());
-			} else if (LegendDisplayPosition.Bottom == pos) {
-				rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2,
-						rtChart.getY() + rtChart.getHeight() - rtLegend.getHeight());
-
-				rtChart.subtractHeight(rtLegend.getHeight());
-			} else if (LegendDisplayPosition.Left == pos) {
-				rtLegend.setPosition(rtChart.getX(), rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
-
-				rtChart.addX(rtLegend.getWidth());
-				rtChart.subtractWidth(rtLegend.getWidth());
-			} else if (LegendDisplayPosition.Right == pos) {
-				rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
-						rtChart.getY() + ((rtChart.getHeight() - rtLegend.getHeight()) / 2));
-
-				rtChart.subtractWidth(rtLegend.getWidth());
-			} else if (LegendDisplayPosition.InnerTopLeft == pos) {
-				rtLegend.setPosition(rtChart.getX(), rtChart.getY());
-			} else if (LegendDisplayPosition.InnerTop == pos) {
-				rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2, rtChart.getY());
-			} else if (LegendDisplayPosition.InnerTopRight == pos) {
-				rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(), rtChart.getY());
-			} else if (LegendDisplayPosition.InnerLeft == pos) {
-				rtLegend.setPosition(rtChart.getX(), rtChart.getY() + (rtChart.getHeight() - rtLegend.getHeight()) / 2);
-			} else if (LegendDisplayPosition.InnerRight == pos) {
-				rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
-						rtChart.getY() + (rtChart.getHeight() - rtLegend.getHeight()) / 2);
-			} else if (LegendDisplayPosition.InnerBottomLeft == pos) {
-				rtLegend.setPosition(rtChart.getX(), rtChart.getY() + rtChart.getHeight() - rtLegend.getHeight());
-			} else if (LegendDisplayPosition.InnerBottom == pos) {
-				rtLegend.setPosition(rtChart.getX() + (rtChart.getWidth() - rtLegend.getWidth()) / 2,
-						rtChart.getY() + rtChart.getHeight() - rtLegend.getHeight());
-			} else if (LegendDisplayPosition.InnerBottomRight == pos) {
-				rtLegend.setPosition(rtChart.getX() + rtChart.getWidth() - rtLegend.getWidth(),
-						rtChart.getY() + rtChart.getHeight() - rtLegend.getHeight());
-			}
-		}
-
-		return rtLegend;
-	}
-
-	/**
-	 * タイトルの描画を行う。
-	 * 
-	 * @param g Graphics
-	 * @param aStyle 凡例スタイル
-	 * @param aRect 描画範囲
-	 */
-	private void drawLegend(final Graphics g, final LegendStyle aStyle, final Rect aRect) {
-		PieDataset dataset = getDataset();
-		PieChartDesign design = getChartDesign();
-		PieChartStyle style = design.getChartStyle();
-
-		if (null != design) {
-			Margin margin = (Margin) ObjectUtility.getNotNullObject(aStyle.getMargin(), new Margin());
-			Padding padding = (Padding) ObjectUtility.getNotNullObject(aStyle.getPadding(), new Padding());
-
-			{ // Draw legend frame
-				Rect rtFrame = new Rect();
-				rtFrame.setX(aRect.getX() + margin.getLeft());
-				rtFrame.setY(aRect.getY() + margin.getTop());
-				rtFrame.setWidth(aRect.getWidth() - margin.getHorizontalSize());
-				rtFrame.setHeight(aRect.getHeight() - margin.getVerticalSize());
-				// fill background
-				if (null != aStyle.getFrameBackgroundColor()) {
-					g.setColor(aStyle.getFrameBackgroundColor());
-					g.fillRect(rtFrame);
-				}
-				// draw stroke
-				if (null != aStyle.getFrameStroke() && null != aStyle.getFrameStrokeColor()) {
-					g.setStroke(aStyle.getFrameStroke(), aStyle.getFrameStrokeColor());
-					g.drawRect(rtFrame);
-				}
-			}
-
-			int fontHeight = 16;
-			FontMetrics fm = null;
-			Font font = aStyle.getFont();
-			if (ObjectUtility.isNotNull(font)) {
-				fm = g.getFontMetrics(font);
-				fontHeight = fm.getAscent() - fm.getDescent();
-			}
-
-			List<PieData> dataList = dataset.getDataList();
-
-			float x = aRect.getX() + margin.getLeft() + padding.getLeft();
-			float y = aRect.getY() + margin.getTop() + padding.getTop();
-			// float width = aRect.getWidth() - (margin.getHorizontalSize() + padding.getHorizontalSize());
-			float height = aRect.getHeight() - (margin.getVerticalSize() + padding.getVerticalSize());
-			LegendDisplayPosition pos = aStyle.getPosition();
-			if (isHorizontalLegend(pos)) {
-				for (int i = 0; i < dataList.size(); i++) {
-					PieData data = dataList.get(i);
-					// draw color
-					Color fillColor = style.getDataFillColor(i);
-					if (ObjectUtility.isNotNull(fillColor)) {
-						g.setColor(fillColor);
-						g.fillRect(x + (fontHeight / 2), y, fontHeight, fontHeight);
-					}
-					Color strokeColor = style.getDataStrokeColor(i);
-					if (ObjectUtility.isNotNull(strokeColor)) {
-						g.setColor(strokeColor);
-						g.drawRect(x + (fontHeight / 2), y, fontHeight, fontHeight);
-					}
-
-					// draw title
-					String title = data.getTitle();
-					Color fontColor = aStyle.getFontColor();
-					int strWidth = 16; // XXX: タイトルがない場合とりあえず16pixelあける
-					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
-						strWidth = fm.stringWidth(title);
-						g.setFont(font, fontColor);
-						g.drawString(title, (fontHeight * 2) + x, y + fontHeight + (height - fontHeight) / 2);
-					}
-
-					x += aStyle.getSpace() + (fontHeight * 2) + strWidth;
-				}
-
-			} else if (isVerticalLegend(pos)) {
-				for (int i = 0; i < dataList.size(); i++) {
-					PieData data = dataList.get(i);
-					// draw color
-					Color fillColor = style.getDataFillColor(i);
-					if (ObjectUtility.isNotNull(fillColor)) {
-						g.setColor(fillColor);
-						g.fillRect(x + (fontHeight / 2), y, fontHeight, fontHeight);
-					}
-					Color strokeColor = style.getDataStrokeColor(i);
-					if (ObjectUtility.isNotNull(strokeColor)) {
-						g.setColor(strokeColor);
-						g.drawRect(x + (fontHeight / 2), y, fontHeight, fontHeight);
-					}
-
-					// draw title
-					String title = data.getTitle();
-					Color fontColor = aStyle.getFontColor();
-					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
-						g.setFont(font, fontColor);
-						g.drawString(title, (fontHeight * 2) + x, y + fontHeight);
-					}
-
-					y += aStyle.getSpace() + fontHeight;
-				}
-
-			}
-		}
-	}
-
-	/**
-	 * シリーズを横に並べる凡例か判断する。
-	 * 
-	 * @param aPosition
-	 * @return
-	 */
-	private boolean isHorizontalLegend(final LegendDisplayPosition aPosition) {
-		if (LegendDisplayPosition.Top == aPosition)
-			return true;
-		if (LegendDisplayPosition.Bottom == aPosition)
-			return true;
-		if (LegendDisplayPosition.InnerTop == aPosition)
-			return true;
-		if (LegendDisplayPosition.InnerBottom == aPosition)
-			return true;
-		return false;
-	}
-
-	/**
-	 * シリーズを縦に並べる凡例か判断する。
-	 * 
-	 * @param aPosition
-	 * @return
-	 */
-	private boolean isVerticalLegend(final LegendDisplayPosition aPosition) {
-		if (LegendDisplayPosition.Left == aPosition)
-			return true;
-		if (LegendDisplayPosition.Right == aPosition)
-			return true;
-		if (LegendDisplayPosition.InnerTopLeft == aPosition)
-			return true;
-		if (LegendDisplayPosition.InnerTopRight == aPosition)
-			return true;
-		if (LegendDisplayPosition.InnerLeft == aPosition)
-			return true;
-		if (LegendDisplayPosition.InnerRight == aPosition)
-			return true;
-		if (LegendDisplayPosition.InnerBottomLeft == aPosition)
-			return true;
-		if (LegendDisplayPosition.InnerBottomRight == aPosition)
-			return true;
-		return false;
 	}
 }

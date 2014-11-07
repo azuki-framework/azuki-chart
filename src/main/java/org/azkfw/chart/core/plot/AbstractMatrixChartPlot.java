@@ -19,9 +19,6 @@ package org.azkfw.chart.core.plot;
 
 import org.azkfw.chart.core.dataset.MatrixDataset;
 import org.azkfw.chart.design.MatrixChartDesign;
-import org.azkfw.chart.design.legend.LegendStyle;
-import org.azkfw.graphics.Graphics;
-import org.azkfw.graphics.Rect;
 
 /**
  * このクラスは、マトリックスデータのグラフプロット機能を実装するための基底クラスです。
@@ -31,7 +28,8 @@ import org.azkfw.graphics.Rect;
  * @author Kawakicchi
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractMatrixChartPlot<DATASET extends MatrixDataset, DESIGN extends MatrixChartDesign> extends AbstractChartPlot<DATASET, DESIGN> {
+public abstract class AbstractMatrixChartPlot<DATASET extends MatrixDataset, DESIGN extends MatrixChartDesign> extends
+		AbstractChartPlot<DATASET, DESIGN> {
 
 	/**
 	 * コンストラクタ
@@ -85,34 +83,6 @@ public abstract class AbstractMatrixChartPlot<DATASET extends MatrixDataset, DES
 	 */
 	public AbstractMatrixChartPlot(final DATASET aDataset) {
 		super(aDataset);
-	}
-
-	/**
-	 * 凡例のフィット処理を行なう。
-	 * <p>
-	 * チャートRectで適切な位置に凡例を配置するように設定する。
-	 * </p>
-	 * 
-	 * @param g Graphics
-	 * @param aStyle 凡例スタイル
-	 * @param rtChart チャートRect（更新される）
-	 * @return 凡例Rect。凡例を表示しない場合、<code>null</code>を返す。
-	 */
-	protected Rect fitLegend(final Graphics g, final LegendStyle aStyle, final Rect rtChart) {
-		Rect rtLegend = null;
-
-		return rtLegend;
-	}
-
-	/**
-	 * タイトルの描画を行う。
-	 * 
-	 * @param g Graphics
-	 * @param aStyle 凡例スタイル
-	 * @param aRect 描画範囲
-	 */
-	protected void drawLegend(final Graphics g, final LegendStyle aStyle, final Rect aRect) {
-
 	}
 
 }

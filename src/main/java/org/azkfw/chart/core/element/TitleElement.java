@@ -55,17 +55,8 @@ public class TitleElement extends AbstractElement {
 		style = aStyle;
 	}
 
-	/**
-	 * タイトルのフィット処理を行なう。
-	 * <p>
-	 * チャートRectで適切な位置にタイトルを配置するように設定する。
-	 * </p>
-	 * 
-	 * @param g Graphics
-	 * @param rect チャートRect（更新される）
-	 * @return タイトルRect。タイトルを表示しない場合は、<code>null</code>を返す。
-	 */
-	public final Rect deploy(final Graphics g, final Rect rect) {
+	@Override
+	public Rect deploy(final Graphics g, final Rect rect) {
 		Rect rtTitle = null;
 		if (null != style && style.isDisplay() && StringUtility.isNotEmpty(title)) {
 			rtTitle = new Rect();
@@ -110,13 +101,8 @@ public class TitleElement extends AbstractElement {
 		return rtTitle;
 	}
 
-	/**
-	 * タイトルの描画を行う。
-	 * 
-	 * @param g Graphics
-	 * @param rect 描画範囲
-	 */
-	public final void draw(final Graphics g, final Rect rect) {
+	@Override
+	public void draw(final Graphics g, final Rect rect) {
 		if (null != style && style.isDisplay() && StringUtility.isNotEmpty(title)) {
 			Margin margin = (Margin) ObjectUtility.getNotNullObject(style.getMargin(), new Margin());
 			Padding padding = (Padding) ObjectUtility.getNotNullObject(style.getPadding(), new Padding());
@@ -162,5 +148,4 @@ public class TitleElement extends AbstractElement {
 			}
 		}
 	}
-
 }

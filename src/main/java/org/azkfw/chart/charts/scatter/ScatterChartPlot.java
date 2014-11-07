@@ -29,7 +29,6 @@ import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterXAxis;
 import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterYAxis;
 import org.azkfw.chart.charts.scatter.ScatterChartDesign.ScatterChartStyle;
 import org.azkfw.chart.charts.scatter.ScatterSeries.ScatterSeriesPoint;
-import org.azkfw.chart.core.element.TitleElement;
 import org.azkfw.chart.core.plot.AbstractSeriesChartPlot;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
@@ -104,25 +103,6 @@ public class ScatterChartPlot extends AbstractSeriesChartPlot<ScatterDataset, Sc
 		ScatterChartDesign design = getChartDesign();
 		ScatterChartStyle style = design.getChartStyle();
 
-		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
-
-		// エレメント作成 ////////////////////////////////
-		TitleElement elementTitle = null;
-		if (ObjectUtility.isAllNotNull(dataset, design)) {
-			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
-		}
-		/////////////////////////////////////////////
-
-		// エレメント配備 ////////////////////////////////
-		// タイトル配備
-		Rect rtTitle = null;
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			rtTitle = elementTitle.deploy(g, rtChartPre);
-		}
-		// 凡例適用
-		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
-		/////////////////////////////////////////////
-
 		// スケール調整
 		ScaleValue[] svs = getXYScaleValue();
 		ScaleValue xScaleValue = svs[0];
@@ -130,14 +110,14 @@ public class ScatterChartPlot extends AbstractSeriesChartPlot<ScatterDataset, Sc
 
 		float fontMargin = 8.0f;
 
-		Margin margin = fitChart(g, rtChartPre, xScaleValue, yScaleValue, fontMargin);
+		Margin margin = fitChart(g, aRect, xScaleValue, yScaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
 		Rect rtChart = new Rect();
-		rtChart.setX(rtChartPre.getX() + margin.getLeft());
-		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom()); // ★注意：Yは原点から
-		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
-		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
+		rtChart.setX(aRect.getX() + margin.getLeft());
+		rtChart.setY(aRect.getY() + aRect.getHeight() - margin.getBottom()); // ★注意：Yは原点から
+		rtChart.setWidth(aRect.getWidth() - margin.getHorizontalSize());
+		rtChart.setHeight(aRect.getHeight() - margin.getVerticalSize());
 
 		// スケール計算
 		double xDifValue = xScaleValue.getDiff();
@@ -247,17 +227,6 @@ public class ScatterChartPlot extends AbstractSeriesChartPlot<ScatterDataset, Sc
 		// Draw dataset
 		drawDataset(g, dataset, xScaleValue, yScaleValue, style, rtChart);
 
-		// エレメント描画 ////////////////////////////////
-		// Draw Legend
-		if (ObjectUtility.isNotNull(rtLegend)) {
-			drawLegend(g, design.getLegendStyle(), rtLegend);
-		}
-		// Draw title
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			elementTitle.draw(g, rtTitle);
-		}
-		/////////////////////////////////////////////
-
 		return true;
 	}
 
@@ -355,6 +324,102 @@ public class ScatterChartPlot extends AbstractSeriesChartPlot<ScatterDataset, Sc
 			}
 
 		}
+	}
+
+	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aXScaleValue, final ScaleValue aYScaleValue,
+			final float aFontMargin) {
+		ScatterChartDesign design = getChartDesign();
+		ScatterChartStyle style = design.getChartStyle();
+
+		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
+
+		double xDifValue = aXScaleValue.getDiff();
+		double yDifValue = aYScaleValue.getDiff();
+
+		// スケール計算(プレ)
+		double pixXPerValue = (aRtChart.getWidth() - margin.getHorizontalSize()) / xDifValue;
+		double pixYPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / yDifValue;
+		{
+			{
+				float maxYLabelWidth = 0.0f;
+				FontMetrics fm = g.getFontMetrics(style.getYAxisScaleLabelFont());
+				DisplayFormat df = axisY.getDisplayFormat();
+				for (double value = aYScaleValue.getMin(); value <= aYScaleValue.getMax(); value += aYScaleValue.getScale()) {
+					String str = df.toString(value);
+					if (StringUtility.isNotEmpty(str)) {
+						int width = fm.stringWidth(str);
+						if (maxYLabelWidth < width) {
+							maxYLabelWidth = width;
+						}
+					}
+				}
+				if (0 < maxYLabelWidth) {
+					maxYLabelWidth += aFontMargin;
+				}
+				debug(String.format("Max y axis label width : %f", maxYLabelWidth));
+				margin.setLeft(maxYLabelWidth);
+			}
+
+			// スケール計算(プレ)
+			pixXPerValue = (aRtChart.getWidth() - margin.getHorizontalSize()) / xDifValue;
+			pixYPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / yDifValue;
+
+			{
+				FontMetrics fm = g.getFontMetrics(style.getXAxisScaleLabelFont());
+				DisplayFormat df = axisX.getDisplayFormat();
+				float minLeft = 0.f;
+				float maxRight = aRtChart.getWidth();
+				for (double value = aXScaleValue.getMin(); value <= aXScaleValue.getMax(); value += aXScaleValue.getScale()) {
+					String str = df.toString(value);
+					if (StringUtility.isNotEmpty(str)) {
+						int width = fm.stringWidth(str);
+						margin.setBottom(style.getXAxisScaleLabelFont().getSize() + aFontMargin);
+
+						float x = (float) (margin.getLeft() + ((value - aXScaleValue.getMin()) * pixXPerValue));
+						float left = x - (width / 2);
+						float right = x + (width / 2);
+						if (minLeft > left) {
+							minLeft = left;
+						}
+						if (maxRight < right) {
+							maxRight = right;
+						}
+					}
+				}
+				if (0 > minLeft) {
+					margin.setLeft(margin.getLeft() - minLeft);
+				}
+				if (0 < maxRight - aRtChart.getWidth()) {
+					margin.setRight(maxRight - aRtChart.getWidth());
+				}
+			}
+
+			// スケール計算(プレ)
+			pixXPerValue = (aRtChart.getWidth() - margin.getHorizontalSize()) / xDifValue;
+			pixYPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / yDifValue;
+
+			{
+				int fontHeight = style.getYAxisScaleLabelFont().getSize();
+				DisplayFormat df = axisY.getDisplayFormat();
+				float minTop = 0.f;
+				for (double value = aYScaleValue.getMin(); value <= aYScaleValue.getMax(); value += aYScaleValue.getScale()) {
+					float y = (float) (aRtChart.getHeight() - margin.getBottom() - pixYPerValue * (value - aYScaleValue.getMin()));
+					String str = df.toString(value);
+					if (StringUtility.isNotEmpty(str)) {
+						y -= fontHeight / 2;
+						if (minTop > y) {
+							minTop = y;
+						}
+					}
+				}
+				if (0 > minTop) {
+					margin.setTop(-1 * minTop);
+				}
+			}
+
+		}
+
+		return margin;
 	}
 
 	private ScaleValue[] getXYScaleValue() {
@@ -497,99 +562,4 @@ public class ScatterChartPlot extends AbstractSeriesChartPlot<ScatterDataset, Sc
 		return result;
 	}
 
-	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aXScaleValue, final ScaleValue aYScaleValue,
-			final float aFontMargin) {
-		ScatterChartDesign design = getChartDesign();
-		ScatterChartStyle style = design.getChartStyle();
-
-		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
-
-		double xDifValue = aXScaleValue.getDiff();
-		double yDifValue = aYScaleValue.getDiff();
-
-		// スケール計算(プレ)
-		double pixXPerValue = (aRtChart.getWidth() - margin.getHorizontalSize()) / xDifValue;
-		double pixYPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / yDifValue;
-		{
-			{
-				float maxYLabelWidth = 0.0f;
-				FontMetrics fm = g.getFontMetrics(style.getYAxisScaleLabelFont());
-				DisplayFormat df = axisY.getDisplayFormat();
-				for (double value = aYScaleValue.getMin(); value <= aYScaleValue.getMax(); value += aYScaleValue.getScale()) {
-					String str = df.toString(value);
-					if (StringUtility.isNotEmpty(str)) {
-						int width = fm.stringWidth(str);
-						if (maxYLabelWidth < width) {
-							maxYLabelWidth = width;
-						}
-					}
-				}
-				if (0 < maxYLabelWidth) {
-					maxYLabelWidth += aFontMargin;
-				}
-				debug(String.format("Max y axis label width : %f", maxYLabelWidth));
-				margin.setLeft(maxYLabelWidth);
-			}
-
-			// スケール計算(プレ)
-			pixXPerValue = (aRtChart.getWidth() - margin.getHorizontalSize()) / xDifValue;
-			pixYPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / yDifValue;
-
-			{
-				FontMetrics fm = g.getFontMetrics(style.getXAxisScaleLabelFont());
-				DisplayFormat df = axisX.getDisplayFormat();
-				float minLeft = 0.f;
-				float maxRight = aRtChart.getWidth();
-				for (double value = aXScaleValue.getMin(); value <= aXScaleValue.getMax(); value += aXScaleValue.getScale()) {
-					String str = df.toString(value);
-					if (StringUtility.isNotEmpty(str)) {
-						int width = fm.stringWidth(str);
-						margin.setBottom(style.getXAxisScaleLabelFont().getSize() + aFontMargin);
-
-						float x = (float) (margin.getLeft() + ((value - aXScaleValue.getMin()) * pixXPerValue));
-						float left = x - (width / 2);
-						float right = x + (width / 2);
-						if (minLeft > left) {
-							minLeft = left;
-						}
-						if (maxRight < right) {
-							maxRight = right;
-						}
-					}
-				}
-				if (0 > minLeft) {
-					margin.setLeft(margin.getLeft() - minLeft);
-				}
-				if (0 < maxRight - aRtChart.getWidth()) {
-					margin.setRight(maxRight - aRtChart.getWidth());
-				}
-			}
-
-			// スケール計算(プレ)
-			pixXPerValue = (aRtChart.getWidth() - margin.getHorizontalSize()) / xDifValue;
-			pixYPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / yDifValue;
-
-			{
-				int fontHeight = style.getYAxisScaleLabelFont().getSize();
-				DisplayFormat df = axisY.getDisplayFormat();
-				float minTop = 0.f;
-				for (double value = aYScaleValue.getMin(); value <= aYScaleValue.getMax(); value += aYScaleValue.getScale()) {
-					float y = (float) (aRtChart.getHeight() - margin.getBottom() - pixYPerValue * (value - aYScaleValue.getMin()));
-					String str = df.toString(value);
-					if (StringUtility.isNotEmpty(str)) {
-						y -= fontHeight / 2;
-						if (minTop > y) {
-							minTop = y;
-						}
-					}
-				}
-				if (0 > minTop) {
-					margin.setTop(-1 * minTop);
-				}
-			}
-
-		}
-
-		return margin;
-	}
 }

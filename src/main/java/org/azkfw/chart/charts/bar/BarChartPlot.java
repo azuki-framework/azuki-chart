@@ -29,10 +29,9 @@ import org.azkfw.chart.charts.bar.BarAxis.BarHorizontalAxis;
 import org.azkfw.chart.charts.bar.BarAxis.BarVerticalAxis;
 import org.azkfw.chart.charts.bar.BarChartDesign.BarChartStyle;
 import org.azkfw.chart.charts.bar.BarSeries.BarSeriesPoint;
-import org.azkfw.chart.core.dataset.series.Series;
-import org.azkfw.chart.core.element.TitleElement;
+import org.azkfw.chart.core.element.BarLegendElement;
+import org.azkfw.chart.core.element.LegendElement;
 import org.azkfw.chart.core.plot.AbstractSeriesChartPlot;
-import org.azkfw.chart.design.chart.SeriesChartStyle;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -100,43 +99,30 @@ public class BarChartPlot extends AbstractSeriesChartPlot<BarDataset, BarChartDe
 	}
 
 	@Override
+	protected LegendElement createLegendElement() {
+		LegendElement element = new BarLegendElement(getDataset(), getChartDesign());
+		return element;
+	}
+
+	@Override
 	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		BarDataset dataset = getDataset();
 		BarChartDesign design = getChartDesign();
 		BarChartStyle style = design.getChartStyle();
-
-		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
-
-		// エレメント作成 ////////////////////////////////
-		TitleElement elementTitle = null;
-		if (ObjectUtility.isAllNotNull(dataset, design)) {
-			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
-		}
-		/////////////////////////////////////////////
-
-		// エレメント配備 ////////////////////////////////
-		// タイトル配備
-		Rect rtTitle = null;
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			rtTitle = elementTitle.deploy(g, rtChartPre);
-		}
-		// 凡例適用
-		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
-		/////////////////////////////////////////////
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
 
 		float fontMargin = 8.0f;
 
-		Margin margin = fitChart(g, rtChartPre, scaleValue, fontMargin);
+		Margin margin = fitChart(g, aRect, scaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
 		Rect rtChart = new Rect();
-		rtChart.setX(rtChartPre.getX() + margin.getLeft());
-		rtChart.setY(rtChartPre.getY() + rtChartPre.getHeight() - margin.getBottom()); // ★注意：Yは原点から
-		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
-		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
+		rtChart.setX(aRect.getX() + margin.getLeft());
+		rtChart.setY(aRect.getY() + aRect.getHeight() - margin.getBottom()); // ★注意：Yは原点から
+		rtChart.setWidth(aRect.getWidth() - margin.getHorizontalSize());
+		rtChart.setHeight(aRect.getHeight() - margin.getVerticalSize());
 
 		// スケール計算
 		double difValue = scaleValue.getDiff();
@@ -246,17 +232,6 @@ public class BarChartPlot extends AbstractSeriesChartPlot<BarDataset, BarChartDe
 		// Draw dataset
 		drawDataset(g, dataset, dataSize, dataPointSize, scaleValue, style, rtChart);
 
-		// エレメント描画 ////////////////////////////////
-		// Draw Legend
-		if (ObjectUtility.isNotNull(rtLegend)) {
-			drawLegend(g, design.getLegendStyle(), rtLegend);
-		}
-		// Draw title
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			elementTitle.draw(g, rtTitle);
-		}
-		/////////////////////////////////////////////
-
 		return true;
 	}
 
@@ -323,87 +298,6 @@ public class BarChartPlot extends AbstractSeriesChartPlot<BarDataset, BarChartDe
 				g.clearClip();
 			}
 		}
-	}
-
-	private ScaleValue getScaleValue() {
-		BarDataset dataset = getDataset();
-
-		// データ最小値・最大値取得
-		Double dataMinValue = null;
-		Double dataMaxValue = null;
-		if (null != dataset) {
-			for (BarSeries series : dataset.getSeriesList()) {
-				for (BarSeriesPoint point : series.getPoints()) {
-					if (null == dataMinValue) {
-						dataMinValue = point.getValue();
-						dataMaxValue = point.getValue();
-					} else {
-						dataMinValue = Math.min(dataMinValue, point.getValue());
-						dataMaxValue = Math.max(dataMaxValue, point.getValue());
-					}
-				}
-			}
-		}
-		debug(String.format("Data minimum value : %f", dataMinValue));
-		debug(String.format("Data maximum value : %f", dataMaxValue));
-
-		// 最小値・最大値・スケール取得
-		// XXX: range は0より大きい値を想定
-		double minValue = axisVertical.getMinimumValue();
-		double maxValue = axisVertical.getMaximumValue();
-		double scale = axisVertical.getScale();
-		if (axisVertical.isMaximumValueAutoFit()) {
-			if (null != dataMaxValue) {
-				maxValue = dataMaxValue;
-			}
-		}
-		if (axisVertical.isMinimumValueAutoFit()) {
-			if (null != dataMinValue) {
-				minValue = dataMinValue;
-			}
-			// TODO: ゼロに近づける
-			if (minValue > 0) {
-				if (minValue <= (maxValue - minValue) / 2) {
-					minValue = 0.f;
-				}
-			}
-		}
-		if (axisVertical.isScaleAutoFit()) {
-			double dif = maxValue - minValue;
-			int logDif = (int) (Math.log10(dif));
-			double scaleDif = Math.pow(10, logDif);
-			if (dif <= scaleDif * 1) {
-				scale = scaleDif / 5;
-			} else if (dif <= scaleDif * 2.5) {
-				scale = scaleDif / 2;
-			} else if (dif <= scaleDif * 5) {
-				scale = scaleDif;
-			} else {
-				scale = scaleDif * 2;
-			}
-		}
-
-		// TODO: 全て同じ数値の場合の対応
-		if (0 == scale) {
-			if (0 == minValue) {
-				minValue = 0;
-				maxValue = 1;
-				scale = 1;
-			} else {
-				int logMin = (int) Math.log10(minValue);
-				double scaleMin = Math.pow(10, logMin);
-				scale = scaleMin;
-				maxValue = minValue + scale;
-				minValue = minValue - scale;
-			}
-		}
-
-		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
-		debug(String.format("Y axis minimum value : %f", minValue));
-		debug(String.format("Y axis maximum value : %f", maxValue));
-		debug(String.format("Y axis scale value : %f", scale));
-
-		return scaleValue;
 	}
 
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
@@ -513,21 +407,84 @@ public class BarChartPlot extends AbstractSeriesChartPlot<BarDataset, BarChartDe
 		return margin;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void doDrawLegendMark(final Graphics g, final Rect aRect, final SeriesChartStyle aStyle, final int aIndex, final Series aSeries) {
-		// draw line
-		Stroke stroke = aStyle.getSeriesStroke(aIndex, aSeries);
-		Color strokeColor = aStyle.getSeriesStrokeColor(aIndex, aSeries);
-		Color fillColor = aStyle.getSeriesFillColor(aIndex, aSeries);
+	private ScaleValue getScaleValue() {
+		BarDataset dataset = getDataset();
 
-		Rect rect = new Rect(aRect.getX() + (aRect.getWidth() - aRect.getHeight()) / 2, aRect.getY(), aRect.getHeight(), aRect.getHeight());
-		if (ObjectUtility.isNotNull(fillColor)) {
-			g.setColor(fillColor);
-			g.fillRect(rect);
+		// データ最小値・最大値取得
+		Double dataMinValue = null;
+		Double dataMaxValue = null;
+		if (null != dataset) {
+			for (BarSeries series : dataset.getSeriesList()) {
+				for (BarSeriesPoint point : series.getPoints()) {
+					if (null == dataMinValue) {
+						dataMinValue = point.getValue();
+						dataMaxValue = point.getValue();
+					} else {
+						dataMinValue = Math.min(dataMinValue, point.getValue());
+						dataMaxValue = Math.max(dataMaxValue, point.getValue());
+					}
+				}
+			}
 		}
-		if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
-			g.setStroke(stroke, strokeColor);
-			g.drawRect(rect);
+		debug(String.format("Data minimum value : %f", dataMinValue));
+		debug(String.format("Data maximum value : %f", dataMaxValue));
+
+		// 最小値・最大値・スケール取得
+		// XXX: range は0より大きい値を想定
+		double minValue = axisVertical.getMinimumValue();
+		double maxValue = axisVertical.getMaximumValue();
+		double scale = axisVertical.getScale();
+		if (axisVertical.isMaximumValueAutoFit()) {
+			if (null != dataMaxValue) {
+				maxValue = dataMaxValue;
+			}
 		}
+		if (axisVertical.isMinimumValueAutoFit()) {
+			if (null != dataMinValue) {
+				minValue = dataMinValue;
+			}
+			// TODO: ゼロに近づける
+			if (minValue > 0) {
+				if (minValue <= (maxValue - minValue) / 2) {
+					minValue = 0.f;
+				}
+			}
+		}
+		if (axisVertical.isScaleAutoFit()) {
+			double dif = maxValue - minValue;
+			int logDif = (int) (Math.log10(dif));
+			double scaleDif = Math.pow(10, logDif);
+			if (dif <= scaleDif * 1) {
+				scale = scaleDif / 5;
+			} else if (dif <= scaleDif * 2.5) {
+				scale = scaleDif / 2;
+			} else if (dif <= scaleDif * 5) {
+				scale = scaleDif;
+			} else {
+				scale = scaleDif * 2;
+			}
+		}
+
+		// TODO: 全て同じ数値の場合の対応
+		if (0 == scale) {
+			if (0 == minValue) {
+				minValue = 0;
+				maxValue = 1;
+				scale = 1;
+			} else {
+				int logMin = (int) Math.log10(minValue);
+				double scaleMin = Math.pow(10, logMin);
+				scale = scaleMin;
+				maxValue = minValue + scale;
+				minValue = minValue - scale;
+			}
+		}
+
+		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
+		debug(String.format("Y axis minimum value : %f", minValue));
+		debug(String.format("Y axis maximum value : %f", maxValue));
+		debug(String.format("Y axis scale value : %f", scale));
+
+		return scaleValue;
 	}
 }

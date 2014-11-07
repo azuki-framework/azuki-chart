@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.azkfw.chart.charts.polar.PolarChartDesign.PolarChartStyle;
 import org.azkfw.chart.charts.polar.PolarSeries.PolarSeriesPoint;
-import org.azkfw.chart.core.element.TitleElement;
 import org.azkfw.chart.core.plot.AbstractSeriesChartPlot;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
@@ -91,43 +90,24 @@ public class PolarChartPlot extends AbstractSeriesChartPlot<PolarDataset, PolarC
 		PolarChartDesign design = getChartDesign();
 		PolarChartStyle style = design.getChartStyle();
 
-		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
-
-		// エレメント作成 ////////////////////////////////
-		TitleElement elementTitle = null;
-		if (ObjectUtility.isAllNotNull(dataset, design)) {
-			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
-		}
-		/////////////////////////////////////////////
-
-		// エレメント配備 ////////////////////////////////
-		// タイトル配備
-		Rect rtTitle = null;
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			rtTitle = elementTitle.deploy(g, rtChartPre);
-		}
-		// 凡例適用
-		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
-		/////////////////////////////////////////////
-
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
 
 		float fontMargin = 8.0f;
 
-		Margin margin = fitChart(g, rtChartPre, scaleValue, fontMargin);
+		Margin margin = fitChart(g, aRect, scaleValue, fontMargin);
 		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
 
 		Rect rtChart = new Rect();
-		rtChart.setX(rtChartPre.getX() + margin.getLeft());
-		rtChart.setY(rtChartPre.getY() + margin.getTop());
-		rtChart.setWidth(rtChartPre.getWidth() - margin.getHorizontalSize());
-		rtChart.setHeight(rtChartPre.getHeight() - margin.getVerticalSize());
+		rtChart.setX(aRect.getX() + margin.getLeft());
+		rtChart.setY(aRect.getY() + margin.getTop());
+		rtChart.setWidth(aRect.getWidth() - margin.getHorizontalSize());
+		rtChart.setHeight(aRect.getHeight() - margin.getVerticalSize());
 
 		Point ptChartMiddle = new Point(rtChart.getX() + (rtChart.getWidth() / 2.f), rtChart.getY() + (rtChart.getHeight() / 2.f));
 
 		// 円に調整
-		float minRange = Math.min(rtChart.getWidth(), rtChartPre.getHeight());
+		float minRange = Math.min(rtChart.getWidth(), aRect.getHeight());
 		rtChart.setX(ptChartMiddle.getX() - (minRange / 2));
 		rtChart.setY(ptChartMiddle.getY() - (minRange / 2));
 		rtChart.setWidth(minRange);
@@ -213,17 +193,6 @@ public class PolarChartPlot extends AbstractSeriesChartPlot<PolarDataset, PolarC
 				}
 			}
 		}
-
-		// エレメント描画 ////////////////////////////////
-		// Draw Legend
-		if (ObjectUtility.isNotNull(rtLegend)) {
-			drawLegend(g, design.getLegendStyle(), rtLegend);
-		}
-		// Draw title
-		if (ObjectUtility.isNotNull(elementTitle)) {
-			elementTitle.draw(g, rtTitle);
-		}
-		/////////////////////////////////////////////
 
 		return true;
 	}
@@ -328,6 +297,43 @@ public class PolarChartPlot extends AbstractSeriesChartPlot<PolarDataset, PolarC
 
 	}
 
+	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
+		PolarChartDesign design = getChartDesign();
+		PolarChartStyle style = design.getChartStyle();
+
+		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
+
+		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
+
+		double difValue = aScaleValue.getDiff();
+
+		// スケール計算(プレ)
+		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
+
+		float maxX = aRtChart.getX() + aRtChart.getWidth();
+
+		// Draw axis scale
+		FontMetrics fm = g.getFontMetrics(style.getAxisScaleLabelFont());
+		DisplayFormat df = axis.getDisplayFormat();
+		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
+			String str = df.toString(value);
+			if (StringUtility.isNotEmpty(str)) {
+				int strWidth = fm.stringWidth(str);
+
+				float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
+				float x = ptChartMiddle.getX() + range + (strWidth / 2);
+
+				maxX = Math.max(maxX, x);
+			}
+		}
+
+		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
+			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
+		}
+
+		return margin;
+	}
+
 	private ScaleValue getScaleValue() {
 		PolarDataset dataset = getDataset();
 
@@ -408,44 +414,7 @@ public class PolarChartPlot extends AbstractSeriesChartPlot<PolarDataset, PolarC
 		return scaleValue;
 	}
 
-	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
-		PolarChartDesign design = getChartDesign();
-		PolarChartStyle style = design.getChartStyle();
-
-		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
-
-		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
-
-		double difValue = aScaleValue.getDiff();
-
-		// スケール計算(プレ)
-		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
-
-		float maxX = aRtChart.getX() + aRtChart.getWidth();
-
-		// Draw axis scale
-		FontMetrics fm = g.getFontMetrics(style.getAxisScaleLabelFont());
-		DisplayFormat df = axis.getDisplayFormat();
-		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
-			String str = df.toString(value);
-			if (StringUtility.isNotEmpty(str)) {
-				int strWidth = fm.stringWidth(str);
-
-				float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
-				float x = ptChartMiddle.getX() + range + (strWidth / 2);
-
-				maxX = Math.max(maxX, x);
-			}
-		}
-
-		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
-			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
-		}
-
-		return margin;
-	}
-
-	protected static double RADIANS(double aAngle) {
+	private static double RADIANS(double aAngle) {
 		return aAngle * Math.PI / 180.0;
 	}
 }
