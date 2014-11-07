@@ -30,7 +30,8 @@ import org.azkfw.chart.charts.line.LineAxis.LineHorizontalAxis;
 import org.azkfw.chart.charts.line.LineAxis.LineVerticalAxis;
 import org.azkfw.chart.charts.line.LineChartDesign.LineChartStyle;
 import org.azkfw.chart.charts.line.LineSeries.LineSeriesPoint;
-import org.azkfw.chart.core.plot.AbstractSeriesPlot;
+import org.azkfw.chart.core.element.TitleElement;
+import org.azkfw.chart.core.plot.AbstractSeriesChartPlot;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.graphics.Graphics;
@@ -47,7 +48,7 @@ import org.azkfw.util.StringUtility;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
+public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChartDesign> {
 
 	/** 水平軸情報 */
 	private LineHorizontalAxis axisHorizontal;
@@ -57,8 +58,8 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 	/**
 	 * コンストラクタ
 	 */
-	public LinePlot() {
-		super(LinePlot.class);
+	public LineChartPlot() {
+		super(LineChartPlot.class);
 
 		axisHorizontal = new LineHorizontalAxis();
 		axisVertical = new LineVerticalAxis();
@@ -71,8 +72,8 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 	 * 
 	 * @param aDataset データセット
 	 */
-	public LinePlot(final LineDataset aDataset) {
-		super(LinePlot.class, aDataset);
+	public LineChartPlot(final LineDataset aDataset) {
+		super(LineChartPlot.class, aDataset);
 
 		axisHorizontal = new LineHorizontalAxis();
 		axisVertical = new LineVerticalAxis();
@@ -99,17 +100,29 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics g, final Rect aRect) {
+	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		LineDataset dataset = getDataset();
 		LineChartDesign design = getChartDesign();
 		LineChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
-		// タイトル適用
-		Rect rtTitle = fitTitle(g, rtChartPre);
+		// エレメント作成 ////////////////////////////////
+		TitleElement elementTitle = null;
+		if (ObjectUtility.isAllNotNull(dataset, design)) {
+			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
+		}
+		/////////////////////////////////////////////
+
+		// エレメント配備 ////////////////////////////////
+		// タイトル配備
+		Rect rtTitle = null;
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			rtTitle = elementTitle.deploy(g, rtChartPre);
+		}
 		// 凡例適用
 		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
+		/////////////////////////////////////////////
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
@@ -254,14 +267,16 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 		// Draw dataset
 		drawDataset(g, dataset, dataPointSize, scaleValue, style, rtChart);
 
+		// エレメント描画 ////////////////////////////////
 		// Draw Legend
 		if (ObjectUtility.isNotNull(rtLegend)) {
 			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
-		if (ObjectUtility.isNotNull(rtTitle)) {
-			drawTitle(g, rtTitle);
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			elementTitle.draw(g, rtTitle);
 		}
+		/////////////////////////////////////////////
 
 		return true;
 	}
@@ -343,7 +358,7 @@ public class LinePlot extends AbstractSeriesPlot<LineDataset, LineChartDesign> {
 						}
 
 						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
-						Marker marker = (Marker) getNotNullObject(pointMarker, seriesMarker);
+						Marker marker = (Marker) ObjectUtility.getNotNullObject(pointMarker, seriesMarker);
 						if (ObjectUtility.isNotNull(marker)) {
 							float xMarker = (float) (aRect.getX() + (j * width + lineOffset));
 							float yMarker = (float) (aRect.getY() - ((point.getValue() - aScaleValue.getMin()) * pixPerValue));

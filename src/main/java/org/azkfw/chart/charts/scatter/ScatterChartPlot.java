@@ -29,7 +29,8 @@ import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterXAxis;
 import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterYAxis;
 import org.azkfw.chart.charts.scatter.ScatterChartDesign.ScatterChartStyle;
 import org.azkfw.chart.charts.scatter.ScatterSeries.ScatterSeriesPoint;
-import org.azkfw.chart.core.plot.AbstractSeriesPlot;
+import org.azkfw.chart.core.element.TitleElement;
+import org.azkfw.chart.core.plot.AbstractSeriesChartPlot;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.graphics.Graphics;
@@ -46,7 +47,7 @@ import org.azkfw.util.StringUtility;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChartDesign> {
+public class ScatterChartPlot extends AbstractSeriesChartPlot<ScatterDataset, ScatterChartDesign> {
 
 	/** X軸情報 */
 	private ScatterXAxis axisX;
@@ -56,8 +57,8 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 	/**
 	 * コンストラクタ
 	 */
-	public ScatterPlot() {
-		super(ScatterPlot.class);
+	public ScatterChartPlot() {
+		super(ScatterChartPlot.class);
 
 		axisX = new ScatterXAxis();
 		axisY = new ScatterYAxis();
@@ -70,8 +71,8 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 	 * 
 	 * @param aDataset データセット
 	 */
-	public ScatterPlot(final ScatterDataset aDataset) {
-		super(ScatterPlot.class, aDataset);
+	public ScatterChartPlot(final ScatterDataset aDataset) {
+		super(ScatterChartPlot.class, aDataset);
 
 		axisX = new ScatterXAxis();
 		axisY = new ScatterYAxis();
@@ -98,17 +99,29 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics g, final Rect aRect) {
+	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		ScatterDataset dataset = getDataset();
 		ScatterChartDesign design = getChartDesign();
 		ScatterChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
-		// タイトル適用
-		Rect rtTitle = fitTitle(g, rtChartPre);
+		// エレメント作成 ////////////////////////////////
+		TitleElement elementTitle = null;
+		if (ObjectUtility.isAllNotNull(dataset, design)) {
+			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
+		}
+		/////////////////////////////////////////////
+
+		// エレメント配備 ////////////////////////////////
+		// タイトル配備
+		Rect rtTitle = null;
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			rtTitle = elementTitle.deploy(g, rtChartPre);
+		}
 		// 凡例適用
 		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
+		/////////////////////////////////////////////
 
 		// スケール調整
 		ScaleValue[] svs = getXYScaleValue();
@@ -234,14 +247,16 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 		// Draw dataset
 		drawDataset(g, dataset, xScaleValue, yScaleValue, style, rtChart);
 
+		// エレメント描画 ////////////////////////////////
 		// Draw Legend
 		if (ObjectUtility.isNotNull(rtLegend)) {
 			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
-		if (ObjectUtility.isNotNull(rtTitle)) {
-			drawTitle(g, rtTitle);
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			elementTitle.draw(g, rtTitle);
 		}
+		/////////////////////////////////////////////
 
 		return true;
 	}
@@ -322,7 +337,7 @@ public class ScatterPlot extends AbstractSeriesPlot<ScatterDataset, ScatterChart
 						}
 
 						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
-						Marker marker = (Marker) getNotNullObject(pointMarker, seriesMarker);
+						Marker marker = (Marker) ObjectUtility.getNotNullObject(pointMarker, seriesMarker);
 						if (ObjectUtility.isNotNull(marker)) {
 							float xMarker = (float) (aRect.getX() + ((point.getX() - aXScaleValue.getMin()) * pixXPerValue));
 							float yMarker = (float) (aRect.getY() - ((point.getY() - aYScaleValue.getMin()) * pixYPerValue));

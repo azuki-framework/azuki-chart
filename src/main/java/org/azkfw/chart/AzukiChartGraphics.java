@@ -19,14 +19,14 @@ package org.azkfw.chart;
 
 import java.awt.Graphics2D;
 
-import org.azkfw.chart.charts.bar.BarPlot;
-import org.azkfw.chart.charts.line.LinePlot;
-import org.azkfw.chart.charts.pie.PiePlot;
-import org.azkfw.chart.charts.polar.PolarPlot;
-import org.azkfw.chart.charts.polararea.PolarAreaPlot;
-import org.azkfw.chart.charts.radar.RadarPlot;
-import org.azkfw.chart.charts.scatter.ScatterPlot;
-import org.azkfw.chart.charts.spectrum.SpectrumPlot;
+import org.azkfw.chart.charts.bar.BarChartPlot;
+import org.azkfw.chart.charts.line.LineChartPlot;
+import org.azkfw.chart.charts.pie.PieChartPlot;
+import org.azkfw.chart.charts.polar.PolarChartPlot;
+import org.azkfw.chart.charts.polararea.PolarAreaChartPlot;
+import org.azkfw.chart.charts.radar.RadarChartPlot;
+import org.azkfw.chart.charts.scatter.ScatterChartPlot;
+import org.azkfw.chart.charts.spectrum.SpectrumChartPlot;
 import org.azkfw.graphics.AzukiGraphics2D;
 import org.azkfw.graphics.Rect;
 
@@ -54,7 +54,7 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aPlot 棒グラフプロット情報
 	 * @param aRect 描画範囲
 	 */
-	public void drawBarChart(final BarPlot aPlot, final Rect aRect) {
+	public void drawBarChart(final BarChartPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 
@@ -64,7 +64,7 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aPlot 折れ線グラフプロット情報
 	 * @param aRect 描画範囲
 	 */
-	public void drawLineChart(final LinePlot aPlot, final Rect aRect) {
+	public void drawLineChart(final LineChartPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 
@@ -74,7 +74,7 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aPlot 円グラフプロット情報
 	 * @param aRect 描画範囲
 	 */
-	public void drawPieChart(final PiePlot aPlot, final Rect aRect) {
+	public void drawPieChart(final PieChartPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 
@@ -84,7 +84,7 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aPlot 極座標グラフプロット情報
 	 * @param aRect 描画範囲
 	 */
-	public void drawPolarChart(final PolarPlot aPlot, final Rect aRect) {
+	public void drawPolarChart(final PolarChartPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 
@@ -94,7 +94,7 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aPlot 鶏頭図プロット情報
 	 * @param aRect 描画範囲
 	 */
-	public void drawPolarAreaChart(final PolarAreaPlot aPlot, final Rect aRect) {
+	public void drawPolarAreaChart(final PolarAreaChartPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 
@@ -104,7 +104,7 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aPlot レーダーチャートプロット情報
 	 * @param aRect 描画範囲
 	 */
-	public void drawRadarChart(final RadarPlot aPlot, final Rect aRect) {
+	public void drawRadarChart(final RadarChartPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 
@@ -114,7 +114,7 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aPlot 散布図プロット情報
 	 * @param aRect 描画範囲
 	 */
-	public void drawScatterChart(final ScatterPlot aPlot, final Rect aRect) {
+	public void drawScatterChart(final ScatterChartPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 
@@ -124,7 +124,7 @@ public class AzukiChartGraphics extends AzukiGraphics2D {
 	 * @param aPlot スペクトログラムプロット情報
 	 * @param aRect 描画範囲
 	 */
-	public void drawSpectrumChart(final SpectrumPlot aPlot, final Rect aRect) {
+	public void drawSpectrumChart(final SpectrumChartPlot aPlot, final Rect aRect) {
 		aPlot.draw(this, aRect);
 	}
 }

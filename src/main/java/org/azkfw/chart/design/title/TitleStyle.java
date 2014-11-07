@@ -83,18 +83,18 @@ public interface TitleStyle {
 	public Padding getPadding();
 
 	/**
-	 * フォントカラーを取得する。
-	 * 
-	 * @return カラー
-	 */
-	public Color getFontColor();
-
-	/**
 	 * フォントを取得する。
 	 * 
 	 * @return フォント
 	 */
 	public Font getFont();
+
+	/**
+	 * フォントカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
+	public Color getFontColor();
 
 	/**
 	 * フォント影を取得する。
@@ -104,24 +104,24 @@ public interface TitleStyle {
 	public boolean isFontShadow();
 
 	/**
-	 * ストロークを取得する。
+	 * 枠のストロークを取得する。
 	 * 
 	 * @return ストローク
 	 */
-	public Stroke getStroke();
+	public Stroke getFrameStroke();
 
 	/**
-	 * ストロークカラーを取得する。
+	 * 枠のストロークカラーを取得する。
 	 * 
 	 * @return カラー
 	 */
-	public Color getStrokeColor();
+	public Color getFrameStrokeColor();
 
 	/**
-	 * 背景色を取得する。
+	 * 枠の背景色を取得する。
 	 * 
 	 * @return 背景色
 	 */
-	public Color getBackgroundColor();
+	public Color getFrameBackgroundColor();
 
 }

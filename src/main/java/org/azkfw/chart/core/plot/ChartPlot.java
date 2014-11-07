@@ -15,25 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.pie;
-
-import org.azkfw.chart.core.axis.AbstractDisplayAxis;
-import org.azkfw.chart.displayformat.StringDisplayFormat;
+package org.azkfw.chart.core.plot;
 
 /**
- * このクラスは、円グラフの軸情報を保持するクラスです。
+ * このインターフェースは、グラフプロット機能を表現したインターフェースです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/26
+ * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PieAxis extends AbstractDisplayAxis {
-
-	/**
-	 * コンストラクタ
-	 */
-	public PieAxis() {
-		setDisplayFormat(new StringDisplayFormat());
-	}
+public interface ChartPlot extends Plot {
 
 }

@@ -21,9 +21,9 @@ import java.awt.Color;
 
 import org.azkfw.chart.AzukiChart;
 import org.azkfw.chart.AzukiChartFactory;
+import org.azkfw.chart.charts.pie.PieChartPlot;
 import org.azkfw.chart.charts.pie.PieData;
 import org.azkfw.chart.charts.pie.PieDataset;
-import org.azkfw.chart.charts.pie.PiePlot;
 import org.azkfw.chart.util.AzukiChartUtility;
 
 /**
@@ -36,7 +36,7 @@ import org.azkfw.chart.util.AzukiChartUtility;
 public class PieChartExample {
 
 	public static void main(final String[] args) {
-		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Pie Chart");
+		AzukiChartUtility.showChartAsFrame(new AzukiChart(createChartPlot(createDataset())), "Pie Chart");
 	}
 
 	public static PieDataset createDataset() {
@@ -50,11 +50,11 @@ public class PieChartExample {
 		return dataset;
 	}
 
-	public static PiePlot createPlot(final PieDataset aDataset) {
+	public static PieChartPlot createChartPlot(final PieDataset aDataset) {
 		AzukiChart chart = AzukiChartFactory.createPieChart(aDataset);
 		chart.setBackgoundColor(Color.WHITE);
 
-		PiePlot plot = (PiePlot) chart.getPlot();
+		PieChartPlot plot = (PieChartPlot) chart.getPlot();
 
 		return plot;
 	}

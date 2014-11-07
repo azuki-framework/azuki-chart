@@ -22,8 +22,8 @@ import java.awt.Color;
 import org.azkfw.chart.AzukiChart;
 import org.azkfw.chart.AzukiChartFactory;
 import org.azkfw.chart.charts.radar.RadarAxis;
+import org.azkfw.chart.charts.radar.RadarChartPlot;
 import org.azkfw.chart.charts.radar.RadarDataset;
-import org.azkfw.chart.charts.radar.RadarPlot;
 import org.azkfw.chart.charts.radar.RadarSeries;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.util.AzukiChartUtility;
@@ -38,7 +38,7 @@ import org.azkfw.chart.util.AzukiChartUtility;
 public class RadarChartExample {
 
 	public static void main(final String[] args) {
-		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Radar Chart");
+		AzukiChartUtility.showChartAsFrame(new AzukiChart(createChartPlot(createDataset())), "Radar Chart");
 	}
 
 	public static RadarDataset createDataset() {
@@ -71,11 +71,11 @@ public class RadarChartExample {
 		return dataset;
 	}
 
-	public static RadarPlot createPlot(final RadarDataset aDataset) {
+	public static RadarChartPlot createChartPlot(final RadarDataset aDataset) {
 		AzukiChart chart = AzukiChartFactory.createRadarChart(aDataset);
 		chart.setBackgoundColor(Color.WHITE);
 
-		RadarPlot plot = (RadarPlot) chart.getPlot();
+		RadarChartPlot plot = (RadarChartPlot) chart.getPlot();
 
 		RadarAxis axis = plot.getAxis();
 		axis.setMinimumValueAutoFit(false);

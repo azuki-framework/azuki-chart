@@ -17,8 +17,7 @@
  */
 package org.azkfw.chart.charts.line;
 
-import org.azkfw.chart.core.axis.AbstractAxis;
-import org.azkfw.chart.displayformat.DisplayFormat;
+import org.azkfw.chart.core.axis.AbstractDisplayAxis;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 
 /**
@@ -28,34 +27,13 @@ import org.azkfw.chart.displayformat.NumericDisplayFormat;
  * @version 1.0.0 2014/07/02
  * @author Kawakicchi
  */
-public abstract class LineAxis extends AbstractAxis {
-
-	/** 表示形式 */
-	private DisplayFormat displayFormat;
+public abstract class LineAxis extends AbstractDisplayAxis {
 
 	/**
 	 * コンストラクタ
 	 */
 	public LineAxis() {
-		displayFormat = new NumericDisplayFormat(0);
-	}
-
-	/**
-	 * 表示形式を設定する。
-	 * 
-	 * @param aDisplayFormat 表示形式
-	 */
-	public final void setDisplayFormat(final DisplayFormat aDisplayFormat) {
-		displayFormat = aDisplayFormat;
-	}
-
-	/**
-	 * 表示形式を取得する。
-	 * 
-	 * @return 表示形式
-	 */
-	public final DisplayFormat getDisplayFormat() {
-		return displayFormat;
+		setDisplayFormat(new NumericDisplayFormat(0));
 	}
 
 	/**

@@ -28,7 +28,8 @@ import java.util.List;
 
 import org.azkfw.chart.charts.polararea.PolarAreaChartDesign.PolarAreaChartStyle;
 import org.azkfw.chart.charts.polararea.PolarAreaSeries.PolarAreaSeriesPoint;
-import org.azkfw.chart.core.plot.AbstractSeriesPlot;
+import org.azkfw.chart.core.element.TitleElement;
+import org.azkfw.chart.core.plot.AbstractSeriesChartPlot;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
@@ -44,7 +45,7 @@ import org.azkfw.util.StringUtility;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAreaChartDesign> {
+public class PolarAreaChartPlot extends AbstractSeriesChartPlot<PolarAreaDataset, PolarAreaChartDesign> {
 
 	/** 軸情報 */
 	private PolarAreaAxis axis;
@@ -52,8 +53,8 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 	/**
 	 * コンストラクタ
 	 */
-	public PolarAreaPlot() {
-		super(PolarAreaPlot.class);
+	public PolarAreaChartPlot() {
+		super(PolarAreaChartPlot.class);
 
 		axis = new PolarAreaAxis();
 
@@ -65,8 +66,8 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 	 * 
 	 * @param aDataset データセット
 	 */
-	public PolarAreaPlot(final PolarAreaDataset aDataset) {
-		super(PolarAreaPlot.class, aDataset);
+	public PolarAreaChartPlot(final PolarAreaDataset aDataset) {
+		super(PolarAreaChartPlot.class, aDataset);
 
 		axis = new PolarAreaAxis();
 
@@ -83,17 +84,29 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics g, final Rect aRect) {
+	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		PolarAreaDataset dataset = getDataset();
 		PolarAreaChartDesign design = getChartDesign();
 		PolarAreaChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
-		// タイトル適用
-		Rect rtTitle = fitTitle(g, rtChartPre);
+		// エレメント作成 ////////////////////////////////
+		TitleElement elementTitle = null;
+		if (ObjectUtility.isAllNotNull(dataset, design)) {
+			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
+		}
+		/////////////////////////////////////////////
+
+		// エレメント配備 ////////////////////////////////
+		// タイトル配備
+		Rect rtTitle = null;
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			rtTitle = elementTitle.deploy(g, rtChartPre);
+		}
 		// 凡例適用
 		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
+		/////////////////////////////////////////////
 
 		// スケール調整
 		ScaleValue scaleValue = getScaleValue();
@@ -199,14 +212,16 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 			}
 		}
 
+		// エレメント描画 ////////////////////////////////
 		// Draw Legend
 		if (ObjectUtility.isNotNull(rtLegend)) {
 			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
-		if (ObjectUtility.isNotNull(rtTitle)) {
-			drawTitle(g, rtTitle);
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			elementTitle.draw(g, rtTitle);
 		}
+		/////////////////////////////////////////////
 
 		return true;
 	}
@@ -251,7 +266,7 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 					range = pixelLimit(range);
 
 					// Draw series fill
-					Color fillColor = (Color) getNotNullObject(aStyle.getSeriesFillColor(index, series, i, point), fillColorSeries);
+					Color fillColor = (Color) ObjectUtility.getNotNullObject(aStyle.getSeriesFillColor(index, series, i, point), fillColorSeries);
 					if (ObjectUtility.isAllNotNull(fillColor)) {
 						float[] dist = { 0.0f, 1.0f };
 						Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
@@ -263,8 +278,9 @@ public class PolarAreaPlot extends AbstractSeriesPlot<PolarAreaDataset, PolarAre
 						g.fillArc(ptMiddle.getX() - range + 1, ptMiddle.getY() - range + 1, range * 2.f, range * 2, i * angle, angle);
 					}
 					// Draw series line
-					Color strokeColor = (Color) getNotNullObject(aStyle.getSeriesStrokeColor(index, series, i, point), strokeColorSeries);
-					Stroke stroke = (Stroke) getNotNullObject(aStyle.getSeriesStroke(index, series, i, point), strokeSeries);
+					Color strokeColor = (Color) ObjectUtility.getNotNullObject(aStyle.getSeriesStrokeColor(index, series, i, point),
+							strokeColorSeries);
+					Stroke stroke = (Stroke) ObjectUtility.getNotNullObject(aStyle.getSeriesStroke(index, series, i, point), strokeSeries);
 					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
 						g.setStroke(stroke, strokeColor);
 						g.drawArc(ptMiddle.getX() - range + 1, ptMiddle.getY() - range + 1, range * 2.f, range * 2, i * angle, angle);

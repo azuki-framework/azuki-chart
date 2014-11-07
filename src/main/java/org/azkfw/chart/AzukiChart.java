@@ -19,8 +19,9 @@ package org.azkfw.chart;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
-import org.azkfw.chart.core.plot.Plot;
+import org.azkfw.chart.core.plot.ChartPlot;
 import org.azkfw.graphics.AzukiGraphics2D;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Rect;
@@ -37,7 +38,7 @@ public final class AzukiChart {
 	/**
 	 * プロット情報
 	 */
-	private Plot plot;
+	private ChartPlot plot;
 
 	/**
 	 * 背景色
@@ -49,7 +50,7 @@ public final class AzukiChart {
 	 * 
 	 * @param aPlot プロット情報
 	 */
-	public AzukiChart(final Plot aPlot) {
+	public AzukiChart(final ChartPlot aPlot) {
 		plot = aPlot;
 	}
 
@@ -67,7 +68,7 @@ public final class AzukiChart {
 	 * 
 	 * @return プロット情報
 	 */
-	public Plot getPlot() {
+	public ChartPlot getPlot() {
 		return plot;
 	}
 
@@ -75,11 +76,14 @@ public final class AzukiChart {
 	 * グラフを描画する。
 	 * 
 	 * @param g Graphics
-	 * @param rect Rect情報
+	 * @param x グラフ描画X座標
+	 * @param y グラフ描画Y座標
+	 * @param width グラフ描画横幅
+	 * @param height グラフ描画縦幅
 	 * @return 結果
 	 */
-	public boolean draw(final Graphics2D g, final Rect rect) {
-		return draw(g, rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	public boolean draw(final Graphics2D g, final int x, final int y, final int width, final int height) {
+		return draw(new AzukiGraphics2D(g), new Rect(x, y, width, height));
 	}
 
 	/**
@@ -93,10 +97,7 @@ public final class AzukiChart {
 	 * @return 結果
 	 */
 	public boolean draw(final Graphics2D g, final float x, final float y, final float width, final float height) {
-		boolean result = false;
-		Graphics graphics = new AzukiGraphics2D(g);
-		result = draw(graphics, x, y, width, height);
-		return result;
+		return draw(new AzukiGraphics2D(g), new Rect(x, y, width, height));
 	}
 
 	/**
@@ -106,8 +107,33 @@ public final class AzukiChart {
 	 * @param rect Rect情報
 	 * @return 結果
 	 */
-	public boolean draw(final Graphics g, final Rect rect) {
-		return draw(g, rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	public boolean draw(final Graphics2D g, final Rectangle rect) {
+		return draw(new AzukiGraphics2D(g), new Rect(rect));
+	}
+
+	/**
+	 * グラフを描画する。
+	 * 
+	 * @param g Graphics
+	 * @param rect Rect情報
+	 * @return 結果
+	 */
+	public boolean draw(final Graphics2D g, final Rect rect) {
+		return draw(new AzukiGraphics2D(g), rect);
+	}
+
+	/**
+	 * グラフを描画する。
+	 * 
+	 * @param g Graphics
+	 * @param x グラフ描画X座標
+	 * @param y グラフ描画Y座標
+	 * @param width グラフ描画横幅
+	 * @param height グラフ描画縦幅
+	 * @return 結果
+	 */
+	public boolean draw(final Graphics g, final int x, final int y, final int width, final int height) {
+		return draw(g, new Rect(x, y, width, height));
 	}
 
 	/**
@@ -121,14 +147,39 @@ public final class AzukiChart {
 	 * @return 結果
 	 */
 	public boolean draw(final Graphics g, final float x, final float y, final float width, final float height) {
+		return draw(g, new Rect(x, y, width, height));
+	}
+
+	/**
+	 * グラフを描画する。
+	 * 
+	 * @param g Graphics
+	 * @param rect Rect情報
+	 * @return 結果
+	 */
+	public boolean draw(final Graphics g, final Rectangle rect) {
+		return draw(g, new Rect(rect));
+	}
+
+	/**
+	 * グラフを描画する。
+	 * 
+	 * @param g Graphics
+	 * @param rect Rect情報
+	 * @return 結果
+	 */
+	public boolean draw(final Graphics g, final Rect rect) {
 		boolean result = false;
-		if (null != plot) {
-			if (null != backgroundColor) {
-				g.setColor(backgroundColor);
-				g.fillRect(x, y, width, height);
-			}
-			result = plot.draw(g, x, y, width, height);
+
+		if (null != backgroundColor) {
+			g.setColor(backgroundColor);
+			g.fillRect(rect);
 		}
+
+		if (null != plot) {
+			result = plot.draw(g, rect);
+		}
+
 		return result;
 	}
 }

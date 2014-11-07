@@ -23,7 +23,8 @@ import java.awt.FontMetrics;
 import java.util.List;
 
 import org.azkfw.chart.charts.pie.PieChartDesign.PieChartStyle;
-import org.azkfw.chart.core.plot.AbstractPlot;
+import org.azkfw.chart.core.element.TitleElement;
+import org.azkfw.chart.core.plot.AbstractChartPlot;
 import org.azkfw.chart.design.legend.LegendStyle;
 import org.azkfw.chart.design.legend.LegendStyle.LegendDisplayPosition;
 import org.azkfw.graphics.Graphics;
@@ -42,7 +43,7 @@ import org.azkfw.util.StringUtility;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
+public class PieChartPlot extends AbstractChartPlot<PieDataset, PieChartDesign> {
 
 	/** 軸情報 */
 	private PieAxis axis;
@@ -50,8 +51,8 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 	/**
 	 * コンストラクタ
 	 */
-	public PiePlot() {
-		super(PiePlot.class);
+	public PieChartPlot() {
+		super(PieChartPlot.class);
 
 		axis = new PieAxis();
 
@@ -63,8 +64,8 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 	 * 
 	 * @param aDataset データセット
 	 */
-	public PiePlot(final PieDataset aDataset) {
-		super(PiePlot.class, aDataset);
+	public PieChartPlot(final PieDataset aDataset) {
+		super(PieChartPlot.class, aDataset);
 
 		axis = new PieAxis();
 
@@ -81,17 +82,29 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics g, final Rect aRect) {
+	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		PieDataset dataset = getDataset();
 		PieChartDesign design = getChartDesign();
 		PieChartStyle style = design.getChartStyle();
 
 		Rect rtChartPre = new Rect(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
 
-		// タイトル適用
-		Rect rtTitle = fitTitle(g, rtChartPre);
+		// エレメント作成 ////////////////////////////////
+		TitleElement elementTitle = null;
+		if (ObjectUtility.isAllNotNull(dataset, design)) {
+			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
+		}
+		/////////////////////////////////////////////
+
+		// エレメント配備 ////////////////////////////////
+		// タイトル配備
+		Rect rtTitle = null;
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			rtTitle = elementTitle.deploy(g, rtChartPre);
+		}
 		// 凡例適用
 		Rect rtLegend = fitLegend(g, design.getLegendStyle(), rtChartPre);
+		/////////////////////////////////////////////
 
 		float pieSize = Math.min(rtChartPre.getWidth(), rtChartPre.getHeight());
 		Point ptChartMiddle = new Point(rtChartPre.getX() + (rtChartPre.getWidth() / 2.f), rtChartPre.getY() + (rtChartPre.getHeight() / 2.f));
@@ -111,14 +124,16 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 		// Draw dataset
 		drawDataset(g, dataset, style, rtChart);
 
+		// エレメント描画 ////////////////////////////////
 		// Draw Legend
 		if (ObjectUtility.isNotNull(rtLegend)) {
 			drawLegend(g, design.getLegendStyle(), rtLegend);
 		}
 		// Draw title
-		if (ObjectUtility.isNotNull(rtTitle)) {
-			drawTitle(g, rtTitle);
+		if (ObjectUtility.isNotNull(elementTitle)) {
+			elementTitle.draw(g, rtTitle);
 		}
+		/////////////////////////////////////////////
 
 		return true;
 	}
@@ -307,8 +322,8 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 		PieChartStyle style = design.getChartStyle();
 
 		if (null != design) {
-			Margin margin = (Margin) getNotNullObject(aStyle.getMargin(), new Margin());
-			Padding padding = (Padding) getNotNullObject(aStyle.getPadding(), new Padding());
+			Margin margin = (Margin) ObjectUtility.getNotNullObject(aStyle.getMargin(), new Margin());
+			Padding padding = (Padding) ObjectUtility.getNotNullObject(aStyle.getPadding(), new Padding());
 
 			{ // Draw legend frame
 				Rect rtFrame = new Rect();
@@ -317,13 +332,13 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 				rtFrame.setWidth(aRect.getWidth() - margin.getHorizontalSize());
 				rtFrame.setHeight(aRect.getHeight() - margin.getVerticalSize());
 				// fill background
-				if (null != aStyle.getBackgroundColor()) {
-					g.setColor(aStyle.getBackgroundColor());
+				if (null != aStyle.getFrameBackgroundColor()) {
+					g.setColor(aStyle.getFrameBackgroundColor());
 					g.fillRect(rtFrame);
 				}
 				// draw stroke
-				if (null != aStyle.getStroke() && null != aStyle.getStrokeColor()) {
-					g.setStroke(aStyle.getStroke(), aStyle.getStrokeColor());
+				if (null != aStyle.getFrameStroke() && null != aStyle.getFrameStrokeColor()) {
+					g.setStroke(aStyle.getFrameStroke(), aStyle.getFrameStrokeColor());
 					g.drawRect(rtFrame);
 				}
 			}

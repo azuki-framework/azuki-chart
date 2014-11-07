@@ -15,25 +15,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.charts.pie;
+package org.azkfw.chart.core.axis;
 
-import org.azkfw.chart.core.axis.AbstractDisplayAxis;
-import org.azkfw.chart.displayformat.StringDisplayFormat;
+import org.azkfw.chart.displayformat.DisplayFormat;
 
 /**
- * このクラスは、円グラフの軸情報を保持するクラスです。
+ * このクラスは、グラフ軸情報を実装するための基底クラスです。
  * 
  * @since 1.0.0
- * @version 1.0.0 2014/06/26
+ * @version 1.0.0 2014/07/03
  * @author Kawakicchi
  */
-public class PieAxis extends AbstractDisplayAxis {
+public abstract class AbstractDisplayAxis extends AbstractAxis {
+
+	/** 表示形式 */
+	private DisplayFormat displayFormat;
 
 	/**
 	 * コンストラクタ
 	 */
-	public PieAxis() {
-		setDisplayFormat(new StringDisplayFormat());
+	public AbstractDisplayAxis() {
+		displayFormat = null;
 	}
 
+	/**
+	 * 表示形式を設定する。
+	 * 
+	 * @param aDisplayFormat 表示形式
+	 */
+	public final void setDisplayFormat(final DisplayFormat aDisplayFormat) {
+		displayFormat = aDisplayFormat;
+	}
+
+	/**
+	 * 表示形式を取得する。
+	 * 
+	 * @return 表示形式
+	 */
+	public final DisplayFormat getDisplayFormat() {
+		return displayFormat;
+	}
 }
