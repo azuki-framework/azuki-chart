@@ -44,34 +44,31 @@ public class LineChartExample {
 	}
 
 	public static LineDataset createDataset() {
-		LineDataset dataset = new LineDataset("Line Chart");
+		LineDataset dataset = new LineDataset("支店別売上");
 
-		LineSeries seriesAve = new LineSeries("Average");
-		LineSeries seriesMax = new LineSeries("Maximum");
-		LineSeries seriesMin = new LineSeries("Mininum");
-		seriesAve.add(50.f);
-		seriesMax.add(100.f);
-		seriesMin.add(10.f);
+		LineSeries series1 = new LineSeries("東京");
+		series1.add(50.f);
+		series1.add(75.f);
+		series1.add(135.f);
+		series1.add(48.f);
+		series1.add(185.f);
+		dataset.addSeries(series1);
 
-		seriesAve.add(70.f);
-		seriesMax.add(100.f);
-		seriesMin.add(70.f);
+		LineSeries series2 = new LineSeries("大阪");
+		series2.add(100.f);
+		series2.add(0.f);
+		series2.add(10.f);
+		series2.add(200.f);
+		series2.add(145.f);
+		dataset.addSeries(series2);
 
-		seriesAve.add(100.f);
-		seriesMax.add(45.f);
-		seriesMin.add(50.f);
-
-		seriesAve.add(100.f);
-		seriesMax.add(60.f);
-		seriesMin.add(50.f);
-
-		seriesAve.add(100.f);
-		seriesMax.add(70.f);
-		seriesMin.add(50.f);
-
-		dataset.addSeries(seriesAve);
-		dataset.addSeries(seriesMax);
-		dataset.addSeries(seriesMin);
+		LineSeries series3 = new LineSeries("名古屋");
+		series3.add(10.f);
+		series3.add(35.f);
+		series3.add(100.f);
+		series3.add(75.f);
+		series3.add(50.f);
+		dataset.addSeries(series3);
 
 		return dataset;
 	}

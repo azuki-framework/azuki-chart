@@ -63,7 +63,7 @@ public class PolarSeries extends AbstractSeries {
 	 */
 	public PolarSeries(final String aTitle, final List<PolarSeriesPoint> aPoints) {
 		super(aTitle);
-		points = new ArrayList<>(aPoints);
+		points = new ArrayList<PolarSeriesPoint>(aPoints);
 	}
 
 	/**

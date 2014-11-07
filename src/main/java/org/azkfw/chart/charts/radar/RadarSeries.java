@@ -67,6 +67,20 @@ public class RadarSeries extends AbstractSeries {
 	}
 
 	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aValues 値配列
+	 */
+	public RadarSeries(final String aTitle, final double... aValues) {
+		super(aTitle);
+		points = new ArrayList<RadarSeriesPoint>();
+		for (double value : aValues) {
+			points.add(new RadarSeriesPoint(value));
+		}
+	}
+
+	/**
 	 * ポイントを追加する。
 	 * 
 	 * @param aPoint ポイント

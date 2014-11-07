@@ -42,10 +42,10 @@ public class PieChartExample {
 	public static PieDataset createDataset() {
 		PieDataset dataset = new PieDataset("Pie Chart");
 
-		dataset.addData(new PieData("Japan", 50.f));
-		dataset.addData(new PieData("America", 30.f));
-		dataset.addData(new PieData("England", 15.f));
-		dataset.addData(new PieData("Germany", 5.f));
+		dataset.addData(new PieData("日本", 50.f));
+		dataset.addData(new PieData("アメリカ", 30.f));
+		dataset.addData(new PieData("イギリス", 15.f));
+		dataset.addData(new PieData("ドイツ", 5.f));
 
 		return dataset;
 	}

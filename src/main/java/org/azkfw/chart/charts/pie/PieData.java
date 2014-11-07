@@ -47,8 +47,8 @@ public class PieData {
 	/**
 	 * コンストラクタ
 	 * 
-	 * @param aTitle
-	 * @param aValue
+	 * @param aTitle タイトル
+	 * @param aValue 値
 	 */
 	public PieData(final String aTitle, final double aValue) {
 		title = aTitle;

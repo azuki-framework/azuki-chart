@@ -64,7 +64,8 @@ public class CustomLegendStyle implements LegendStyle {
 		space = 4.f;
 
 		fontColor = new Color(64, 64, 64, 255);
-		font = new Font("Arial", Font.BOLD, 16);
+		// font = new Font("Arial", Font.BOLD, 16);
+		font = new Font("MS ゴシック", Font.BOLD, 16);
 
 		stroke = null;
 		strokeColor = null;

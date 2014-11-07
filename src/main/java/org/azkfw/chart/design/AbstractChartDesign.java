@@ -42,11 +42,13 @@ public abstract class AbstractChartDesign<STYLE extends ChartStyle> implements C
 	/** デフォルト 軸線カラー */
 	private final static Color DEFAULT_STROKE_COLOR_AXIS = Color.LIGHT_GRAY;;
 	/** デフォルト 軸ラベルフォント */
-	private final static Font DEFAULT_FONT_AXIS_LABEL = new Font("Arial", Font.BOLD, 14);
+	// private final static Font DEFAULT_FONT_AXIS_LABEL = new Font("Arial", Font.BOLD, 14);
+	private final static Font DEFAULT_FONT_AXIS_LABEL = new Font("MS ゴシック", Font.BOLD, 14);
 	/** デフォルト 軸ラベルフォントカラー */
 	private final static Color DEFAULT_FONT_COLOR_AXIS_LABEL = Color.DARK_GRAY;
 	/** デフォルト 軸目盛ラベルフォント */
-	private final static Font DEFAULT_FONT_AXIS_SCALE_LABEL = new Font("Arial", Font.BOLD, 14);
+	// private final static Font DEFAULT_FONT_AXIS_SCALE_LABEL = new Font("Arial", Font.BOLD, 14);
+	private final static Font DEFAULT_FONT_AXIS_SCALE_LABEL = new Font("MS ゴシック", Font.BOLD, 14);
 	/** デフォルト 軸目盛ラベルカラー */
 	private final static Color DEFAULT_FONT_COLOR_AXIS_SCALE_LABEL = Color.DARK_GRAY;
 	/** デフォルト 軸目盛線ストローク */

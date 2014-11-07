@@ -59,11 +59,25 @@ public class PolarAreaSeries extends AbstractSeries {
 	 * コンストラクタ
 	 * 
 	 * @param aTitle タイトル
-	 * @param aPoints ポイント
+	 * @param aPoints ポイントリスト
 	 */
 	public PolarAreaSeries(final String aTitle, final List<PolarAreaSeriesPoint> aPoints) {
 		super(aTitle);
-		points = new ArrayList<>(aPoints);
+		points = new ArrayList<PolarAreaSeriesPoint>(aPoints);
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aValues 値配列
+	 */
+	public PolarAreaSeries(final String aTitle, final double... aValues) {
+		super(aTitle);
+		points = new ArrayList<PolarAreaSeriesPoint>();
+		for (double value : aValues) {
+			points.add(new PolarAreaSeriesPoint(value));
+		}
 	}
 
 	/**

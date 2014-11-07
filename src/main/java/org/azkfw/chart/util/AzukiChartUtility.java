@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.util;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -216,7 +217,9 @@ public class AzukiChartUtility {
 					Insets insets = getInsets();
 					int width = image.getWidth(null) + (insets.left + insets.right);
 					int height = image.getHeight(null) + (insets.top + insets.bottom);
+					Dimension dim = new Dimension(width, height);
 					setSize(width, height);
+					setMinimumSize(dim);
 				}
 			});
 			addComponentListener(new ComponentAdapter() {
@@ -243,8 +246,13 @@ public class AzukiChartUtility {
 
 			@Override
 			public void paintComponent(final Graphics g) {
+				int width = getWidth();
+				int height = getHeight();
+				int x = (width - image.getWidth(this)) / 2;
+				int y = (height - image.getHeight(this)) / 2;
+
 				Graphics2D g2D = (Graphics2D) g;
-				g2D.drawImage(image, 0, 0, this);
+				g2D.drawImage(image, x, y, this);
 			}
 		}
 	}

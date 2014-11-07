@@ -200,7 +200,7 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 			Font font = aStyle.getFont();
 			if (ObjectUtility.isNotNull(font)) {
 				fm = g.getFontMetrics(font);
-				fontHeight = font.getSize();
+				fontHeight = fm.getAscent() - fm.getDescent();
 			}
 
 			LegendDisplayPosition pos = aStyle.getPosition();
@@ -333,13 +333,15 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 			Font font = aStyle.getFont();
 			if (ObjectUtility.isNotNull(font)) {
 				fm = g.getFontMetrics(font);
-				fontHeight = font.getSize();
+				fontHeight = fm.getAscent() - fm.getDescent();
 			}
 
 			List<PieData> dataList = dataset.getDataList();
 
 			float x = aRect.getX() + margin.getLeft() + padding.getLeft();
 			float y = aRect.getY() + margin.getTop() + padding.getTop();
+			// float width = aRect.getWidth() - (margin.getHorizontalSize() + padding.getHorizontalSize());
+			float height = aRect.getHeight() - (margin.getVerticalSize() + padding.getVerticalSize());
 			LegendDisplayPosition pos = aStyle.getPosition();
 			if (isHorizontalLegend(pos)) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -363,7 +365,7 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
 						strWidth = fm.stringWidth(title);
 						g.setFont(font, fontColor);
-						g.drawStringA(title, (fontHeight * 2) + x, y);
+						g.drawString(title, (fontHeight * 2) + x, y + fontHeight + (height - fontHeight) / 2);
 					}
 
 					x += aStyle.getSpace() + (fontHeight * 2) + strWidth;
@@ -389,7 +391,7 @@ public class PiePlot extends AbstractPlot<PieDataset, PieChartDesign> {
 					Color fontColor = aStyle.getFontColor();
 					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
 						g.setFont(font, fontColor);
-						g.drawStringA(title, (fontHeight * 2) + x, y);
+						g.drawString(title, (fontHeight * 2) + x, y + fontHeight);
 					}
 
 					y += aStyle.getSpace() + fontHeight;

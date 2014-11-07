@@ -64,7 +64,8 @@ public class CustomTitleStyle implements TitleStyle {
 		padding = new Padding(6.f, 6.f, 6.f, 6.f);
 
 		fontColor = Color.DARK_GRAY;
-		font = new Font("Arial", Font.BOLD, 24);
+		// font = new Font("Arial", Font.BOLD, 24);
+		font = new Font("MS ゴシック", Font.BOLD, 24);
 		fontShadow = false;
 
 		stroke = null;

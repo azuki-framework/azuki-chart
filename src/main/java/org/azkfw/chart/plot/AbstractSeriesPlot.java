@@ -137,7 +137,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 			Font font = aStyle.getFont();
 			if (ObjectUtility.isNotNull(font)) {
 				fm = g.getFontMetrics(font);
-				fontHeight = font.getSize();
+				fontHeight = fm.getAscent() - fm.getDescent();
 			}
 
 			LegendDisplayPosition pos = aStyle.getPosition();
@@ -292,13 +292,15 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 			Font font = aStyle.getFont();
 			if (ObjectUtility.isNotNull(font)) {
 				fm = g.getFontMetrics(font);
-				fontHeight = font.getSize();
+				fontHeight = fm.getAscent() - fm.getDescent();
 			}
 
 			List<? extends Series> seriesList = dataset.getSeriesList();
 
 			float x = aRect.getX() + margin.getLeft() + padding.getLeft();
 			float y = aRect.getY() + margin.getTop() + padding.getTop();
+			// float width = aRect.getWidth() - (margin.getHorizontalSize() + padding.getHorizontalSize());
+			float height = aRect.getHeight() - (margin.getVerticalSize() + padding.getVerticalSize());
 			LegendDisplayPosition pos = aStyle.getPosition();
 			if (isHorizontalLegend(pos)) {
 				for (int i = 0; i < seriesList.size(); i++) {
@@ -314,7 +316,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
 						strWidth = fm.stringWidth(title);
 						g.setFont(font, fontColor);
-						g.drawStringA(title, (fontHeight * 2) + x, y);
+						g.drawString(title, (fontHeight * 2) + x, y + fontHeight + (height - fontHeight) / 2);
 					}
 
 					x += aStyle.getSpace() + (fontHeight * 2) + strWidth;
@@ -332,7 +334,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 					Color fontColor = aStyle.getFontColor();
 					if (StringUtility.isNotEmpty(title) && ObjectUtility.isAllNotNull(font, fontColor)) {
 						g.setFont(font, fontColor);
-						g.drawStringA(title, (fontHeight * 2) + x, y);
+						g.drawString(title, (fontHeight * 2) + x, y + fontHeight);
 					}
 
 					y += aStyle.getSpace() + fontHeight;

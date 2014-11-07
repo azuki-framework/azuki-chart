@@ -44,29 +44,31 @@ public class BarChartExample {
 	}
 
 	public static BarDataset createDataset() {
-		BarDataset dataset = new BarDataset("Bar Chart");
+		BarDataset dataset = new BarDataset("支店別売上");
 
-		BarSeries seriesAve = new BarSeries("Average");
-		BarSeries seriesMax = new BarSeries("Maximum");
-		BarSeries seriesMin = new BarSeries("Mininum");
-		seriesAve.add(50.f);
-		seriesMax.add(100.f);
-		seriesMin.add(10.f);
-		seriesAve.add(70.f);
-		seriesMax.add(70.f);
-		seriesMin.add(70.f);
-		seriesAve.add(100.f);
-		seriesMax.add(200.f);
-		seriesMin.add(50.f);
-		seriesAve.add(100.f);
-		seriesMax.add(200.f);
-		seriesMin.add(50.f);
-		seriesAve.add(100.f);
-		seriesMax.add(200.f);
-		seriesMin.add(50.f);
-		dataset.addSeries(seriesAve);
-		dataset.addSeries(seriesMax);
-		dataset.addSeries(seriesMin);
+		BarSeries series1 = new BarSeries("東京");
+		series1.add(50.f);
+		series1.add(75.f);
+		series1.add(135.f);
+		series1.add(48.f);
+		series1.add(185.f);
+		dataset.addSeries(series1);
+
+		BarSeries series2 = new BarSeries("大阪");
+		series2.add(100.f);
+		series2.add(0.f);
+		series2.add(10.f);
+		series2.add(200.f);
+		series2.add(145.f);
+		dataset.addSeries(series2);
+
+		BarSeries series3 = new BarSeries("名古屋");
+		series3.add(10.f);
+		series3.add(35.f);
+		series3.add(100.f);
+		series3.add(75.f);
+		series3.add(50.f);
+		dataset.addSeries(series3);
 
 		return dataset;
 	}

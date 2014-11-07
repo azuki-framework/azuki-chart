@@ -59,11 +59,25 @@ public class BarSeries extends AbstractSeries {
 	 * コンストラクタ
 	 * 
 	 * @param aTitle タイトル
-	 * @param aPoints ポイント
+	 * @param aPoints ポイントリスト
 	 */
 	public BarSeries(final String aTitle, final List<BarSeriesPoint> aPoints) {
 		super(aTitle);
-		points = new ArrayList<>(aPoints);
+		points = new ArrayList<BarSeriesPoint>(aPoints);
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aValues 値配列
+	 */
+	public BarSeries(final String aTitle, final double... aValues) {
+		super(aTitle);
+		points = new ArrayList<BarSeriesPoint>();
+		for (double value : aValues) {
+			points.add(new BarSeriesPoint(value));
+		}
 	}
 
 	/**

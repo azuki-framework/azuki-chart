@@ -59,11 +59,25 @@ public class LineSeries extends AbstractSeries {
 	 * コンストラクタ
 	 * 
 	 * @param aTitle タイトル
-	 * @param aPoints ポイント
+	 * @param aPoints ポイントリスト
 	 */
 	public LineSeries(final String aTitle, final List<LineSeriesPoint> aPoints) {
 		super(aTitle);
-		points = new ArrayList<>(aPoints);
+		points = new ArrayList<LineSeriesPoint>(aPoints);
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aValues 値配列
+	 */
+	public LineSeries(final String aTitle, final double... aValues) {
+		super(aTitle);
+		points = new ArrayList<LineSeriesPoint>();
+		for (double value : aValues) {
+			points.add(new LineSeriesPoint(value));
+		}
 	}
 
 	/**
