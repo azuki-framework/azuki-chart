@@ -33,6 +33,13 @@ import org.azkfw.graphics.Padding;
  */
 public interface LegendStyle {
 
+	/**
+	 * 凡例の表示位置を定義
+	 * 
+	 * @since 1.0.0
+	 * @version 1.0.0 2014/06/26
+	 * @author Kawakicchi
+	 */
 	public enum LegendDisplayPosition {
 		/** グラフ上部 */
 		Top(),
@@ -70,22 +77,67 @@ public interface LegendStyle {
 	 */
 	public boolean isDisplay();
 
+	/**
+	 * 凡例表示位置を取得する。
+	 * 
+	 * @return 表示位置
+	 */
 	public LegendDisplayPosition getPosition();
 
+	/**
+	 * マージンを取得する。
+	 * 
+	 * @return マージン
+	 */
 	public Margin getMargin();
 
+	/**
+	 * パディングを取得する。
+	 * 
+	 * @return パディング
+	 */
 	public Padding getPadding();
 
-	public Color getFontColor();
-
+	/**
+	 * フォントを取得する。
+	 * 
+	 * @return フォント
+	 */
 	public Font getFont();
 
-	public Stroke getStroke();
+	/**
+	 * フォントカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
+	public Color getFontColor();
 
-	public Color getStrokeColor();
+	/**
+	 * 枠のストロークを取得する。
+	 * 
+	 * @return ストローク
+	 */
+	public Stroke getFrameStroke();
 
-	public Color getBackgroundColor();
+	/**
+	 * 枠のストロークカラーを取得する。
+	 * 
+	 * @return カラー
+	 */
+	public Color getFrameStrokeColor();
 
+	/**
+	 * 枠の背景色を取得する。
+	 * 
+	 * @return 背景色
+	 */
+	public Color getFrameBackgroundColor();
+
+	/**
+	 * スペースを取得する。
+	 * 
+	 * @return スペース
+	 */
 	public float getSpace();
 
 }

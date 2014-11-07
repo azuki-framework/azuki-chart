@@ -23,8 +23,8 @@ import org.azkfw.chart.AzukiChart;
 import org.azkfw.chart.AzukiChartFactory;
 import org.azkfw.chart.charts.bar.BarAxis.BarHorizontalAxis;
 import org.azkfw.chart.charts.bar.BarAxis.BarVerticalAxis;
+import org.azkfw.chart.charts.bar.BarChartPlot;
 import org.azkfw.chart.charts.bar.BarDataset;
-import org.azkfw.chart.charts.bar.BarPlot;
 import org.azkfw.chart.charts.bar.BarSeries;
 import org.azkfw.chart.displayformat.MonthDisplayFormat;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
@@ -40,7 +40,7 @@ import org.azkfw.chart.util.AzukiChartUtility;
 public class BarChartExample {
 
 	public static void main(final String[] args) {
-		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Bar Chart");
+		AzukiChartUtility.showChartAsFrame(new AzukiChart(createChartPlot(createDataset())), "Bar Chart");
 	}
 
 	public static BarDataset createDataset() {
@@ -73,11 +73,11 @@ public class BarChartExample {
 		return dataset;
 	}
 
-	public static BarPlot createPlot(final BarDataset aDataset) {
+	public static BarChartPlot createChartPlot(final BarDataset aDataset) {
 		AzukiChart chart = AzukiChartFactory.createBarChart(aDataset);
 		chart.setBackgoundColor(Color.WHITE);
 
-		BarPlot plot = (BarPlot) chart.getPlot();
+		BarChartPlot plot = (BarChartPlot) chart.getPlot();
 
 		BarVerticalAxis yAxis = plot.getVerticalAxis();
 		yAxis.setDisplayFormat(new NumericDisplayFormat(2));

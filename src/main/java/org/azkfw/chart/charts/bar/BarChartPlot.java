@@ -30,7 +30,7 @@ import org.azkfw.chart.charts.bar.BarAxis.BarVerticalAxis;
 import org.azkfw.chart.charts.bar.BarChartDesign.BarChartStyle;
 import org.azkfw.chart.charts.bar.BarSeries.BarSeriesPoint;
 import org.azkfw.chart.core.dataset.series.Series;
-import org.azkfw.chart.core.plot.AbstractSeriesPlot;
+import org.azkfw.chart.core.plot.AbstractSeriesChartPlot;
 import org.azkfw.chart.design.chart.SeriesChartStyle;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.graphics.Graphics;
@@ -47,7 +47,7 @@ import org.azkfw.util.StringUtility;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
+public class BarChartPlot extends AbstractSeriesChartPlot<BarDataset, BarChartDesign> {
 
 	/** 水平軸情報 */
 	private BarHorizontalAxis axisHorizontal;
@@ -57,8 +57,8 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 	/**
 	 * コンストラクタ
 	 */
-	public BarPlot() {
-		super(BarPlot.class);
+	public BarChartPlot() {
+		super(BarChartPlot.class);
 
 		axisHorizontal = new BarHorizontalAxis();
 		axisVertical = new BarVerticalAxis();
@@ -71,8 +71,8 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 	 * 
 	 * @param aDataset データセット
 	 */
-	public BarPlot(final BarDataset aDataset) {
-		super(BarPlot.class, aDataset);
+	public BarChartPlot(final BarDataset aDataset) {
+		super(BarChartPlot.class, aDataset);
 
 		axisHorizontal = new BarHorizontalAxis();
 		axisVertical = new BarVerticalAxis();
@@ -99,7 +99,7 @@ public class BarPlot extends AbstractSeriesPlot<BarDataset, BarChartDesign> {
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics g, final Rect aRect) {
+	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		BarDataset dataset = getDataset();
 		BarChartDesign design = getChartDesign();
 		BarChartStyle style = design.getChartStyle();

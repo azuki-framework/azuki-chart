@@ -24,20 +24,19 @@ import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Rect;
 
 /**
- * このクラスは、グラフプロット機能を実装するための基底クラスです。
+ * このクラスは、マトリックスデータのグラフプロット機能を実装するための基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/07/09
  * @author Kawakicchi
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractMatrixPlot<DATASET extends MatrixDataset, DESIGN extends MatrixChartDesign> extends AbstractPlot<DATASET, DESIGN>
-		implements Plot {
+public abstract class AbstractMatrixChartPlot<DATASET extends MatrixDataset, DESIGN extends MatrixChartDesign> extends AbstractChartPlot<DATASET, DESIGN> {
 
 	/**
 	 * コンストラクタ
 	 */
-	public AbstractMatrixPlot() {
+	public AbstractMatrixChartPlot() {
 		super();
 	}
 
@@ -46,7 +45,7 @@ public abstract class AbstractMatrixPlot<DATASET extends MatrixDataset, DESIGN e
 	 * 
 	 * @param aClass クラス
 	 */
-	public AbstractMatrixPlot(final Class<?> aClass) {
+	public AbstractMatrixChartPlot(final Class<?> aClass) {
 		super(aClass);
 	}
 
@@ -56,7 +55,7 @@ public abstract class AbstractMatrixPlot<DATASET extends MatrixDataset, DESIGN e
 	 * @param aClass クラス
 	 * @param aDataset データセット
 	 */
-	public AbstractMatrixPlot(final Class<?> aClass, final DATASET aDataset) {
+	public AbstractMatrixChartPlot(final Class<?> aClass, final DATASET aDataset) {
 		super(aClass, aDataset);
 	}
 
@@ -65,7 +64,7 @@ public abstract class AbstractMatrixPlot<DATASET extends MatrixDataset, DESIGN e
 	 * 
 	 * @param aName 名前
 	 */
-	public AbstractMatrixPlot(final String aName) {
+	public AbstractMatrixChartPlot(final String aName) {
 		super(aName);
 	}
 
@@ -75,7 +74,7 @@ public abstract class AbstractMatrixPlot<DATASET extends MatrixDataset, DESIGN e
 	 * @param aName 名前
 	 * @param aDataset データセット
 	 */
-	public AbstractMatrixPlot(final String aName, final DATASET aDataset) {
+	public AbstractMatrixChartPlot(final String aName, final DATASET aDataset) {
 		super(aName, aDataset);
 	}
 
@@ -84,7 +83,7 @@ public abstract class AbstractMatrixPlot<DATASET extends MatrixDataset, DESIGN e
 	 * 
 	 * @param aDataset データセット
 	 */
-	public AbstractMatrixPlot(final DATASET aDataset) {
+	public AbstractMatrixChartPlot(final DATASET aDataset) {
 		super(aDataset);
 	}
 

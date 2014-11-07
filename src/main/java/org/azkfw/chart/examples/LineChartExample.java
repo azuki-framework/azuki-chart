@@ -23,8 +23,8 @@ import org.azkfw.chart.AzukiChart;
 import org.azkfw.chart.AzukiChartFactory;
 import org.azkfw.chart.charts.line.LineAxis.LineHorizontalAxis;
 import org.azkfw.chart.charts.line.LineAxis.LineVerticalAxis;
+import org.azkfw.chart.charts.line.LineChartPlot;
 import org.azkfw.chart.charts.line.LineDataset;
-import org.azkfw.chart.charts.line.LinePlot;
 import org.azkfw.chart.charts.line.LineSeries;
 import org.azkfw.chart.displayformat.MonthDisplayFormat;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
@@ -40,7 +40,7 @@ import org.azkfw.chart.util.AzukiChartUtility;
 public class LineChartExample {
 
 	public static void main(final String[] args) {
-		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Line Chart");
+		AzukiChartUtility.showChartAsFrame(new AzukiChart(createChartPlot(createDataset())), "Line Chart");
 	}
 
 	public static LineDataset createDataset() {
@@ -73,11 +73,11 @@ public class LineChartExample {
 		return dataset;
 	}
 
-	public static LinePlot createPlot(final LineDataset aDataset) {
+	public static LineChartPlot createChartPlot(final LineDataset aDataset) {
 		AzukiChart chart = AzukiChartFactory.createLineChart(aDataset);
 		chart.setBackgoundColor(Color.WHITE);
 
-		LinePlot plot = (LinePlot) chart.getPlot();
+		LineChartPlot plot = (LineChartPlot) chart.getPlot();
 
 		LineVerticalAxis yAxis = plot.getVerticalAxis();
 		yAxis.setDisplayFormat(new NumericDisplayFormat(2));

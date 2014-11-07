@@ -21,7 +21,7 @@ import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Rect;
 
 /**
- * このインターフェースは、グラフプロット機能を表現したインターフェースです。
+ * このインターフェースは、プロット機能を表現したインターフェースです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19

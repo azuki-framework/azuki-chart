@@ -23,8 +23,8 @@ import org.azkfw.chart.AzukiChart;
 import org.azkfw.chart.AzukiChartFactory;
 import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterXAxis;
 import org.azkfw.chart.charts.scatter.ScatterAxis.ScatterYAxis;
+import org.azkfw.chart.charts.scatter.ScatterChartPlot;
 import org.azkfw.chart.charts.scatter.ScatterDataset;
-import org.azkfw.chart.charts.scatter.ScatterPlot;
 import org.azkfw.chart.charts.scatter.ScatterSeries;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.util.AzukiChartUtility;
@@ -39,7 +39,7 @@ import org.azkfw.chart.util.AzukiChartUtility;
 public class ScatterChartExample {
 
 	public static void main(final String[] args) {
-		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Scatter Chart");
+		AzukiChartUtility.showChartAsFrame(new AzukiChart(createChartPlot(createDataset())), "Scatter Chart");
 	}
 
 	public static ScatterDataset createDataset() {
@@ -58,11 +58,11 @@ public class ScatterChartExample {
 		return dataset;
 	}
 
-	public static ScatterPlot createPlot(final ScatterDataset aDataset) {
+	public static ScatterChartPlot createChartPlot(final ScatterDataset aDataset) {
 		AzukiChart chart = AzukiChartFactory.createScatterChart(aDataset);
 		chart.setBackgoundColor(Color.WHITE);
 
-		ScatterPlot plot = (ScatterPlot) chart.getPlot();
+		ScatterChartPlot plot = (ScatterChartPlot) chart.getPlot();
 		//plot.setChartDesign(ScatterChartDesign.DarkDesign);
 
 		ScatterXAxis xAxis = plot.getXAxis();

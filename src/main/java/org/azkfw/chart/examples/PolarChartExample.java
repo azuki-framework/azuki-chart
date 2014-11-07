@@ -22,8 +22,8 @@ import java.awt.Color;
 import org.azkfw.chart.AzukiChart;
 import org.azkfw.chart.AzukiChartFactory;
 import org.azkfw.chart.charts.polar.PolarAxis;
+import org.azkfw.chart.charts.polar.PolarChartPlot;
 import org.azkfw.chart.charts.polar.PolarDataset;
-import org.azkfw.chart.charts.polar.PolarPlot;
 import org.azkfw.chart.charts.polar.PolarSeries;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.util.AzukiChartUtility;
@@ -38,7 +38,7 @@ import org.azkfw.chart.util.AzukiChartUtility;
 public class PolarChartExample {
 
 	public static void main(final String[] args) {
-		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Polar Chart");
+		AzukiChartUtility.showChartAsFrame(new AzukiChart(createChartPlot(createDataset())), "Polar Chart");
 	}
 
 	public static PolarDataset createDataset() {
@@ -67,11 +67,11 @@ public class PolarChartExample {
 		return dataset;
 	}
 
-	public static PolarPlot createPlot(final PolarDataset aDataset) {
+	public static PolarChartPlot createChartPlot(final PolarDataset aDataset) {
 		AzukiChart chart = AzukiChartFactory.createPolarChart(aDataset);
 		chart.setBackgoundColor(Color.WHITE);
 
-		PolarPlot plot = (PolarPlot) chart.getPlot();
+		PolarChartPlot plot = (PolarChartPlot) chart.getPlot();
 
 		PolarAxis axis = plot.getAxis();
 		axis.setMaximumValueAutoFit(false);

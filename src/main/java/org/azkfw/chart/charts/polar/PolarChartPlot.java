@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.azkfw.chart.charts.polar.PolarChartDesign.PolarChartStyle;
 import org.azkfw.chart.charts.polar.PolarSeries.PolarSeriesPoint;
-import org.azkfw.chart.core.plot.AbstractSeriesPlot;
+import org.azkfw.chart.core.plot.AbstractSeriesChartPlot;
 import org.azkfw.chart.design.marker.Marker;
 import org.azkfw.chart.displayformat.DisplayFormat;
 import org.azkfw.graphics.Graphics;
@@ -46,7 +46,7 @@ import org.azkfw.util.StringUtility;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign> {
+public class PolarChartPlot extends AbstractSeriesChartPlot<PolarDataset, PolarChartDesign> {
 
 	/** 軸情報 */
 	private PolarAxis axis;
@@ -54,8 +54,8 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 	/**
 	 * コンストラクタ
 	 */
-	public PolarPlot() {
-		super(PolarPlot.class);
+	public PolarChartPlot() {
+		super(PolarChartPlot.class);
 
 		axis = new PolarAxis();
 
@@ -67,8 +67,8 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 	 * 
 	 * @param aDataset データセット
 	 */
-	public PolarPlot(final PolarDataset aDataset) {
-		super(PolarPlot.class, aDataset);
+	public PolarChartPlot(final PolarDataset aDataset) {
+		super(PolarChartPlot.class, aDataset);
 
 		axis = new PolarAxis();
 
@@ -85,7 +85,7 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics g, final Rect aRect) {
+	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		PolarDataset dataset = getDataset();
 		PolarChartDesign design = getChartDesign();
 		PolarChartStyle style = design.getChartStyle();
@@ -290,7 +290,7 @@ public class PolarPlot extends AbstractSeriesPlot<PolarDataset, PolarChartDesign
 						}
 
 						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
-						Marker marker = (Marker) getNotNullObject(pointMarker, seriesMarker);
+						Marker marker = (Marker) ObjectUtility.getNotNullObject(pointMarker, seriesMarker);
 						if (ObjectUtility.isNotNull(marker)) {
 							double value = point.getRange();
 							float x = (float) (ptMiddle.getX() + pixPerValue * (value - aScaleValue.getMin()) * Math.cos(RADIANS(point.getAngle())));

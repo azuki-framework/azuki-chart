@@ -19,23 +19,23 @@ package org.azkfw.chart;
 
 import java.util.List;
 
+import org.azkfw.chart.charts.bar.BarChartPlot;
 import org.azkfw.chart.charts.bar.BarDataset;
-import org.azkfw.chart.charts.bar.BarPlot;
+import org.azkfw.chart.charts.line.LineChartPlot;
 import org.azkfw.chart.charts.line.LineDataset;
-import org.azkfw.chart.charts.line.LinePlot;
+import org.azkfw.chart.charts.pie.PieChartPlot;
 import org.azkfw.chart.charts.pie.PieDataset;
-import org.azkfw.chart.charts.pie.PiePlot;
+import org.azkfw.chart.charts.polar.PolarChartPlot;
 import org.azkfw.chart.charts.polar.PolarDataset;
-import org.azkfw.chart.charts.polar.PolarPlot;
+import org.azkfw.chart.charts.polararea.PolarAreaChartPlot;
 import org.azkfw.chart.charts.polararea.PolarAreaDataset;
-import org.azkfw.chart.charts.polararea.PolarAreaPlot;
+import org.azkfw.chart.charts.radar.RadarChartPlot;
 import org.azkfw.chart.charts.radar.RadarDataset;
-import org.azkfw.chart.charts.radar.RadarPlot;
+import org.azkfw.chart.charts.scatter.ScatterChartPlot;
 import org.azkfw.chart.charts.scatter.ScatterDataset;
-import org.azkfw.chart.charts.scatter.ScatterPlot;
 import org.azkfw.chart.charts.scatter.ScatterSeries;
+import org.azkfw.chart.charts.spectrum.SpectrumChartPlot;
 import org.azkfw.chart.charts.spectrum.SpectrumDataset;
-import org.azkfw.chart.charts.spectrum.SpectrumPlot;
 
 /**
  * このクラスは、チャート生成を行うファクトリークラスです。
@@ -52,7 +52,7 @@ public class AzukiChartFactory {
 	 * @return 棒グラフ
 	 */
 	public static AzukiChart createBarChart() {
-		BarPlot plot = new BarPlot();
+		BarChartPlot plot = new BarChartPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -64,7 +64,7 @@ public class AzukiChartFactory {
 	 * @return 棒グラフ
 	 */
 	public static AzukiChart createBarChart(final BarDataset aDataset) {
-		BarPlot plot = new BarPlot(aDataset);
+		BarChartPlot plot = new BarChartPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -75,7 +75,7 @@ public class AzukiChartFactory {
 	 * @return 折れ線グラフ
 	 */
 	public static AzukiChart createLineChart() {
-		LinePlot plot = new LinePlot();
+		LineChartPlot plot = new LineChartPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -87,7 +87,7 @@ public class AzukiChartFactory {
 	 * @return 折れ線グラフ
 	 */
 	public static AzukiChart createLineChart(final LineDataset aDataset) {
-		LinePlot plot = new LinePlot(aDataset);
+		LineChartPlot plot = new LineChartPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -98,7 +98,7 @@ public class AzukiChartFactory {
 	 * @return 円グラフ
 	 */
 	public static AzukiChart createPieChart() {
-		PiePlot plot = new PiePlot();
+		PieChartPlot plot = new PieChartPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -110,7 +110,7 @@ public class AzukiChartFactory {
 	 * @return 円グラフ
 	 */
 	public static AzukiChart createPieChart(final PieDataset aDataset) {
-		PiePlot plot = new PiePlot(aDataset);
+		PieChartPlot plot = new PieChartPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -121,7 +121,7 @@ public class AzukiChartFactory {
 	 * @return 極座標グラフ
 	 */
 	public static AzukiChart createPolarChart() {
-		PolarPlot plot = new PolarPlot();
+		PolarChartPlot plot = new PolarChartPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -133,7 +133,7 @@ public class AzukiChartFactory {
 	 * @return 極座標グラフ
 	 */
 	public static AzukiChart createPolarChart(final PolarDataset aDataset) {
-		PolarPlot plot = new PolarPlot(aDataset);
+		PolarChartPlot plot = new PolarChartPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -144,7 +144,7 @@ public class AzukiChartFactory {
 	 * @return 鶏頭図
 	 */
 	public static AzukiChart createPolarAreaChart() {
-		PolarAreaPlot plot = new PolarAreaPlot();
+		PolarAreaChartPlot plot = new PolarAreaChartPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -156,7 +156,7 @@ public class AzukiChartFactory {
 	 * @return 鶏頭図
 	 */
 	public static AzukiChart createPolarAreaChart(final PolarAreaDataset aDataset) {
-		PolarAreaPlot plot = new PolarAreaPlot(aDataset);
+		PolarAreaChartPlot plot = new PolarAreaChartPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -167,7 +167,7 @@ public class AzukiChartFactory {
 	 * @return レーダーチャート
 	 */
 	public static AzukiChart createRadarChart() {
-		RadarPlot plot = new RadarPlot();
+		RadarChartPlot plot = new RadarChartPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -179,7 +179,7 @@ public class AzukiChartFactory {
 	 * @return レーダーチャート
 	 */
 	public static AzukiChart createRadarChart(final RadarDataset aDataset) {
-		RadarPlot plot = new RadarPlot(aDataset);
+		RadarChartPlot plot = new RadarChartPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -190,7 +190,7 @@ public class AzukiChartFactory {
 	 * @return 散布図
 	 */
 	public static AzukiChart createScatterChart() {
-		ScatterPlot plot = new ScatterPlot();
+		ScatterChartPlot plot = new ScatterChartPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -202,7 +202,7 @@ public class AzukiChartFactory {
 	 * @return 散布図
 	 */
 	public static AzukiChart createScatterChart(final ScatterDataset aDataset) {
-		ScatterPlot plot = new ScatterPlot(aDataset);
+		ScatterChartPlot plot = new ScatterChartPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -221,7 +221,7 @@ public class AzukiChartFactory {
 		}
 		dataset.addSeries(series);
 
-		ScatterPlot plot = new ScatterPlot(dataset);
+		ScatterChartPlot plot = new ScatterChartPlot(dataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -232,7 +232,7 @@ public class AzukiChartFactory {
 	 * @return スペクトログラム
 	 */
 	public static AzukiChart createSpectrumChart() {
-		SpectrumPlot plot = new SpectrumPlot();
+		SpectrumChartPlot plot = new SpectrumChartPlot();
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}
@@ -244,7 +244,7 @@ public class AzukiChartFactory {
 	 * @return スペクトログラム
 	 */
 	public static AzukiChart createSpectrumChart(final SpectrumDataset aDataset) {
-		SpectrumPlot plot = new SpectrumPlot(aDataset);
+		SpectrumChartPlot plot = new SpectrumChartPlot(aDataset);
 		AzukiChart chart = new AzukiChart(plot);
 		return chart;
 	}

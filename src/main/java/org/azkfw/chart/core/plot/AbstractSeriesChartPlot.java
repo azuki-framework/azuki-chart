@@ -39,20 +39,19 @@ import org.azkfw.util.ObjectUtility;
 import org.azkfw.util.StringUtility;
 
 /**
- * このクラスは、グラフプロット機能を実装するための基底クラスです。
+ * このクラスは、シリーズデータのグラフプロット機能を実装するための基底クラスです。
  * 
  * @since 1.0.0
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN extends SeriesChartDesign> extends AbstractPlot<DATASET, DESIGN>
-		implements Plot {
+public abstract class AbstractSeriesChartPlot<DATASET extends SeriesDataset, DESIGN extends SeriesChartDesign> extends AbstractChartPlot<DATASET, DESIGN> {
 
 	/**
 	 * コンストラクタ
 	 */
-	public AbstractSeriesPlot() {
+	public AbstractSeriesChartPlot() {
 		super();
 	}
 
@@ -61,7 +60,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 	 * 
 	 * @param aClass クラス
 	 */
-	public AbstractSeriesPlot(final Class<?> aClass) {
+	public AbstractSeriesChartPlot(final Class<?> aClass) {
 		super(aClass);
 	}
 
@@ -71,7 +70,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 	 * @param aClass クラス
 	 * @param aDataset データセット
 	 */
-	public AbstractSeriesPlot(final Class<?> aClass, final DATASET aDataset) {
+	public AbstractSeriesChartPlot(final Class<?> aClass, final DATASET aDataset) {
 		super(aClass, aDataset);
 	}
 
@@ -80,7 +79,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 	 * 
 	 * @param aName 名前
 	 */
-	public AbstractSeriesPlot(final String aName) {
+	public AbstractSeriesChartPlot(final String aName) {
 		super(aName);
 	}
 
@@ -90,7 +89,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 	 * @param aName 名前
 	 * @param aDataset データセット
 	 */
-	public AbstractSeriesPlot(final String aName, final DATASET aDataset) {
+	public AbstractSeriesChartPlot(final String aName, final DATASET aDataset) {
 		super(aName, aDataset);
 	}
 
@@ -99,7 +98,7 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 	 * 
 	 * @param aDataset データセット
 	 */
-	public AbstractSeriesPlot(final DATASET aDataset) {
+	public AbstractSeriesChartPlot(final DATASET aDataset) {
 		super(aDataset);
 	}
 
@@ -266,8 +265,8 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 		SeriesChartStyle style = (SeriesChartStyle) design.getChartStyle();
 
 		if (null != design) {
-			Margin margin = (Margin) getNotNullObject(aStyle.getMargin(), new Margin());
-			Padding padding = (Padding) getNotNullObject(aStyle.getPadding(), new Padding());
+			Margin margin = (Margin) ObjectUtility.getNotNullObject(aStyle.getMargin(), new Margin());
+			Padding padding = (Padding) ObjectUtility.getNotNullObject(aStyle.getPadding(), new Padding());
 
 			{ // Draw legend frame
 				Rect rtFrame = new Rect();
@@ -276,13 +275,13 @@ public abstract class AbstractSeriesPlot<DATASET extends SeriesDataset, DESIGN e
 				rtFrame.setWidth(aRect.getWidth() - margin.getHorizontalSize());
 				rtFrame.setHeight(aRect.getHeight() - margin.getVerticalSize());
 				// fill background
-				if (ObjectUtility.isNotNull(aStyle.getBackgroundColor())) {
-					g.setColor(aStyle.getBackgroundColor());
+				if (ObjectUtility.isNotNull(aStyle.getFrameBackgroundColor())) {
+					g.setColor(aStyle.getFrameBackgroundColor());
 					g.fillRect(rtFrame);
 				}
 				// draw stroke
-				if (ObjectUtility.isAllNotNull(aStyle.getStroke(), aStyle.getStrokeColor())) {
-					g.setStroke(aStyle.getStroke(), aStyle.getStrokeColor());
+				if (ObjectUtility.isAllNotNull(aStyle.getFrameStroke(), aStyle.getFrameStrokeColor())) {
+					g.setStroke(aStyle.getFrameStroke(), aStyle.getFrameStrokeColor());
 					g.drawRect(rtFrame);
 				}
 			}

@@ -17,8 +17,7 @@
  */
 package org.azkfw.chart.charts.spectrum;
 
-import org.azkfw.chart.core.axis.AbstractAxis;
-import org.azkfw.chart.displayformat.DisplayFormat;
+import org.azkfw.chart.core.axis.AbstractDisplayAxis;
 import org.azkfw.chart.displayformat.StringDisplayFormat;
 
 /**
@@ -28,10 +27,7 @@ import org.azkfw.chart.displayformat.StringDisplayFormat;
  * @version 1.0.0 2014/07/09
  * @author Kawakicchi
  */
-public class SpectrumAxis extends AbstractAxis {
-
-	/** 表示形式 */
-	private DisplayFormat displayFormat;
+public class SpectrumAxis extends AbstractDisplayAxis {
 
 	/** 最小値 */
 	private double minValue;
@@ -46,30 +42,12 @@ public class SpectrumAxis extends AbstractAxis {
 	 * コンストラクタ
 	 */
 	public SpectrumAxis() {
-		displayFormat = new StringDisplayFormat();
+		setDisplayFormat(new StringDisplayFormat());
 
 		minValue = 0.0;
 		minValueAutoFit = true;
 		maxValue = 1.0;
 		maxValueAutoFit = true;
-	}
-
-	/**
-	 * 表示形式を設定する。
-	 * 
-	 * @param aDisplayFormat 表示形式
-	 */
-	public final void setDisplayFormat(final DisplayFormat aDisplayFormat) {
-		displayFormat = aDisplayFormat;
-	}
-
-	/**
-	 * 表示形式を取得する。
-	 * 
-	 * @return 表示形式
-	 */
-	public final DisplayFormat getDisplayFormat() {
-		return displayFormat;
 	}
 
 	/**

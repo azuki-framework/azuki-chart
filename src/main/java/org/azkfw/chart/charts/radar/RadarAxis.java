@@ -17,8 +17,7 @@
  */
 package org.azkfw.chart.charts.radar;
 
-import org.azkfw.chart.core.axis.AbstractAxis;
-import org.azkfw.chart.displayformat.DisplayFormat;
+import org.azkfw.chart.core.axis.AbstractDisplayAxis;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 
 /**
@@ -28,10 +27,7 @@ import org.azkfw.chart.displayformat.NumericDisplayFormat;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-public class RadarAxis extends AbstractAxis {
-
-	/** 表示形式 */
-	private DisplayFormat displayFormat;
+public class RadarAxis extends AbstractDisplayAxis {
 
 	/** 最小値 */
 	private double minValue;
@@ -50,7 +46,7 @@ public class RadarAxis extends AbstractAxis {
 	 * コンストラクタ
 	 */
 	public RadarAxis() {
-		displayFormat = new NumericDisplayFormat(0);
+		setDisplayFormat(new NumericDisplayFormat(0));
 
 		minValue = 0.0;
 		minValueAutoFit = true;
@@ -58,24 +54,6 @@ public class RadarAxis extends AbstractAxis {
 		maxValueAutoFit = true;
 		scale = 20.0;
 		scaleAutoFit = true;
-	}
-
-	/**
-	 * 表示形式を設定する。
-	 * 
-	 * @param aDisplayFormat 表示形式
-	 */
-	public final void setDisplayFormat(final DisplayFormat aDisplayFormat) {
-		displayFormat = aDisplayFormat;
-	}
-
-	/**
-	 * 表示形式を取得する。
-	 * 
-	 * @return 表示形式
-	 */
-	public final DisplayFormat getDisplayFormat() {
-		return displayFormat;
 	}
 
 	/**

@@ -20,7 +20,7 @@ package org.azkfw.chart.charts.spectrum;
 import java.awt.Color;
 
 import org.azkfw.chart.charts.spectrum.SpectrumChartDesign.SpectrumChartStyle;
-import org.azkfw.chart.core.plot.AbstractMatrixPlot;
+import org.azkfw.chart.core.plot.AbstractMatrixChartPlot;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Point;
 import org.azkfw.graphics.Rect;
@@ -33,7 +33,7 @@ import org.azkfw.util.ObjectUtility;
  * @version 1.0.0 2014/07/09
  * @author Kawakicchi
  */
-public class SpectrumPlot extends AbstractMatrixPlot<SpectrumDataset, SpectrumChartDesign> {
+public class SpectrumChartPlot extends AbstractMatrixChartPlot<SpectrumDataset, SpectrumChartDesign> {
 
 	/** 軸情報 */
 	private SpectrumAxis axis;
@@ -41,8 +41,8 @@ public class SpectrumPlot extends AbstractMatrixPlot<SpectrumDataset, SpectrumCh
 	/**
 	 * コンストラクタ
 	 */
-	public SpectrumPlot() {
-		super(SpectrumPlot.class);
+	public SpectrumChartPlot() {
+		super(SpectrumChartPlot.class);
 
 		axis = new SpectrumAxis();
 
@@ -54,8 +54,8 @@ public class SpectrumPlot extends AbstractMatrixPlot<SpectrumDataset, SpectrumCh
 	 * 
 	 * @param aDataset データセット
 	 */
-	public SpectrumPlot(final SpectrumDataset aDataset) {
-		super(SpectrumPlot.class, aDataset);
+	public SpectrumChartPlot(final SpectrumDataset aDataset) {
+		super(SpectrumChartPlot.class, aDataset);
 
 		axis = new SpectrumAxis();
 
@@ -72,7 +72,7 @@ public class SpectrumPlot extends AbstractMatrixPlot<SpectrumDataset, SpectrumCh
 	}
 
 	@Override
-	protected boolean doDraw(final Graphics g, final Rect aRect) {
+	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		SpectrumDataset dataset = getDataset();
 		SpectrumChartDesign design = getChartDesign();
 		SpectrumChartStyle style = design.getChartStyle();

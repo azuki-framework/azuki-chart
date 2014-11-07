@@ -22,9 +22,9 @@ import java.awt.Color;
 import org.azkfw.chart.AzukiChart;
 import org.azkfw.chart.AzukiChartFactory;
 import org.azkfw.chart.charts.spectrum.SpectrumAxis;
+import org.azkfw.chart.charts.spectrum.SpectrumChartPlot;
 import org.azkfw.chart.charts.spectrum.SpectrumDataset;
 import org.azkfw.chart.charts.spectrum.SpectrumMatrixData;
-import org.azkfw.chart.charts.spectrum.SpectrumPlot;
 import org.azkfw.chart.displayformat.NumericDisplayFormat;
 import org.azkfw.chart.util.AzukiChartUtility;
 
@@ -38,7 +38,7 @@ import org.azkfw.chart.util.AzukiChartUtility;
 public class SpectrumChartExample {
 
 	public static void main(final String[] args) {
-		AzukiChartUtility.showChartAsFrame(new AzukiChart(createPlot(createDataset())), "Spectrum Chart");
+		AzukiChartUtility.showChartAsFrame(new AzukiChart(createChartPlot(createDataset())), "Spectrum Chart");
 	}
 
 	public static SpectrumDataset createDataset() {
@@ -51,11 +51,11 @@ public class SpectrumChartExample {
 		return dataset;
 	}
 
-	public static SpectrumPlot createPlot(final SpectrumDataset aDataset) {
+	public static SpectrumChartPlot createChartPlot(final SpectrumDataset aDataset) {
 		AzukiChart chart = AzukiChartFactory.createSpectrumChart(aDataset);
 		chart.setBackgoundColor(Color.WHITE);
 
-		SpectrumPlot plot = (SpectrumPlot) chart.getPlot();
+		SpectrumChartPlot plot = (SpectrumChartPlot) chart.getPlot();
 
 		SpectrumAxis axis = plot.getAxis();
 		axis.setMinimumValueAutoFit(false);
