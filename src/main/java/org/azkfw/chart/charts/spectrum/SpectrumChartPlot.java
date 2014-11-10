@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.charts.spectrum;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 
 import org.azkfw.chart.charts.spectrum.SpectrumChartDesign.SpectrumChartStyle;
@@ -74,11 +75,11 @@ public class SpectrumChartPlot extends AbstractMatrixChartPlot<SpectrumDataset, 
 	@Override
 	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		SpectrumDataset dataset = getDataset();
-		SpectrumChartDesign design = getChartDesign();
+		SpectrumChartDesign design = getDesign();
 		SpectrumChartStyle style = design.getChartStyle();
 
 		// スケール調整
-		ScaleValue scaleValue = getScaleValue();
+		ScaleValue scaleValue = getScaleValue(getDataset());
 
 		float pieSize = Math.min(aRect.getWidth(), aRect.getHeight());
 		Point ptChartMiddle = new Point(aRect.getX() + (aRect.getWidth() / 2.f), aRect.getY() + (aRect.getHeight() / 2.f));
@@ -97,6 +98,12 @@ public class SpectrumChartPlot extends AbstractMatrixChartPlot<SpectrumDataset, 
 
 		// Draw dataset
 		drawDataset(g, dataset, scaleValue, style, rtChart);
+
+		if (isDebugMode()) {
+			g.setStroke(new BasicStroke(1.f));
+			g.setColor(Color.blue);
+			g.drawRect(rtChart);
+		}
 
 		return true;
 	}
@@ -126,16 +133,14 @@ public class SpectrumChartPlot extends AbstractMatrixChartPlot<SpectrumDataset, 
 		}
 	}
 
-	private ScaleValue getScaleValue() {
-		SpectrumDataset dataset = getDataset();
-
-		// データ最小値・最大値取得
+	private ScaleValue getScaleValue(final SpectrumDataset aDataset) {
+		// データ最小値・最大値取得 //////////////////////////
 		Double dataMinValue = null;
 		Double dataMaxValue = null;
-		if (null != dataset) {
-			for (int row = 0; row < dataset.getRowSize(); row++) {
-				for (int col = 0; col < dataset.getColSize(); col++) {
-					SpectrumMatrixData data = dataset.get(row, col);
+		if (null != aDataset) {
+			for (int row = 0; row < aDataset.getRowSize(); row++) {
+				for (int col = 0; col < aDataset.getColSize(); col++) {
+					SpectrumMatrixData data = aDataset.get(row, col);
 					if (null == dataMinValue) {
 						dataMinValue = data.getValue();
 						dataMaxValue = data.getValue();
@@ -149,6 +154,7 @@ public class SpectrumChartPlot extends AbstractMatrixChartPlot<SpectrumDataset, 
 		}
 		debug(String.format("Data minimum value : %f", dataMinValue));
 		debug(String.format("Data maximum value : %f", dataMaxValue));
+		////////////////////////////////////////////////
 
 		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定

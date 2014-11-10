@@ -18,7 +18,9 @@
 package org.azkfw.chart.core.plot;
 
 import org.azkfw.chart.core.dataset.MatrixDataset;
+import org.azkfw.chart.core.dataset.matrix.MatrixData;
 import org.azkfw.chart.design.MatrixChartDesign;
+import org.azkfw.chart.design.chart.MatrixChartStyle;
 
 /**
  * このクラスは、マトリックスデータのグラフプロット機能を実装するための基底クラスです。
@@ -27,9 +29,8 @@ import org.azkfw.chart.design.MatrixChartDesign;
  * @version 1.0.0 2014/07/09
  * @author Kawakicchi
  */
-@SuppressWarnings("rawtypes")
-public abstract class AbstractMatrixChartPlot<DATASET extends MatrixDataset, DESIGN extends MatrixChartDesign> extends
-		AbstractChartPlot<DATASET, DESIGN> {
+public abstract class AbstractMatrixChartPlot<DATASET extends MatrixDataset<? extends MatrixData>, DESIGN extends MatrixChartDesign<? extends MatrixChartStyle<? extends MatrixData>, ? extends MatrixData>>
+		extends AbstractChartPlot<DATASET, DESIGN> {
 
 	/**
 	 * コンストラクタ

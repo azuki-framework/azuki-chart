@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.core.element;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -49,8 +50,9 @@ import org.azkfw.util.StringUtility;
 public class SeriesLegendElement extends LegendElement {
 
 	private SeriesDataset<? extends Series> dataset;
-	private SeriesChartDesign<?, ?, ?> design;
-	private LegendStyle style;
+	private SeriesChartDesign<? extends SeriesChartStyle<Series, SeriesPoint>, ? extends Series, ? extends SeriesPoint> design;
+
+	private Rect rtLegend;
 
 	/**
 	 * コンストラクタ
@@ -58,28 +60,54 @@ public class SeriesLegendElement extends LegendElement {
 	 * @param aTitle タイトル
 	 * @param aStyle スタイル
 	 */
-	public SeriesLegendElement(final SeriesDataset<? extends Series> aDataset, final SeriesChartDesign<?, ?, ?> aDesign) {
+	public SeriesLegendElement(final SeriesDataset<? extends Series> aDataset,
+			final SeriesChartDesign<? extends SeriesChartStyle<Series, SeriesPoint>, ? extends Series, ? extends SeriesPoint> aDesign) {
 		dataset = aDataset;
 		design = aDesign;
-		style = design.getLegendStyle();
+
+		rtLegend = null;
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aStyle スタイル
+	 */
+	public SeriesLegendElement(final SeriesDataset<? extends Series> aDataset,
+			final SeriesChartDesign<? extends SeriesChartStyle<Series, SeriesPoint>, ? extends Series, ? extends SeriesPoint> aDesign,
+			final boolean aDebugMode) {
+		super(aDebugMode);
+
+		dataset = aDataset;
+		design = aDesign;
+
+		rtLegend = null;
+	}
+
+	private boolean isDraw() {
+		if (!ObjectUtility.isAllNotNull(dataset, design)) {
+			return false;
+		}
+		if (ObjectUtility.isNull(design.getLegendStyle())) {
+			return false;
+		}
+		if (ListUtility.isEmpty(dataset.getSeriesList())) {
+			return false;
+		}
+
+		if (!design.getLegendStyle().isDisplay()) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public Rect deploy(final Graphics g, final Rect rect) {
-		Rect rtLegend = null;
+		Rect rtArea = new Rect(rect);
 
-		if (!ObjectUtility.isAllNotNull(style, dataset)) {
-			return rtLegend;
-		}
-		if (ListUtility.isEmpty(dataset.getSeriesList())) {
-			return rtLegend;
-		}
-
-		if (style.isDisplay()) {
-			rtLegend = new Rect();
-
-			Margin margin = style.getMargin();
-			Padding padding = style.getPadding();
+		if (isDraw()) {
+			LegendStyle style = design.getLegendStyle();
 
 			int fontHeight = 16;
 			FontMetrics fm = null;
@@ -89,12 +117,12 @@ public class SeriesLegendElement extends LegendElement {
 				fontHeight = fm.getAscent() - fm.getDescent();
 			}
 
-			LegendDisplayPosition pos = style.getPosition();
-
-			List<? extends Series> seriesList = dataset.getSeriesList();
-
 			// get size
-			if (isHorizontalLegend(pos)) {
+			rtLegend = new Rect();
+			List<? extends Series> seriesList = dataset.getSeriesList();
+			LegendDisplayPosition pos = style.getPosition();
+			if (isHorizontalLegend(pos)) { // horizontal
+				rtLegend.setHeight(fontHeight);
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
 
@@ -105,13 +133,12 @@ public class SeriesLegendElement extends LegendElement {
 						strWidth = fm.stringWidth(title);
 					}
 
-					rtLegend.setHeight(fontHeight);
 					rtLegend.addWidth((fontHeight * 2) + strWidth);
 					if (0 < i) {
 						rtLegend.addWidth(style.getSpace());
 					}
 				}
-			} else if (isVerticalLegend(pos)) {
+			} else if (isVerticalLegend(pos)) { // vertical
 				for (int i = 0; i < seriesList.size(); i++) {
 					Series series = seriesList.get(i);
 
@@ -129,70 +156,74 @@ public class SeriesLegendElement extends LegendElement {
 					}
 				}
 			}
+
+			Margin margin = style.getMargin();
 			if (ObjectUtility.isNotNull(margin)) { // Add margin
 				rtLegend.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
 			}
+			Padding padding = style.getPadding();
 			if (ObjectUtility.isNotNull(padding)) { // Add padding
 				rtLegend.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
 			}
 
 			// get point and resize chart
 			if (LegendDisplayPosition.Top == pos) {
-				rtLegend.setPosition(rect.getX() + (rect.getWidth() - rtLegend.getWidth()) / 2, rect.getY());
+				rtLegend.setPosition(rtArea.getX() + (rtArea.getWidth() - rtLegend.getWidth()) / 2, rtArea.getY());
 
-				rect.addY(rtLegend.getHeight());
-				rect.subtractHeight(rtLegend.getHeight());
+				rtArea.addY(rtLegend.getHeight());
+				rtArea.subtractHeight(rtLegend.getHeight());
 			} else if (LegendDisplayPosition.Bottom == pos) {
-				rtLegend.setPosition(rect.getX() + (rect.getWidth() - rtLegend.getWidth()) / 2, rect.getY() + rect.getHeight() - rtLegend.getHeight());
+				rtLegend.setPosition(rtArea.getX() + (rtArea.getWidth() - rtLegend.getWidth()) / 2,
+						rtArea.getY() + rtArea.getHeight() - rtLegend.getHeight());
 
-				rect.subtractHeight(rtLegend.getHeight());
+				rtArea.subtractHeight(rtLegend.getHeight());
 			} else if (LegendDisplayPosition.Left == pos) {
-				rtLegend.setPosition(rect.getX(), rect.getY() + ((rect.getHeight() - rtLegend.getHeight()) / 2));
+				rtLegend.setPosition(rtArea.getX(), rtArea.getY() + ((rtArea.getHeight() - rtLegend.getHeight()) / 2));
 
-				rect.addX(rtLegend.getWidth());
-				rect.subtractWidth(rtLegend.getWidth());
+				rtArea.addX(rtLegend.getWidth());
+				rtArea.subtractWidth(rtLegend.getWidth());
 			} else if (LegendDisplayPosition.Right == pos) {
-				rtLegend.setPosition(rect.getX() + rect.getWidth() - rtLegend.getWidth(), rect.getY()
-						+ ((rect.getHeight() - rtLegend.getHeight()) / 2));
+				rtLegend.setPosition(rtArea.getX() + rtArea.getWidth() - rtLegend.getWidth(),
+						rtArea.getY() + ((rtArea.getHeight() - rtLegend.getHeight()) / 2));
 
-				rect.subtractWidth(rtLegend.getWidth());
+				rtArea.subtractWidth(rtLegend.getWidth());
 			} else if (LegendDisplayPosition.InnerTopLeft == pos) {
-				rtLegend.setPosition(rect.getX(), rect.getY());
+				rtLegend.setPosition(rtArea.getX(), rtArea.getY());
 			} else if (LegendDisplayPosition.InnerTop == pos) {
-				rtLegend.setPosition(rect.getX() + (rect.getWidth() - rtLegend.getWidth()) / 2, rect.getY());
+				rtLegend.setPosition(rtArea.getX() + (rtArea.getWidth() - rtLegend.getWidth()) / 2, rtArea.getY());
 			} else if (LegendDisplayPosition.InnerTopRight == pos) {
-				rtLegend.setPosition(rect.getX() + rect.getWidth() - rtLegend.getWidth(), rect.getY());
+				rtLegend.setPosition(rtArea.getX() + rtArea.getWidth() - rtLegend.getWidth(), rtArea.getY());
 			} else if (LegendDisplayPosition.InnerLeft == pos) {
-				rtLegend.setPosition(rect.getX(), rect.getY() + (rect.getHeight() - rtLegend.getHeight()) / 2);
+				rtLegend.setPosition(rtArea.getX(), rtArea.getY() + (rtArea.getHeight() - rtLegend.getHeight()) / 2);
 			} else if (LegendDisplayPosition.InnerRight == pos) {
-				rtLegend.setPosition(rect.getX() + rect.getWidth() - rtLegend.getWidth(), rect.getY() + (rect.getHeight() - rtLegend.getHeight()) / 2);
+				rtLegend.setPosition(rtArea.getX() + rtArea.getWidth() - rtLegend.getWidth(),
+						rtArea.getY() + (rtArea.getHeight() - rtLegend.getHeight()) / 2);
 			} else if (LegendDisplayPosition.InnerBottomLeft == pos) {
-				rtLegend.setPosition(rect.getX(), rect.getY() + rect.getHeight() - rtLegend.getHeight());
+				rtLegend.setPosition(rtArea.getX(), rtArea.getY() + rtArea.getHeight() - rtLegend.getHeight());
 			} else if (LegendDisplayPosition.InnerBottom == pos) {
-				rtLegend.setPosition(rect.getX() + (rect.getWidth() - rtLegend.getWidth()) / 2, rect.getY() + rect.getHeight() - rtLegend.getHeight());
+				rtLegend.setPosition(rtArea.getX() + (rtArea.getWidth() - rtLegend.getWidth()) / 2,
+						rtArea.getY() + rtArea.getHeight() - rtLegend.getHeight());
 			} else if (LegendDisplayPosition.InnerBottomRight == pos) {
-				rtLegend.setPosition(rect.getX() + rect.getWidth() - rtLegend.getWidth(), rect.getY() + rect.getHeight() - rtLegend.getHeight());
+				rtLegend.setPosition(rtArea.getX() + rtArea.getWidth() - rtLegend.getWidth(),
+						rtArea.getY() + rtArea.getHeight() - rtLegend.getHeight());
 			}
 		}
 
-		return rtLegend;
+		return rtArea;
 	}
 
 	@Override
-	public void draw(final Graphics g, final Rect rect) {
-		@SuppressWarnings("unchecked")
-		SeriesChartStyle<Series, SeriesPoint> styleChart = (SeriesChartStyle<Series, SeriesPoint>) design.getChartStyle();
-
-		if (null != design) {
-			Margin margin = (Margin) ObjectUtility.getNotNullObject(style.getMargin(), new Margin());
-			Padding padding = (Padding) ObjectUtility.getNotNullObject(style.getPadding(), new Padding());
+	public void draw(final Graphics g) {
+		if (isDraw()) {
+			LegendStyle style = design.getLegendStyle();
+			Margin margin = ObjectUtility.getNotNullObject(style.getMargin(), new Margin());
+			Padding padding = ObjectUtility.getNotNullObject(style.getPadding(), new Padding());
 
 			{ // Draw legend frame
-				Rect rtFrame = new Rect();
-				rtFrame.setX(rect.getX() + margin.getLeft());
-				rtFrame.setY(rect.getY() + margin.getTop());
-				rtFrame.setWidth(rect.getWidth() - margin.getHorizontalSize());
-				rtFrame.setHeight(rect.getHeight() - margin.getVerticalSize());
+				Rect rtFrame = new Rect(rtLegend);
+				rtFrame.addPosition(margin.getLeft(), margin.getTop());
+				rtFrame.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
+
 				// fill background
 				if (ObjectUtility.isNotNull(style.getFrameBackgroundColor())) {
 					g.setColor(style.getFrameBackgroundColor());
@@ -213,12 +244,13 @@ public class SeriesLegendElement extends LegendElement {
 				fontHeight = fm.getAscent() - fm.getDescent();
 			}
 
+			SeriesChartStyle<Series, SeriesPoint> styleChart = design.getChartStyle();
 			List<? extends Series> seriesList = dataset.getSeriesList();
 
-			float x = rect.getX() + margin.getLeft() + padding.getLeft();
-			float y = rect.getY() + margin.getTop() + padding.getTop();
+			float x = rtLegend.getX() + margin.getLeft() + padding.getLeft();
+			float y = rtLegend.getY() + margin.getTop() + padding.getTop();
 			// float width = aRect.getWidth() - (margin.getHorizontalSize() + padding.getHorizontalSize());
-			float height = rect.getHeight() - (margin.getVerticalSize() + padding.getVerticalSize());
+			float height = rtLegend.getHeight() - (margin.getVerticalSize() + padding.getVerticalSize());
 			LegendDisplayPosition pos = style.getPosition();
 			if (isHorizontalLegend(pos)) {
 				for (int i = 0; i < seriesList.size(); i++) {
@@ -257,6 +289,22 @@ public class SeriesLegendElement extends LegendElement {
 
 					y += style.getSpace() + fontHeight;
 				}
+			}
+
+			if (isDebugMode()) {
+				g.setStroke(new BasicStroke(1.f));
+				g.setColor(Color.green);
+
+				Rect rect = new Rect(rtLegend);
+				g.drawRect(rect); // margin
+
+				rect.addPosition(margin.getLeft(), margin.getTop());
+				rect.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
+				g.drawRect(rect); // frame
+
+				rect.addPosition(padding.getLeft(), padding.getTop());
+				rect.subtractSize(padding.getHorizontalSize(), padding.getVerticalSize());
+				g.drawRect(rect); // padding
 			}
 		}
 	}

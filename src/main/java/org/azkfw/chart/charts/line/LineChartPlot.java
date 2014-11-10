@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.charts.line;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -101,22 +102,21 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 	@Override
 	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		LineDataset dataset = getDataset();
-		LineChartDesign design = getChartDesign();
+		LineChartDesign design = getDesign();
 		LineChartStyle style = design.getChartStyle();
 
 		// スケール調整
-		ScaleValue scaleValue = getScaleValue();
+		ScaleValue scaleValue = getScaleValue(getDataset());
 
 		float fontMargin = 8.0f;
 
 		Margin margin = fitChart(g, aRect, scaleValue, fontMargin);
-		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
+		debug(String.format("Margin : { Left : %f, Right : %f, Top : %f, Bottom : %f }", margin.getLeft(), margin.getRight(), margin.getTop(),
+				margin.getBottom()));
 
-		Rect rtChart = new Rect();
-		rtChart.setX(aRect.getX() + margin.getLeft());
-		rtChart.setY(aRect.getY() + aRect.getHeight() - margin.getBottom()); // ★注意：Yは原点から
-		rtChart.setWidth(aRect.getWidth() - margin.getHorizontalSize());
-		rtChart.setHeight(aRect.getHeight() - margin.getVerticalSize());
+		Rect rtChart = new Rect(aRect);
+		rtChart.addPosition(margin.getLeft(), margin.getTop());
+		rtChart.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
 
 		// スケール計算
 		double difValue = scaleValue.getDiff();
@@ -141,21 +141,22 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 		// 背景色描画
 		if (ObjectUtility.isNotNull(style.getBackgroundColor())) {
 			g.setColor(style.getBackgroundColor());
-			g.fillRect(rtChart.getX(), rtChart.getY() - rtChart.getHeight(), rtChart.getWidth(), rtChart.getHeight());
+			g.fillRect(rtChart);
 		}
 
 		// 垂直軸描画
 		{
-			// ラベル描画 TODO: タイトル・凡例が右にある場合の対応が出来ていない
+			// ラベル描画
 			Font labelFont = style.getVerticalAxisLabelFont();
 			Color labelColor = style.getVerticalAxisLabelColor();
-			String labelTitle = style.getVerticalAxisLabelTitle();
+			String labelTitle = getVerticalAxis().getLabelTitle();
 			if (ObjectUtility.isAllNotNull(labelFont, labelColor) && StringUtility.isNotEmpty(labelTitle)) {
 				FontMetrics fm = g.getFontMetrics(labelFont);
 				int strWidth = fm.stringWidth(labelTitle);
+				int fontHeight = fm.getAscent() - fm.getDescent();
 
-				float x = aRect.getX() + (labelFont.getSize() / 2);
-				float y = rtChart.getY() - (rtChart.getHeight() / 2);
+				float x = aRect.getX() + (fontHeight / 2);
+				float y = (rtChart.getY() + rtChart.getHeight()) - (rtChart.getHeight() / 2);
 
 				AffineTransform save = g.getTransform();
 				AffineTransform at = new AffineTransform();
@@ -163,7 +164,7 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 				g.setTransform(at);
 
 				g.setFont(labelFont, labelColor);
-				g.drawStringA(labelTitle, x - (strWidth / 2), y - (labelFont.getSize() / 2));
+				g.drawStringA(labelTitle, x - (strWidth / 2), y - (fontHeight / 2));
 
 				g.setTransform(save);
 			}
@@ -182,7 +183,7 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 						float strWidth = fm.stringWidth(str);
 
 						float x = (float) (rtChart.getX() - (strWidth + fontMargin));
-						float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
+						float y = (float) ((rtChart.getY() + rtChart.getHeight()) - ((value - scaleValue.getMin()) * pixPerValue) - (fontSize / 2));
 						g.drawStringA(str, x, y);
 					}
 				}
@@ -194,7 +195,7 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 				g.setStroke(scaleLineStroke, scaleLineColor);
 				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 					float x = (float) (rtChart.getX());
-					float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
+					float y = (float) ((rtChart.getY() + rtChart.getHeight()) - ((value - scaleValue.getMin()) * pixPerValue));
 					g.drawLine(x, y, x + rtChart.getWidth(), y);
 				}
 			}
@@ -203,11 +204,11 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 			Color lineColor = style.getVerticalAxisLineColor();
 			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
 				g.setStroke(lineStroke, lineColor);
-				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() - rtChart.getHeight());
+				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX(), rtChart.getY() + rtChart.getHeight());
 				// 目盛
 				for (double value = scaleValue.getMin(); value <= scaleValue.getMax(); value += scaleValue.getScale()) {
 					float x = (float) (rtChart.getX());
-					float y = (float) (rtChart.getY() - ((value - scaleValue.getMin()) * pixPerValue));
+					float y = (float) ((rtChart.getY() + rtChart.getHeight()) - ((value - scaleValue.getMin()) * pixPerValue));
 					g.drawLine(x, y, x + 6, y);
 				}
 			}
@@ -216,6 +217,22 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 		{
 			float dataWidth = rtChart.getWidth() / dataPointSize;
 
+			// ラベル描画
+			Font labelFont = style.getHorizontalAxisLabelFont();
+			Color labelColor = style.getHorizontalAxisLabelColor();
+			String labelTitle = getHorizontalAxis().getLabelTitle();
+			if (ObjectUtility.isAllNotNull(labelFont, labelColor) && StringUtility.isNotEmpty(labelTitle)) {
+				FontMetrics fm = g.getFontMetrics(labelFont);
+				int strWidth = fm.stringWidth(labelTitle);
+				int fontHeight = fm.getAscent() - fm.getDescent();
+
+				float x = rtChart.getX() + (rtChart.getWidth() - strWidth) / 2;
+				float y = (aRect.getY() + aRect.getHeight() - fontHeight);
+
+				g.setFont(labelFont, labelColor);
+				g.drawStringA(labelTitle, x, y);
+
+			}
 			// 目盛ラベル描画
 			Font scaleLabelFont = style.getHorizontalAxisScaleLabelFont();
 			Color scaleLabelColor = style.getHorizontalAxisScaleLabelColor();
@@ -229,7 +246,7 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 					if (StringUtility.isNotEmpty(str)) {
 						float strWidth = fm.stringWidth(str);
 
-						float y = rtChart.getY() + fontMargin;
+						float y = (rtChart.getY() + rtChart.getHeight()) + fontMargin;
 						float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2) - (strWidth / 2);
 						g.drawStringA(str, x, y);
 					}
@@ -240,116 +257,32 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 			Color lineColor = style.getHorizontalAxisLineColor();
 			if (ObjectUtility.isAllNotNull(lineStroke, lineColor)) {
 				g.setStroke(lineStroke, lineColor);
-				g.drawLine(rtChart.getX(), rtChart.getY(), rtChart.getX() + rtChart.getWidth(), rtChart.getY());
+				g.drawLine(rtChart.getX(), rtChart.getY() + rtChart.getHeight(), rtChart.getX() + rtChart.getWidth(),
+						rtChart.getY() + rtChart.getHeight());
+
+				for (int i = 0; i < dataPointSize; i++) {
+					float y = (rtChart.getY() + rtChart.getHeight());
+					float x = rtChart.getX() + (i * dataWidth) + (dataWidth / 2);
+					g.drawLine(x, y, x, y - 6);
+				}
 			}
 		}
 
 		// Draw dataset
 		drawDataset(g, dataset, dataPointSize, scaleValue, style, rtChart);
 
-		return true;
-	}
-
-	private void drawDataset(final Graphics g, final LineDataset aDataset, final int aDataPointSize, final ScaleValue aScaleValue,
-			final LineChartStyle aStyle, final Rect aRect) {
-		if (ObjectUtility.isNotNull(aDataset)) {
-			// スケール計算
-			double difValue = aScaleValue.getDiff();
-			double pixPerValue = aRect.getHeight() / difValue;
-
-			float width = aRect.getWidth() / aDataPointSize;
-
-			float lineOffset = width / 2.f;
-
-			List<LineSeries> seriesList = aDataset.getSeriesList();
-			for (int index = 0; index < seriesList.size(); index++) {
-				LineSeries series = seriesList.get(index);
-				List<LineSeriesPoint> points = series.getPoints();
-
-				if (!aStyle.isOverflow()) {
-					g.setClip(aRect.getX(), aRect.getY() - aRect.getHeight(), aRect.getWidth(), aRect.getHeight());
-				}
-
-				// Draw series fill
-				{
-					Color fillColor = aStyle.getSeriesFillColor(index, series);
-					if (ObjectUtility.isNotNull(fillColor)) {
-						int xps[] = new int[points.size() + 2];
-						int yps[] = new int[points.size() + 2];
-						for (int j = 0; j < points.size(); j++) {
-							LineSeriesPoint point = points.get(j);
-							xps[j + 1] = (int) (aRect.getX() + (j * width + lineOffset));
-							yps[j + 1] = (int) (aRect.getY() - ((point.getValue() - aScaleValue.getMin()) * pixPerValue));
-						}
-						xps[0] = (int) (xps[1]);
-						yps[0] = (int) (aRect.getY());
-						xps[points.size() + 1] = (int) (xps[points.size()]);
-						yps[points.size() + 1] = (int) (aRect.getY());
-
-						GradientPaint paint = new GradientPaint(0f, aRect.getY() - aRect.getHeight(), fillColor, 0f, aRect.getY(), new Color(
-								fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0));
-						g.setPaint(paint);
-						g.fillPolygon(new Polygon(xps, yps, points.size() + 2));
-					}
-				}
-
-				// Draw series line
-				{
-					Stroke stroke = aStyle.getSeriesStroke(index, series);
-					Color strokeColor = aStyle.getSeriesStrokeColor(index, series);
-					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
-						float xps[] = new float[points.size()];
-						float yps[] = new float[points.size()];
-						for (int j = 0; j < points.size(); j++) {
-							LineSeriesPoint point = points.get(j);
-							xps[j] = (int) (aRect.getX() + (j * width + lineOffset));
-							yps[j] = (int) (aRect.getY() - ((point.getValue() - aScaleValue.getMin()) * pixPerValue));
-						}
-						g.setStroke(stroke, strokeColor);
-						g.drawPolyline(xps, yps, points.size());
-					}
-				}
-
-				if (!aStyle.isOverflow()) {
-					g.clearClip();
-				}
-
-				// Draw series marker
-				{
-					Marker seriesMarker = aStyle.getSeriesMarker(index, series);
-					for (int j = 0; j < points.size(); j++) {
-						LineSeriesPoint point = points.get(j);
-
-						if (!aStyle.isOverflow()) {
-							if (point.getValue() < aScaleValue.getMin() || point.getValue() > aScaleValue.getMax()) {
-								continue;
-							}
-						}
-
-						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
-						Marker marker = (Marker) ObjectUtility.getNotNullObject(pointMarker, seriesMarker);
-						if (ObjectUtility.isNotNull(marker)) {
-							float xMarker = (float) (aRect.getX() + (j * width + lineOffset));
-							float yMarker = (float) (aRect.getY() - ((point.getValue() - aScaleValue.getMin()) * pixPerValue));
-							Size size = marker.getSize();
-
-							int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
-							int my = (0 == (int) size.getHeight() % 2) ? 0 : 1;
-							marker.draw(g, xMarker - (size.getWidth() / 2) + mx, yMarker - (size.getHeight() / 2) + my);
-						}
-
-					}
-
-				}
-
-			}
-
+		if (isDebugMode()) {
+			g.setStroke(new BasicStroke(1.f));
+			g.setColor(Color.blue);
+			g.drawRect(rtChart);
 		}
+
+		return true;
 	}
 
 	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
 		LineDataset dataset = getDataset();
-		LineChartDesign design = getChartDesign();
+		LineChartDesign design = getDesign();
 		LineChartStyle style = design.getChartStyle();
 
 		// データポイント数取得
@@ -367,15 +300,16 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 		// スケール計算(プレ)
 		double pixPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / difValue;
 		{
-			{
+			{ // 軸ラベル
 				Font labelFont = style.getVerticalAxisLabelFont();
 				Color labelColor = style.getVerticalAxisLabelColor();
-				String labelTitle = style.getVerticalAxisLabelTitle();
+				String labelTitle = getVerticalAxis().getLabelTitle();
 				if (ObjectUtility.isAllNotNull(labelFont, labelColor) && StringUtility.isNotEmpty(labelTitle)) {
-					margin.setLeft(labelFont.getSize());
+					FontMetrics fm = g.getFontMetrics(labelFont);
+					margin.addLeft((fm.getAscent() - fm.getDescent()) + aFontMargin);
 				}
 			}
-			{
+			{ // 軸目盛ラベル
 				float maxYLabelWidth = 0.0f;
 				FontMetrics fm = g.getFontMetrics(style.getVerticalAxisScaleLabelFont());
 				DisplayFormat df = axisVertical.getDisplayFormat();
@@ -383,33 +317,42 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 					String str = df.toString(value);
 					if (StringUtility.isNotEmpty(str)) {
 						int width = fm.stringWidth(str);
-						if (maxYLabelWidth < width) {
-							maxYLabelWidth = width;
-						}
+						maxYLabelWidth = Math.max(width, maxYLabelWidth);
 					}
 				}
 				if (0 < maxYLabelWidth) {
 					maxYLabelWidth += aFontMargin;
 				}
 				debug(String.format("Max y axis label width : %f", maxYLabelWidth));
-				margin.setLeft(margin.getLeft() + maxYLabelWidth);
+				margin.addLeft(maxYLabelWidth);
 			}
 
 			// スケール計算(プレ)
 			pixPerValue = (aRtChart.getHeight() - margin.getVerticalSize()) / difValue;
 
 			{
+				{ // 軸ラベル
+					Font labelFont = style.getHorizontalAxisLabelFont();
+					Color labelColor = style.getHorizontalAxisLabelColor();
+					String labelTitle = getHorizontalAxis().getLabelTitle();
+					if (ObjectUtility.isAllNotNull(labelFont, labelColor) && StringUtility.isNotEmpty(labelTitle)) {
+						FontMetrics fm = g.getFontMetrics(labelFont);
+						margin.addBottom((fm.getAscent() - fm.getDescent()) + aFontMargin);
+					}
+				}
+
 				float chartWidth = aRtChart.getWidth() - margin.getLeft();
 				float dataWidth = chartWidth / (float) dataPointSize;
 				FontMetrics fm = g.getFontMetrics(style.getHorizontalAxisScaleLabelFont());
 				DisplayFormat df = axisHorizontal.getDisplayFormat();
 				float minLeft = 0.f;
 				float maxRight = aRtChart.getWidth();
+				int fontHeight = 0;
 				for (int i = 0; i < dataPointSize; i++) {
 					String str = df.toString(i);
 					if (StringUtility.isNotEmpty(str)) {
 						int width = fm.stringWidth(str);
-						margin.setBottom(style.getHorizontalAxisScaleLabelFont().getSize() + aFontMargin);
+						fontHeight = Math.max((fm.getAscent() - fm.getDescent()), fontHeight);
 
 						float x = margin.getLeft() + (i * dataWidth) + (dataWidth / 2);
 						float left = x - (width / 2);
@@ -421,6 +364,9 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 							maxRight = right;
 						}
 					}
+				}
+				if (0 < fontHeight) {
+					margin.addBottom(fontHeight + aFontMargin);
 				}
 				if (0 > minLeft) {
 					margin.setLeft(margin.getLeft() - minLeft);
@@ -462,14 +408,109 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 		return margin;
 	}
 
-	private ScaleValue getScaleValue() {
-		LineDataset dataset = getDataset();
+	private void drawDataset(final Graphics g, final LineDataset aDataset, final int aDataPointSize, final ScaleValue aScaleValue,
+			final LineChartStyle aStyle, final Rect aRect) {
+		if (ObjectUtility.isNotNull(aDataset)) {
+			// スケール計算
+			double difValue = aScaleValue.getDiff();
+			double pixPerValue = aRect.getHeight() / difValue;
 
-		// データ最小値・最大値取得
+			float width = aRect.getWidth() / aDataPointSize;
+
+			float lineOffset = width / 2.f;
+
+			List<LineSeries> seriesList = aDataset.getSeriesList();
+			for (int index = 0; index < seriesList.size(); index++) {
+				LineSeries series = seriesList.get(index);
+				List<LineSeriesPoint> points = series.getPoints();
+
+				if (!aStyle.isOverflow()) {
+					g.setClip(aRect.getX(), aRect.getY(), aRect.getWidth(), aRect.getHeight());
+				}
+
+				// Draw series fill
+				{
+					Color fillColor = aStyle.getSeriesFillColor(index, series);
+					if (ObjectUtility.isNotNull(fillColor)) {
+						int xps[] = new int[points.size() + 2];
+						int yps[] = new int[points.size() + 2];
+						for (int j = 0; j < points.size(); j++) {
+							LineSeriesPoint point = points.get(j);
+							xps[j + 1] = (int) (aRect.getX() + (j * width + lineOffset));
+							yps[j + 1] = (int) ((aRect.getY() + aRect.getHeight()) - ((point.getValue() - aScaleValue.getMin()) * pixPerValue));
+						}
+						xps[0] = (int) (xps[1]);
+						yps[0] = (int) (aRect.getY() + aRect.getHeight());
+						xps[points.size() + 1] = (int) (xps[points.size()]);
+						yps[points.size() + 1] = (int) (aRect.getY() + aRect.getHeight());
+
+						GradientPaint paint = new GradientPaint(0f, aRect.getY(), fillColor, 0f, aRect.getY() + aRect.getHeight(), new Color(
+								fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0));
+						g.setPaint(paint);
+						g.fillPolygon(new Polygon(xps, yps, points.size() + 2));
+					}
+				}
+
+				// Draw series line
+				{
+					Stroke stroke = aStyle.getSeriesStroke(index, series);
+					Color strokeColor = aStyle.getSeriesStrokeColor(index, series);
+					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
+						float xps[] = new float[points.size()];
+						float yps[] = new float[points.size()];
+						for (int j = 0; j < points.size(); j++) {
+							LineSeriesPoint point = points.get(j);
+							xps[j] = (int) (aRect.getX() + (j * width + lineOffset));
+							yps[j] = (int) ((aRect.getY() + aRect.getHeight()) - ((point.getValue() - aScaleValue.getMin()) * pixPerValue));
+						}
+						g.setStroke(stroke, strokeColor);
+						g.drawPolyline(xps, yps, points.size());
+					}
+				}
+
+				if (!aStyle.isOverflow()) {
+					g.clearClip();
+				}
+
+				// Draw series marker
+				{
+					Marker seriesMarker = aStyle.getSeriesMarker(index, series);
+					for (int j = 0; j < points.size(); j++) {
+						LineSeriesPoint point = points.get(j);
+
+						if (!aStyle.isOverflow()) {
+							if (point.getValue() < aScaleValue.getMin() || point.getValue() > aScaleValue.getMax()) {
+								continue;
+							}
+						}
+
+						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
+						Marker marker = (Marker) ObjectUtility.getNotNullObject(pointMarker, seriesMarker);
+						if (ObjectUtility.isNotNull(marker)) {
+							float xMarker = (float) (aRect.getX() + (j * width + lineOffset));
+							float yMarker = (float) ((aRect.getY() + aRect.getHeight()) - ((point.getValue() - aScaleValue.getMin()) * pixPerValue));
+							Size size = marker.getSize();
+
+							int mx = (0 == (int) size.getWidth() % 2) ? 0 : 1;
+							int my = (0 == (int) size.getHeight() % 2) ? 0 : 1;
+							marker.draw(g, xMarker - (size.getWidth() / 2) + mx, yMarker - (size.getHeight() / 2) + my);
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+	}
+
+	private ScaleValue getScaleValue(final LineDataset aDataset) {
+		// データ最小値・最大値取得 //////////////////////////
 		Double dataMinValue = null;
 		Double dataMaxValue = null;
-		if (ObjectUtility.isNotNull(dataset)) {
-			for (LineSeries series : dataset.getSeriesList()) {
+		if (ObjectUtility.isNotNull(aDataset)) {
+			for (LineSeries series : aDataset.getSeriesList()) {
 				for (LineSeriesPoint point : series.getPoints()) {
 					if (null == dataMinValue) {
 						dataMinValue = point.getValue();
@@ -483,6 +524,7 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 		}
 		debug(String.format("Data minimum value : %f", dataMinValue));
 		debug(String.format("Data maximum value : %f", dataMaxValue));
+		////////////////////////////////////////////////
 
 		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
@@ -536,9 +578,9 @@ public class LineChartPlot extends AbstractSeriesChartPlot<LineDataset, LineChar
 		}
 
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
-		debug(String.format("Y axis minimum value : %f", minValue));
-		debug(String.format("Y axis maximum value : %f", maxValue));
-		debug(String.format("Y axis scale value : %f", scale));
+		debug(String.format("Vertical axis scale minimum  value : %f", minValue));
+		debug(String.format("Vertical axis scale maximum  value : %f", maxValue));
+		debug(String.format("Vertical axis scale interval value : %f", scale));
 
 		return scaleValue;
 	}

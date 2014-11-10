@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.charts.pie;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.List;
 
@@ -76,14 +77,14 @@ public class PieChartPlot extends AbstractChartPlot<PieDataset, PieChartDesign> 
 
 	@Override
 	protected LegendElement createLegendElement() {
-		LegendElement element = new PieLegendElement(getDataset(), getChartDesign());
+		LegendElement element = new PieLegendElement(getDataset(), getDesign(), isDebugMode());
 		return element;
 	}
 
 	@Override
 	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		PieDataset dataset = getDataset();
-		PieChartDesign design = getChartDesign();
+		PieChartDesign design = getDesign();
 		PieChartStyle style = design.getChartStyle();
 
 		float pieSize = Math.min(aRect.getWidth(), aRect.getHeight());
@@ -103,6 +104,12 @@ public class PieChartPlot extends AbstractChartPlot<PieDataset, PieChartDesign> 
 
 		// Draw dataset
 		drawDataset(g, dataset, style, rtChart);
+
+		if (isDebugMode()) {
+			g.setStroke(new BasicStroke(1.f));
+			g.setColor(Color.blue);
+			g.drawRect(rtChart);
+		}
 
 		return true;
 	}

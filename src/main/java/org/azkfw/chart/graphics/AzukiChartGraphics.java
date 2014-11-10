@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart;
+package org.azkfw.chart.graphics;
 
 import java.awt.Graphics2D;
 

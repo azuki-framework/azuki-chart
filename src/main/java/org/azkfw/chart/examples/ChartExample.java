@@ -32,7 +32,6 @@ import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 
 import org.azkfw.chart.AzukiChartFactory;
-import org.azkfw.chart.AzukiChartGraphics;
 import org.azkfw.chart.charts.bar.BarChartPlot;
 import org.azkfw.chart.charts.bar.BarDataset;
 import org.azkfw.chart.charts.line.LineChartPlot;
@@ -49,6 +48,7 @@ import org.azkfw.chart.charts.scatter.ScatterChartPlot;
 import org.azkfw.chart.charts.scatter.ScatterDataset;
 import org.azkfw.chart.charts.spectrum.SpectrumChartPlot;
 import org.azkfw.chart.charts.spectrum.SpectrumDataset;
+import org.azkfw.chart.graphics.AzukiChartGraphics;
 import org.azkfw.graphics.Rect;
 
 /**

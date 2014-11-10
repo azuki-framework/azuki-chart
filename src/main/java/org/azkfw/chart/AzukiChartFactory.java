@@ -47,6 +47,16 @@ import org.azkfw.chart.charts.spectrum.SpectrumDataset;
 public class AzukiChartFactory {
 
 	/**
+	 * コンストラクタ
+	 * <p>
+	 * インスタンス生成を禁止
+	 * </p>
+	 */
+	private AzukiChartFactory() {
+
+	}
+
+	/**
 	 * 棒グラフのインスタンスを生成する。
 	 * 
 	 * @return 棒グラフ

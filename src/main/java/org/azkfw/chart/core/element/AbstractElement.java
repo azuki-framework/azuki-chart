@@ -26,4 +26,13 @@ package org.azkfw.chart.core.element;
  */
 public abstract class AbstractElement implements Element {
 
+	private boolean debugMode;
+
+	public AbstractElement(final boolean aDebugMode) {
+		debugMode = aDebugMode;
+	}
+
+	protected boolean isDebugMode() {
+		return debugMode;
+	}
 }

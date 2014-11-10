@@ -71,7 +71,7 @@ public class CustomLegendStyle implements LegendStyle {
 		strokeColor = null;
 		backgroundColor = null;
 
-		space = 4.f;
+		space = 6.f;
 	}
 
 	/**

@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.core.element;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -44,6 +45,9 @@ public class TitleElement extends AbstractElement {
 	/** スタイル */
 	private TitleStyle style;
 
+	/** タイトル描画範囲 */
+	private Rect rtTitle;
+
 	/**
 	 * コンストラクタ
 	 * 
@@ -51,100 +55,147 @@ public class TitleElement extends AbstractElement {
 	 * @param aStyle スタイル
 	 */
 	public TitleElement(final String aTitle, final TitleStyle aStyle) {
+		super(false);
+
 		title = aTitle;
 		style = aStyle;
+
+		rtTitle = null;
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aStyle スタイル
+	 */
+	public TitleElement(final String aTitle, final TitleStyle aStyle, final boolean aDebugMode) {
+		super(aDebugMode);
+
+		title = aTitle;
+		style = aStyle;
+
+		rtTitle = null;
+	}
+
+	private boolean isDraw() {
+		if (ObjectUtility.isNull(style) || !style.isDisplay()) {
+			return false;
+		}
+		if (StringUtility.isEmpty(title)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public Rect deploy(final Graphics g, final Rect rect) {
-		Rect rtTitle = null;
-		if (null != style && style.isDisplay() && StringUtility.isNotEmpty(title)) {
-			rtTitle = new Rect();
+		Rect rtArea = new Rect(rect);
 
-			Margin margin = style.getMargin();
-			Padding padding = style.getPadding();
-
+		if (isDraw()) {
 			Font font = style.getFont();
 			FontMetrics fm = g.getFontMetrics(font);
 			TitleDisplayPosition pos = style.getPosition();
 
 			// get size
-			rtTitle.setSize(fm.stringWidth(title), font.getSize());
-			if (null != margin) { // Add margin
+			rtTitle = new Rect();
+			rtTitle.setSize(fm.stringWidth(title), (fm.getAscent() - fm.getDescent()));
+
+			Margin margin = style.getMargin();
+			if (ObjectUtility.isNotNull(margin)) { // Add margin
 				rtTitle.addSize(margin.getHorizontalSize(), margin.getVerticalSize());
 			}
-			if (null != padding) { // Add padding
+			Padding padding = style.getPadding();
+			if (ObjectUtility.isNotNull(padding)) { // Add padding
 				rtTitle.addSize(padding.getHorizontalSize(), padding.getVerticalSize());
 			}
 
 			// get point and resize chart
 			if (TitleDisplayPosition.Top == pos) {
-				rtTitle.setPosition(rect.getX() + ((rect.getWidth() - rtTitle.getWidth()) / 2), rect.getY());
+				rtTitle.setPosition(rtArea.getX() + ((rtArea.getWidth() - rtTitle.getWidth()) / 2), rtArea.getY());
 
-				rect.addY(rtTitle.getHeight());
-				rect.subtractHeight(rtTitle.getHeight());
+				rtArea.addY(rtTitle.getHeight());
+				rtArea.subtractHeight(rtTitle.getHeight());
 			} else if (TitleDisplayPosition.Bottom == pos) {
-				rtTitle.setPosition(rect.getX() + ((rect.getWidth() - rtTitle.getWidth()) / 2), rect.getY() + rect.getHeight() - rtTitle.getHeight());
+				rtTitle.setPosition(rtArea.getX() + ((rtArea.getWidth() - rtTitle.getWidth()) / 2),
+						rtArea.getY() + rtArea.getHeight() - rtTitle.getHeight());
 
-				rect.subtractHeight(rtTitle.getHeight());
+				rtArea.subtractHeight(rtTitle.getHeight());
 			} else if (TitleDisplayPosition.Left == pos) {
-				rtTitle.setPosition(rect.getX(), rect.getY() + ((rect.getHeight() - rtTitle.getHeight()) / 2));
+				rtTitle.setPosition(rtArea.getX(), rtArea.getY() + ((rtArea.getHeight() - rtTitle.getHeight()) / 2));
 
-				rect.addX(rtTitle.getWidth());
-				rect.subtractWidth(rtTitle.getWidth());
+				rtArea.addX(rtTitle.getWidth());
+				rtArea.subtractWidth(rtTitle.getWidth());
 			} else if (TitleDisplayPosition.Right == pos) {
-				rtTitle.setPosition(rect.getX() + rect.getWidth() - rtTitle.getWidth(), rect.getY() + ((rect.getHeight() - rtTitle.getHeight()) / 2));
+				rtTitle.setPosition(rtArea.getX() + rtArea.getWidth() - rtTitle.getWidth(),
+						rtArea.getY() + ((rtArea.getHeight() - rtTitle.getHeight()) / 2));
 
-				rect.subtractWidth(rtTitle.getWidth());
+				rtArea.subtractWidth(rtTitle.getWidth());
 			}
 		}
-		return rtTitle;
+
+		return rtArea;
 	}
 
 	@Override
-	public void draw(final Graphics g, final Rect rect) {
-		if (null != style && style.isDisplay() && StringUtility.isNotEmpty(title)) {
-			Margin margin = (Margin) ObjectUtility.getNotNullObject(style.getMargin(), new Margin());
-			Padding padding = (Padding) ObjectUtility.getNotNullObject(style.getPadding(), new Padding());
+	public void draw(final Graphics g) {
+		if (isDraw()) {
+			Margin margin = ObjectUtility.getNotNullObject(style.getMargin(), new Margin());
+			Padding padding = ObjectUtility.getNotNullObject(style.getPadding(), new Padding());
 
 			{ // Draw title frame
-				Rect rtFrame = new Rect();
-				rtFrame.setX(rect.getX() + margin.getLeft());
-				rtFrame.setY(rect.getY() + margin.getTop());
-				rtFrame.setWidth(rect.getWidth() - margin.getHorizontalSize());
-				rtFrame.setHeight(rect.getHeight() - margin.getVerticalSize());
+				Rect rtFrame = new Rect(rtTitle);
+				rtFrame.addPosition(margin.getLeft(), margin.getTop());
+				rtFrame.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
+
 				// fill frame background
-				if (null != style.getFrameBackgroundColor()) {
+				if (ObjectUtility.isNotNull(style.getFrameBackgroundColor())) {
 					g.setColor(style.getFrameBackgroundColor());
 					g.fillRect(rtFrame);
 				}
 				// draw frame
-				if (null != style.getFrameStroke() && null != style.getFrameStrokeColor()) {
+				if (ObjectUtility.isAllNotNull(style.getFrameStroke(), style.getFrameStrokeColor())) {
 					g.setStroke(style.getFrameStroke(), style.getFrameStrokeColor());
 					g.drawRect(rtFrame);
 				}
 			}
 
-			if (null != style.getFontColor()) { // Draw title				
+			if (ObjectUtility.isNotNull(style.getFontColor())) { // Draw title				
+				float x = rtTitle.getX() + margin.getLeft() + padding.getLeft();
+				float y = rtTitle.getY() + margin.getTop() + padding.getTop();
+
 				if (style.isFontShadow()) {
 					// Draw shadow
 					g.setFont(style.getFont());
 					int max = 4;
 					int s = max;
 					while (s > 0) {
-						float x = rect.getX() + margin.getLeft() + padding.getLeft() + s;
-						float y = rect.getY() + margin.getTop() + padding.getTop() + s;
-
+						float x2 = x + s;
+						float y2 = y + s;
 						g.setColor(new Color(0, 0, 0, 255 - (255 / (max + 1)) * s));
-						g.drawStringA(title, x, y);
+						g.drawStringA(title, x2, y2);
 						s--;
 					}
 				}
 
-				float x = rect.getX() + margin.getLeft() + padding.getLeft();
-				float y = rect.getY() + margin.getTop() + padding.getTop();
 				g.setFont(style.getFont(), style.getFontColor());
 				g.drawStringA(title, x, y);
+			}
+
+			if (isDebugMode()) {
+				g.setStroke(new BasicStroke(1.f));
+				g.setColor(Color.green);
+
+				Rect rect = new Rect(rtTitle);
+				g.drawRect(rect); // margin
+
+				rect.addPosition(margin.getLeft(), margin.getTop());
+				rect.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
+				g.drawRect(rect); // frame
+
+				rect.addPosition(padding.getLeft(), padding.getTop());
+				rect.subtractSize(padding.getHorizontalSize(), padding.getVerticalSize());
+				g.drawRect(rect); // padding
 			}
 		}
 	}

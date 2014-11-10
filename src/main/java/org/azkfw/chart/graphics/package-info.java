@@ -15,26 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.azkfw.chart.core.element;
 
 /**
- * このクラスは、凡例エレメント機能を実装する為の基底クラスです。
- * 
- * @since 1.0.0
- * @version 1.0.0 2014/11/07
- * @author Kawakicchi
+ * グラフのグラフィクス関連のクラスおよびインタフェースを提供します。
  */
-public abstract class LegendElement extends AbstractElement {
-
-	/**
-	 * コンストラクタ
-	 */
-	public LegendElement() {
-		super(false);
-	}
-
-	public LegendElement(final boolean aDebugMode) {
-		super(aDebugMode);
-	}
-
-}
+package org.azkfw.chart.graphics;

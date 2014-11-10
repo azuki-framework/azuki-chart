@@ -50,7 +50,7 @@ public class PolarAreaChartExample {
 		series1.add(0.5);
 		series1.add(0.6);
 		series1.add(0.6);
-		series1.add(0.3);
+		series1.add(2.0);
 		dataset.addSeries(series1);
 
 		PolarAreaSeries series2 = new PolarAreaSeries("BBB");

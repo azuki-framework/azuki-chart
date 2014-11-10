@@ -18,9 +18,12 @@
 package org.azkfw.chart.core.plot;
 
 import org.azkfw.chart.core.dataset.SeriesDataset;
+import org.azkfw.chart.core.dataset.series.Series;
+import org.azkfw.chart.core.dataset.series.SeriesPoint;
 import org.azkfw.chart.core.element.LegendElement;
 import org.azkfw.chart.core.element.SeriesLegendElement;
 import org.azkfw.chart.design.SeriesChartDesign;
+import org.azkfw.chart.design.chart.SeriesChartStyle;
 
 /**
  * このクラスは、シリーズデータのグラフプロット機能を実装するための基底クラスです。
@@ -29,9 +32,8 @@ import org.azkfw.chart.design.SeriesChartDesign;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-@SuppressWarnings("rawtypes")
-public abstract class AbstractSeriesChartPlot<DATASET extends SeriesDataset, DESIGN extends SeriesChartDesign> extends
-		AbstractChartPlot<DATASET, DESIGN> {
+public abstract class AbstractSeriesChartPlot<DATASET extends SeriesDataset<? extends Series>, DESIGN extends SeriesChartDesign<? extends SeriesChartStyle<? extends Series, ? extends SeriesPoint>, ? extends Series, ? extends SeriesPoint>>
+		extends AbstractChartPlot<DATASET, DESIGN> {
 
 	/**
 	 * コンストラクタ
@@ -87,9 +89,12 @@ public abstract class AbstractSeriesChartPlot<DATASET extends SeriesDataset, DES
 		super(aDataset);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
 	protected LegendElement createLegendElement() {
-		@SuppressWarnings("unchecked")
-		LegendElement element = new SeriesLegendElement(getDataset(), getChartDesign());
+		LegendElement element = new SeriesLegendElement((SeriesDataset<? extends Series>) getDataset(),
+				(SeriesChartDesign<? extends SeriesChartStyle<Series, SeriesPoint>, ? extends Series, ? extends SeriesPoint>) getDesign(),
+				isDebugMode());
 		return element;
 	}
 

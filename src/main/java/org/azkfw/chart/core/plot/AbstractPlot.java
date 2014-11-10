@@ -30,6 +30,9 @@ import org.azkfw.lang.LoggingObject;
  */
 public abstract class AbstractPlot extends LoggingObject implements Plot {
 
+	public static final float PIXEL_MAXIMUM = 100000;
+	public static final float PIXEL_MINIMUM = -100000;
+
 	/**
 	 * コンストラクタ
 	 */
@@ -71,6 +74,15 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	}
 
 	/**
+	 * デバッグモードか判断する。
+	 * 
+	 * @return 判断結果
+	 */
+	protected final boolean isDebugMode() {
+		return false;
+	}
+
+	/**
 	 * 描画を行う。
 	 * 
 	 * @param g Graphics
@@ -79,4 +91,24 @@ public abstract class AbstractPlot extends LoggingObject implements Plot {
 	 */
 	protected abstract boolean doDraw(final Graphics g, final Rect aRect);
 
+	/**
+	 * ピクセル値の上限下限を調整する。
+	 * <p>
+	 * {@link AbstractPlot#PIXEL_MINIMUM} 未満の場合は、
+	 * {@link AbstractPlot#PIXEL_MINIMUM}にする。 <br/>
+	 * {@link AbstractPlot#PIXEL_MAXIMUM} 未満の場合は、
+	 * {@link AbstractPlot#PIXEL_MAXIMUM}にする。
+	 * </p>
+	 * 
+	 * @param aValue ピクセル値
+	 * @return ピクセル値（調整後）
+	 */
+	protected static float pixelLimit(final float aValue) {
+		if (aValue > PIXEL_MAXIMUM) {
+			return PIXEL_MAXIMUM;
+		} else if (aValue < PIXEL_MINIMUM) {
+			return PIXEL_MINIMUM;
+		}
+		return aValue;
+	}
 }

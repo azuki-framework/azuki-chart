@@ -119,6 +119,24 @@ public class BarChartDesign extends AbstractSeriesChartDesign<BarChartStyle, Bar
 		}
 
 		/**
+		 * 水平軸ラベルのフォントを取得する。
+		 * 
+		 * @return フォント
+		 */
+		public Font getHorizontalAxisLabelFont() {
+			return getDefaultAxisLabelFont();
+		}
+
+		/**
+		 * 水平軸ラベルのカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getHorizontalAxisLabelColor() {
+			return getDefaultAxisLabelColor();
+		}
+
+		/**
 		 * 水平軸目盛ラベルのフォントを取得する。
 		 * 
 		 * @return フォント
@@ -170,6 +188,24 @@ public class BarChartDesign extends AbstractSeriesChartDesign<BarChartStyle, Bar
 		 */
 		public Stroke getVerticalAxisLineStroke() {
 			return null;
+		}
+
+		/**
+		 * 垂直軸ラベルのフォントを取得する。
+		 * 
+		 * @return フォント
+		 */
+		public Font getVerticalAxisLabelFont() {
+			return getDefaultAxisLabelFont();
+		}
+
+		/**
+		 * 垂直軸ラベルのカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getVerticalAxisLabelColor() {
+			return getDefaultAxisLabelColor();
 		}
 
 		/**

@@ -135,6 +135,24 @@ public class ScatterChartDesign extends AbstractSeriesChartDesign<ScatterChartSt
 		}
 
 		/**
+		 * X軸ラベルのフォントを取得する。
+		 * 
+		 * @return フォント
+		 */
+		public Font getXAxisLabelFont() {
+			return getDefaultAxisLabelFont();
+		}
+
+		/**
+		 * X軸ラベルのカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getXAxisLabelColor() {
+			return getDefaultAxisLabelColor();
+		}
+
+		/**
 		 * X軸目盛ラベルのフォントを取得する。
 		 * 
 		 * @return フォント
@@ -186,6 +204,24 @@ public class ScatterChartDesign extends AbstractSeriesChartDesign<ScatterChartSt
 		 */
 		public Stroke getYAxisLineStroke() {
 			return getDefaultAxisLineStroke();
+		}
+
+		/**
+		 * Y軸ラベルのフォントを取得する。
+		 * 
+		 * @return フォント
+		 */
+		public Font getYAxisLabelFont() {
+			return getDefaultAxisLabelFont();
+		}
+
+		/**
+		 * Y軸ラベルのカラーを取得する。
+		 * 
+		 * @return カラー
+		 */
+		public Color getYAxisLabelColor() {
+			return getDefaultAxisLabelColor();
 		}
 
 		/**

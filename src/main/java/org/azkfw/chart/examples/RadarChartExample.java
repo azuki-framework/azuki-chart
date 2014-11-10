@@ -65,7 +65,7 @@ public class RadarChartExample {
 		series3.add(30);
 		series3.add(75);
 		series3.add(80);
-		series3.add(90);
+		series3.add(120);
 		dataset.addSeries(series3);
 
 		return dataset;

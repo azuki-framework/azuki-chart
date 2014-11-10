@@ -22,7 +22,10 @@ import java.awt.Stroke;
 
 import org.azkfw.chart.charts.bar.BarChartDesign;
 import org.azkfw.chart.charts.bar.BarDataset;
+import org.azkfw.chart.core.dataset.SeriesDataset;
 import org.azkfw.chart.core.dataset.series.Series;
+import org.azkfw.chart.core.dataset.series.SeriesPoint;
+import org.azkfw.chart.design.SeriesChartDesign;
 import org.azkfw.chart.design.chart.SeriesChartStyle;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Rect;
@@ -43,8 +46,21 @@ public class BarLegendElement extends SeriesLegendElement {
 	 * @param aTitle タイトル
 	 * @param aStyle スタイル
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public BarLegendElement(final BarDataset aDataset, final BarChartDesign aDesign) {
-		super(aDataset, aDesign);
+		super((SeriesDataset<? extends Series>) aDataset, (SeriesChartDesign) aDesign);
+	}
+
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param aTitle タイトル
+	 * @param aStyle スタイル
+	 */
+	@SuppressWarnings("unchecked")
+	public BarLegendElement(final BarDataset aDataset, final BarChartDesign aDesign, final boolean aDebugMode) {
+		super((SeriesDataset<? extends Series>) aDataset,
+				(SeriesChartDesign<? extends SeriesChartStyle<Series, SeriesPoint>, ? extends Series, ? extends SeriesPoint>) aDesign, aDebugMode);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

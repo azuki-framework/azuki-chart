@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.charts.radar;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -87,27 +88,26 @@ public class RadarChartPlot extends AbstractSeriesChartPlot<RadarDataset, RadarC
 	@Override
 	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		RadarDataset dataset = getDataset();
-		RadarChartDesign design = getChartDesign();
+		RadarChartDesign design = getDesign();
 		RadarChartStyle style = design.getChartStyle();
 
 		// スケール調整
-		ScaleValue scaleValue = getScaleValue();
+		ScaleValue scaleValue = getScaleValue(getDataset());
 
 		float fontMargin = 8.0f;
 
 		Margin margin = fitChart(g, aRect, scaleValue, fontMargin);
-		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
+		debug(String.format("Margin : { Left : %f, Right : %f, Top : %f, Bottom : %f }", margin.getLeft(), margin.getRight(), margin.getTop(),
+				margin.getBottom()));
 
-		Rect rtChart = new Rect();
-		rtChart.setX(aRect.getX() + margin.getLeft());
-		rtChart.setY(aRect.getY() + margin.getTop());
-		rtChart.setWidth(aRect.getWidth() - margin.getHorizontalSize());
-		rtChart.setHeight(aRect.getHeight() - margin.getVerticalSize());
+		Rect rtChart = new Rect(aRect);
+		rtChart.addPosition(margin.getLeft(), margin.getTop());
+		rtChart.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
 
 		Point ptChartMiddle = new Point(rtChart.getX() + (rtChart.getWidth() / 2.f), rtChart.getY() + (rtChart.getHeight() / 2.f));
 
 		// 正多角形調整
-		float minRange = Math.min(rtChart.getWidth(), aRect.getHeight());
+		float minRange = Math.min(rtChart.getWidth(), rtChart.getHeight());
 		rtChart.setX(ptChartMiddle.getX() - (minRange / 2));
 		rtChart.setY(ptChartMiddle.getY() - (minRange / 2));
 		rtChart.setWidth(minRange);
@@ -243,7 +243,50 @@ public class RadarChartPlot extends AbstractSeriesChartPlot<RadarDataset, RadarC
 			}
 		}
 
+		if (isDebugMode()) {
+			g.setStroke(new BasicStroke(1.f));
+			g.setColor(Color.blue);
+			g.drawRect(rtChart);
+		}
+
 		return true;
+	}
+
+	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
+		RadarChartDesign design = getDesign();
+		RadarChartStyle style = design.getChartStyle();
+
+		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
+
+		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
+
+		double difValue = aScaleValue.getDiff();
+
+		// スケール計算(プレ)
+		double pixPerValue = ((aRtChart.getHeight() - margin.getVerticalSize()) / 2.f) / difValue;
+
+		float minY = aRtChart.getY();
+
+		// Draw axis scale
+		DisplayFormat df = axis.getDisplayFormat();
+		int fontSize = style.getAxisScaleLabelFont().getSize();
+		g.setFont(style.getAxisScaleLabelFont());
+		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
+			String str = df.toString(value);
+			if (StringUtility.isNotEmpty(str)) {
+				double rangeY = pixPerValue * (value - aScaleValue.getMin());
+
+				float y = (float) (ptChartMiddle.getY() - rangeY - (fontSize / 2));
+
+				minY = Math.min(minY, y);
+			}
+		}
+
+		if (minY < aRtChart.getY()) {
+			margin.addTop(aRtChart.getY() - minY);
+		}
+
+		return margin;
 	}
 
 	private void drawDataset(final Graphics g, final RadarDataset aDataset, final int aDataPointSize, final ScaleValue aScaleValue,
@@ -321,7 +364,7 @@ public class RadarChartPlot extends AbstractSeriesChartPlot<RadarDataset, RadarC
 						}
 
 						Marker pointMarker = aStyle.getSeriesPointMarker(index, series, j, point);
-						Marker marker = (Marker) ObjectUtility.getNotNullObject(pointMarker, seriesMarker);
+						Marker marker = ObjectUtility.getNotNullObject(pointMarker, seriesMarker);
 						if (ObjectUtility.isNotNull(marker)) {
 							double angle = -1 * (360.f / aDataPointSize) * j + 90;
 							double value = point.getValue();
@@ -345,51 +388,12 @@ public class RadarChartPlot extends AbstractSeriesChartPlot<RadarDataset, RadarC
 		}
 	}
 
-	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
-		RadarChartDesign design = getChartDesign();
-		RadarChartStyle style = design.getChartStyle();
-
-		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
-
-		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
-
-		double difValue = aScaleValue.getDiff();
-
-		// スケール計算(プレ)
-		double pixPerValue = ((aRtChart.getHeight() - margin.getVerticalSize()) / 2.f) / difValue;
-
-		float minY = aRtChart.getY();
-
-		// Draw axis scale
-		DisplayFormat df = axis.getDisplayFormat();
-		int fontSize = style.getAxisScaleLabelFont().getSize();
-		g.setFont(style.getAxisScaleLabelFont());
-		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
-			String str = df.toString(value);
-			if (StringUtility.isNotEmpty(str)) {
-				double rangeY = pixPerValue * (value - aScaleValue.getMin());
-
-				float y = (float) (ptChartMiddle.getY() - rangeY - (fontSize / 2));
-
-				minY = Math.min(minY, y);
-			}
-		}
-
-		if (minY < aRtChart.getY()) {
-			margin.addTop(aRtChart.getY() - minY);
-		}
-
-		return margin;
-	}
-
-	private ScaleValue getScaleValue() {
-		RadarDataset dataset = getDataset();
-
-		// データ最小値・最大値取得
+	private ScaleValue getScaleValue(final RadarDataset aDataset) {
+		// データ最小値・最大値取得 //////////////////////////
 		Double dataMaxValue = null;
 		Double dataMinValue = null;
-		if (null != dataset) {
-			for (RadarSeries series : dataset.getSeriesList()) {
+		if (null != aDataset) {
+			for (RadarSeries series : aDataset.getSeriesList()) {
 				for (RadarSeriesPoint point : series.getPoints()) {
 					if (null == dataMaxValue) {
 						dataMinValue = point.getValue();
@@ -403,6 +407,7 @@ public class RadarChartPlot extends AbstractSeriesChartPlot<RadarDataset, RadarC
 		}
 		debug(String.format("Data minimum value : %f", dataMinValue));
 		debug(String.format("Data maximum value : %f", dataMaxValue));
+		////////////////////////////////////////////////
 
 		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
@@ -456,9 +461,9 @@ public class RadarChartPlot extends AbstractSeriesChartPlot<RadarDataset, RadarC
 		}
 
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
-		debug(String.format("Axis minimum value : %f", minValue));
-		debug(String.format("Axis maximum value : %f", maxValue));
-		debug(String.format("Axis scale value : %f", scale));
+		debug(String.format("Axis scale minimum  value : %f", minValue));
+		debug(String.format("Axis scale maximum  value : %f", maxValue));
+		debug(String.format("Axis scale interval value : %f", scale));
 
 		return scaleValue;
 	}

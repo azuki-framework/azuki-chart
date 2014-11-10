@@ -32,12 +32,12 @@ public interface Element {
 	/**
 	 * エレメントのフィット処理を行なう。
 	 * <p>
-	 * 描画Rectで適切な位置にタイトルを配置するように設定する。
+	 * 描画範囲で適切な位置にエレメントを配置するように設定する。
 	 * </p>
 	 * 
 	 * @param g Graphics
-	 * @param rect 描画Rect（更新される）
-	 * @return エレメントRect。エレメントを表示しない場合は、<code>null</code>を返す。
+	 * @param rect 描画範囲
+	 * @return エレメントを除く描画範囲を返す。
 	 */
 	public Rect deploy(final Graphics g, final Rect rect);
 
@@ -45,7 +45,6 @@ public interface Element {
 	 * エレメントの描画を行う。
 	 * 
 	 * @param g Graphics
-	 * @param rect エレメント描画範囲
 	 */
-	public void draw(final Graphics g, final Rect rect);
+	public void draw(final Graphics g);
 }

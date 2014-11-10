@@ -17,6 +17,7 @@
  */
 package org.azkfw.chart.charts.polararea;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -85,22 +86,21 @@ public class PolarAreaChartPlot extends AbstractSeriesChartPlot<PolarAreaDataset
 	@Override
 	protected boolean doDrawChart(final Graphics g, final Rect aRect) {
 		PolarAreaDataset dataset = getDataset();
-		PolarAreaChartDesign design = getChartDesign();
+		PolarAreaChartDesign design = getDesign();
 		PolarAreaChartStyle style = design.getChartStyle();
 
 		// スケール調整
-		ScaleValue scaleValue = getScaleValue();
+		ScaleValue scaleValue = getScaleValue(getDataset());
 
 		float fontMargin = 8.0f;
 
 		Margin margin = fitChart(g, aRect, scaleValue, fontMargin);
-		debug(String.format("Margin : Left:%f Right:%f Top:%f Bottom:%f", margin.getLeft(), margin.getRight(), margin.getTop(), margin.getBottom()));
+		debug(String.format("Margin : { Left : %f, Right : %f, Top : %f, Bottom : %f }", margin.getLeft(), margin.getRight(), margin.getTop(),
+				margin.getBottom()));
 
-		Rect rtChart = new Rect();
-		rtChart.setX(aRect.getX() + margin.getLeft());
-		rtChart.setY(aRect.getY() + margin.getTop());
-		rtChart.setWidth(aRect.getWidth() - margin.getHorizontalSize());
-		rtChart.setHeight(aRect.getHeight() - margin.getVerticalSize());
+		Rect rtChart = new Rect(aRect);
+		rtChart.addPosition(margin.getLeft(), margin.getTop());
+		rtChart.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
 
 		Point ptChartMiddle = new Point(rtChart.getX() + (rtChart.getWidth() / 2.f), rtChart.getY() + (rtChart.getHeight() / 2.f));
 
@@ -192,7 +192,50 @@ public class PolarAreaChartPlot extends AbstractSeriesChartPlot<PolarAreaDataset
 			}
 		}
 
+		if (isDebugMode()) {
+			g.setStroke(new BasicStroke(1.f));
+			g.setColor(Color.blue);
+			g.drawRect(rtChart);
+		}
+
 		return true;
+	}
+
+	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
+		PolarAreaChartDesign design = getDesign();
+		PolarAreaChartStyle style = design.getChartStyle();
+
+		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
+
+		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
+
+		double difValue = aScaleValue.getDiff();
+
+		// スケール計算(プレ)
+		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
+
+		float maxX = aRtChart.getX() + aRtChart.getWidth();
+
+		// Draw axis scale
+		FontMetrics fm = g.getFontMetrics(style.getAxisScaleLabelFont());
+		DisplayFormat df = axis.getDisplayFormat();
+		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
+			String str = df.toString(value);
+			if (StringUtility.isNotEmpty(str)) {
+				int strWidth = fm.stringWidth(str);
+
+				float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
+				float x = ptChartMiddle.getX() + range + (strWidth / 2);
+
+				maxX = Math.max(maxX, x);
+			}
+		}
+
+		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
+			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
+		}
+
+		return margin;
 	}
 
 	private void drawDataset(final Graphics g, final PolarAreaDataset aDataset, final ScaleValue aScaleValue, final PolarAreaChartStyle aStyle,
@@ -235,7 +278,7 @@ public class PolarAreaChartPlot extends AbstractSeriesChartPlot<PolarAreaDataset
 					range = pixelLimit(range);
 
 					// Draw series fill
-					Color fillColor = (Color) ObjectUtility.getNotNullObject(aStyle.getSeriesFillColor(index, series, i, point), fillColorSeries);
+					Color fillColor = ObjectUtility.getNotNullObject(aStyle.getSeriesFillColor(index, series, i, point), fillColorSeries);
 					if (ObjectUtility.isAllNotNull(fillColor)) {
 						float[] dist = { 0.0f, 1.0f };
 						Color[] colors = { new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0), fillColor };
@@ -247,9 +290,8 @@ public class PolarAreaChartPlot extends AbstractSeriesChartPlot<PolarAreaDataset
 						g.fillArc(ptMiddle.getX() - range + 1, ptMiddle.getY() - range + 1, range * 2.f, range * 2, i * angle, angle);
 					}
 					// Draw series line
-					Color strokeColor = (Color) ObjectUtility.getNotNullObject(aStyle.getSeriesStrokeColor(index, series, i, point),
-							strokeColorSeries);
-					Stroke stroke = (Stroke) ObjectUtility.getNotNullObject(aStyle.getSeriesStroke(index, series, i, point), strokeSeries);
+					Color strokeColor = ObjectUtility.getNotNullObject(aStyle.getSeriesStrokeColor(index, series, i, point), strokeColorSeries);
+					Stroke stroke = ObjectUtility.getNotNullObject(aStyle.getSeriesStroke(index, series, i, point), strokeSeries);
 					if (ObjectUtility.isAllNotNull(stroke, strokeColor)) {
 						g.setStroke(stroke, strokeColor);
 						g.drawArc(ptMiddle.getX() - range + 1, ptMiddle.getY() - range + 1, range * 2.f, range * 2, i * angle, angle);
@@ -263,51 +305,12 @@ public class PolarAreaChartPlot extends AbstractSeriesChartPlot<PolarAreaDataset
 		}
 	}
 
-	private Margin fitChart(final Graphics g, final Rect aRtChart, final ScaleValue aScaleValue, final float aFontMargin) {
-		PolarAreaChartDesign design = getChartDesign();
-		PolarAreaChartStyle style = design.getChartStyle();
-
-		Margin margin = new Margin(0.f, 0.f, 0.f, 0.f);
-
-		Point ptChartMiddle = new Point(aRtChart.getX() + (aRtChart.getWidth() / 2.f), aRtChart.getY() + (aRtChart.getHeight() / 2.f));
-
-		double difValue = aScaleValue.getDiff();
-
-		// スケール計算(プレ)
-		double pixPerValue = ((aRtChart.getWidth() - margin.getHorizontalSize()) / 2.f) / difValue;
-
-		float maxX = aRtChart.getX() + aRtChart.getWidth();
-
-		// Draw axis scale
-		FontMetrics fm = g.getFontMetrics(style.getAxisScaleLabelFont());
-		DisplayFormat df = axis.getDisplayFormat();
-		for (double value = aScaleValue.getMin(); value <= aScaleValue.getMax(); value += aScaleValue.getScale()) {
-			String str = df.toString(value);
-			if (StringUtility.isNotEmpty(str)) {
-				int strWidth = fm.stringWidth(str);
-
-				float range = (float) (pixPerValue * (value - aScaleValue.getMin()));
-				float x = ptChartMiddle.getX() + range + (strWidth / 2);
-
-				maxX = Math.max(maxX, x);
-			}
-		}
-
-		if (maxX > aRtChart.getX() + aRtChart.getWidth()) {
-			margin.addRight(maxX - (aRtChart.getX() + aRtChart.getWidth()));
-		}
-
-		return margin;
-	}
-
-	private ScaleValue getScaleValue() {
-		PolarAreaDataset dataset = getDataset();
-
-		// データ最小値・最大値取得
+	private ScaleValue getScaleValue(final PolarAreaDataset aDataset) {
+		// データ最小値・最大値取得 //////////////////////////
 		Double dataMaxValue = null;
 		Double dataMinValue = null;
-		if (null != dataset) {
-			for (PolarAreaSeries series : dataset.getSeriesList()) {
+		if (null != aDataset) {
+			for (PolarAreaSeries series : aDataset.getSeriesList()) {
 				for (PolarAreaSeriesPoint point : series.getPoints()) {
 					if (null == dataMaxValue) {
 						dataMinValue = point.getRange();
@@ -321,6 +324,7 @@ public class PolarAreaChartPlot extends AbstractSeriesChartPlot<PolarAreaDataset
 		}
 		debug(String.format("Data minimum value : %f", dataMinValue));
 		debug(String.format("Data maximum value : %f", dataMaxValue));
+		////////////////////////////////////////////////
 
 		// 最小値・最大値・スケール取得
 		// XXX: range は0より大きい値を想定
@@ -374,9 +378,9 @@ public class PolarAreaChartPlot extends AbstractSeriesChartPlot<PolarAreaDataset
 		}
 
 		ScaleValue scaleValue = new ScaleValue(minValue, maxValue, scale);
-		debug(String.format("Axis minimum value : %f", minValue));
-		debug(String.format("Axis maximum value : %f", maxValue));
-		debug(String.format("Axis scale value : %f", scale));
+		debug(String.format("Axis scale minimum  value : %f", minValue));
+		debug(String.format("Axis scale maximum  value : %f", maxValue));
+		debug(String.format("Axis scale interval value : %f", scale));
 
 		return scaleValue;
 	}

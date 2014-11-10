@@ -94,8 +94,6 @@ public class LineChartDesign extends AbstractSeriesChartDesign<LineChartStyle, L
 	 */
 	public static class LineChartStyle extends AbstractSeriesChartStyle<LineSeries, LineSeriesPoint> {
 
-		private String verticalLabelTitle;
-
 		/**
 		 * コンストラクタ
 		 */
@@ -192,10 +190,6 @@ public class LineChartDesign extends AbstractSeriesChartDesign<LineChartStyle, L
 			return null;
 		}
 
-		public String getVerticalAxisLabelTitle() {
-			return verticalLabelTitle;
-		}
-
 		/**
 		 * 垂直軸ラベルのフォントを取得する。
 		 * 
@@ -252,7 +246,7 @@ public class LineChartDesign extends AbstractSeriesChartDesign<LineChartStyle, L
 
 		@Override
 		public Stroke getSeriesStroke(final int aIndex, final LineSeries aSeries) {
-			return new BasicStroke(3.f);
+			return new BasicStroke(3.f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
 		}
 
 		@Override

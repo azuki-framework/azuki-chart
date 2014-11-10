@@ -46,8 +46,8 @@ public class ScatterChartExample {
 
 		ScatterDataset dataset = new ScatterDataset("Scatter Chart");
 
-		ScatterSeries seriesSin = new ScatterSeries("Sine");
-		ScatterSeries seriesCos = new ScatterSeries("Cosine");
+		ScatterSeries seriesSin = new ScatterSeries("sin(x)");
+		ScatterSeries seriesCos = new ScatterSeries("cos(x)");
 		for (int i = 0; i <= 360; i += 10) {
 			seriesSin.add(i, Math.sin(RADIANS(i)));
 			seriesCos.add(i, Math.cos(RADIANS(i)));
@@ -66,16 +66,20 @@ public class ScatterChartExample {
 		//plot.setChartDesign(ScatterChartDesign.DarkDesign);
 
 		ScatterXAxis xAxis = plot.getXAxis();
+		xAxis.setLabelTitle("X");
 		xAxis.setDisplayFormat(new NumericDisplayFormat(0));
 		xAxis.setScaleAutoFit(false);
 		xAxis.setScale(45);
 
 		ScatterYAxis yAxis = plot.getYAxis();
+		yAxis.setLabelTitle("Y");
 		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
 		yAxis.setMinimumValueAutoFit(false);
 		yAxis.setMinimumValue(-1.5);
 		yAxis.setMaximumValueAutoFit(false);
 		yAxis.setMaximumValue(1.5);
+		yAxis.setScaleAutoFit(false);
+		yAxis.setScale(0.5);
 
 		return plot;
 	}

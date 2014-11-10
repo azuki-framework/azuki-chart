@@ -58,7 +58,7 @@ public class BarChartExample {
 		series2.add(100.f);
 		series2.add(0.f);
 		series2.add(10.f);
-		series2.add(200.f);
+		series2.add(250.f);
 		series2.add(145.f);
 		dataset.addSeries(series2);
 
@@ -80,12 +80,14 @@ public class BarChartExample {
 		BarChartPlot plot = (BarChartPlot) chart.getPlot();
 
 		BarVerticalAxis yAxis = plot.getVerticalAxis();
+		yAxis.setLabelTitle("売上高（百万円）");
 		yAxis.setDisplayFormat(new NumericDisplayFormat(2));
 		yAxis.setMinimumValueAutoFit(false);
 		yAxis.setMinimumValue(0.f);
-		// yAxis.setMaximumValueAutoFit(false);
-		// yAxis.setMaximumValue(150.f);
+		yAxis.setMaximumValueAutoFit(false);
+		yAxis.setMaximumValue(200.f);
 		BarHorizontalAxis xAxis = plot.getHorizontalAxis();
+		xAxis.setLabelTitle("月別");
 		xAxis.setDisplayFormat(new MonthDisplayFormat());
 
 		return plot;

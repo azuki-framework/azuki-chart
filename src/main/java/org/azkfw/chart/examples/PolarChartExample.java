@@ -45,11 +45,12 @@ public class PolarChartExample {
 		PolarDataset dataset = new PolarDataset("Polar Chart");
 
 		PolarSeries series1 = new PolarSeries("aaa");
-		series1.add(0, 1.0);
+		series1.add(0, 2.0);
 		series1.add(30, 0.1);
 		series1.add(90, 0.5);
 		series1.add(180, 0.6);
-		series1.add(270, 0.6);
+		series1.add(270, 2.0);
+		series1.add(315, 2.0);
 		dataset.addSeries(series1);
 
 		PolarSeries series2 = new PolarSeries("bbb");
@@ -60,7 +61,7 @@ public class PolarChartExample {
 
 		PolarSeries series3 = new PolarSeries("ccc");
 		for (int i = 0; i < 360; i += 45) {
-			series3.add(i, 0.85);
+			series3.add(i, 1.0);
 		}
 		dataset.addSeries(series3);
 
@@ -75,7 +76,7 @@ public class PolarChartExample {
 
 		PolarAxis axis = plot.getAxis();
 		axis.setMaximumValueAutoFit(false);
-		axis.setMaximumValue(1.2);
+		axis.setMaximumValue(1.5);
 		axis.setDisplayFormat(new NumericDisplayFormat(2));
 
 		return plot;

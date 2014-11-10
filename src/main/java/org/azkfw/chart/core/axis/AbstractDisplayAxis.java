@@ -31,11 +31,33 @@ public abstract class AbstractDisplayAxis extends AbstractAxis {
 	/** 表示形式 */
 	private DisplayFormat displayFormat;
 
+	/** ラベル */
+	private String labelTitle;
+
 	/**
 	 * コンストラクタ
 	 */
 	public AbstractDisplayAxis() {
+		labelTitle = null;
 		displayFormat = null;
+	}
+
+	/**
+	 * ラベルを設定する。
+	 * 
+	 * @param aLabel ラベル
+	 */
+	public final void setLabelTitle(final String aTitle) {
+		labelTitle = aTitle;
+	}
+
+	/**
+	 * ラベルを取得する。
+	 * 
+	 * @return ラベル
+	 */
+	public final String getLabelTitle() {
+		return labelTitle;
 	}
 
 	/**

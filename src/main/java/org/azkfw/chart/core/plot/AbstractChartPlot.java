@@ -17,11 +17,14 @@
  */
 package org.azkfw.chart.core.plot;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+
 import org.azkfw.chart.core.dataset.Dataset;
 import org.azkfw.chart.core.element.LegendElement;
 import org.azkfw.chart.core.element.TitleElement;
 import org.azkfw.chart.design.ChartDesign;
-import org.azkfw.chart.design.title.TitleStyle;
+import org.azkfw.chart.design.chart.ChartStyle;
 import org.azkfw.graphics.Graphics;
 import org.azkfw.graphics.Margin;
 import org.azkfw.graphics.Padding;
@@ -35,8 +38,8 @@ import org.azkfw.util.ObjectUtility;
  * @version 1.0.0 2014/06/19
  * @author Kawakicchi
  */
-@SuppressWarnings("rawtypes")
-public abstract class AbstractChartPlot<DATASET extends Dataset, DESIGN extends ChartDesign> extends AbstractPlot implements ChartPlot {
+public abstract class AbstractChartPlot<DATASET extends Dataset, DESIGN extends ChartDesign<? extends ChartStyle>> extends AbstractPlot implements
+		ChartPlot {
 
 	/** データセット */
 	private DATASET dataset;
@@ -132,27 +135,27 @@ public abstract class AbstractChartPlot<DATASET extends Dataset, DESIGN extends 
 	protected final boolean doDraw(final Graphics g, final Rect aRect) {
 		boolean result = false;
 
-		Rect rtGraph = new Rect(aRect);
+		Rect rect = new Rect(aRect);
 		if (ObjectUtility.isNotNull(design)) {
 			Margin margin = design.getMargin();
 			if (null != margin) {
-				rtGraph.addPosition(margin.getLeft(), margin.getTop());
-				rtGraph.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
+				rect.addPosition(margin.getLeft(), margin.getTop());
+				rect.subtractSize(margin.getHorizontalSize(), margin.getVerticalSize());
 			}
 
 			if (null != design.getBackgroundColor()) {
 				g.setColor(design.getBackgroundColor());
-				g.fillRect(rtGraph);
+				g.fillRect(rect);
 			}
 			if (null != design.getFrameStroke() && null != design.getFrameStrokeColor()) {
 				g.setStroke(design.getFrameStroke(), design.getFrameStrokeColor());
-				g.drawRect(rtGraph);
+				g.drawRect(rect);
 			}
 
 			Padding padding = design.getPadding();
 			if (null != padding) {
-				rtGraph.addPosition(padding.getLeft(), padding.getTop());
-				rtGraph.subtractSize(padding.getHorizontalSize(), padding.getVerticalSize());
+				rect.addPosition(padding.getLeft(), padding.getTop());
+				rect.subtractSize(padding.getHorizontalSize(), padding.getVerticalSize());
 			}
 		}
 
@@ -160,34 +163,37 @@ public abstract class AbstractChartPlot<DATASET extends Dataset, DESIGN extends 
 		TitleElement elementTitle = null;
 		LegendElement elementLegend = null;
 		if (ObjectUtility.isAllNotNull(dataset, design)) {
-			elementTitle = createTitleElement(dataset.getTitle(), design.getTitleStyle());
+			elementTitle = createTitleElement();
 			elementLegend = createLegendElement();
 		}
 		/////////////////////////////////////////////
 
 		// エレメント配備 ////////////////////////////////
 		// タイトル配備
-		Rect rtTitle = null;
 		if (ObjectUtility.isNotNull(elementTitle)) {
-			rtTitle = elementTitle.deploy(g, rtGraph);
+			rect = elementTitle.deploy(g, rect);
 		}
 		// 凡例適用
-		Rect rtLegend = null;
 		if (ObjectUtility.isNotNull(elementLegend)) {
-			rtLegend = elementLegend.deploy(g, rtGraph);
+			rect = elementLegend.deploy(g, rect);
 		}
 		/////////////////////////////////////////////
 
-		result = doDrawChart(g, rtGraph);
+		if (isDebugMode()) {
+			g.setStroke(new BasicStroke(1.f));
+			g.setColor(Color.red);
+			g.drawRect(rect);
+		}
+		result = doDrawChart(g, rect);
 
 		// エレメント描画 ////////////////////////////////
 		// Draw Legend
 		if (ObjectUtility.isNotNull(elementLegend)) {
-			elementLegend.draw(g, rtLegend);
+			elementLegend.draw(g);
 		}
 		// Draw title
 		if (ObjectUtility.isNotNull(elementTitle)) {
-			elementTitle.draw(g, rtTitle);
+			elementTitle.draw(g);
 		}
 		/////////////////////////////////////////////
 
@@ -208,12 +214,12 @@ public abstract class AbstractChartPlot<DATASET extends Dataset, DESIGN extends 
 	 * 
 	 * @return デザイン
 	 */
-	protected final DESIGN getChartDesign() {
+	protected final DESIGN getDesign() {
 		return design;
 	}
 
 	/**
-	 * 描画を行う。
+	 * グラフの描画を行う。
 	 * 
 	 * @param g Graphics
 	 * @param aRect 描画範囲
@@ -221,22 +227,29 @@ public abstract class AbstractChartPlot<DATASET extends Dataset, DESIGN extends 
 	 */
 	protected abstract boolean doDrawChart(final Graphics g, final Rect aRect);
 
-	protected TitleElement createTitleElement(final String aTitle, final TitleStyle aStyle) {
-		TitleElement element = new TitleElement(aTitle, aStyle);
+	/**
+	 * タイトルエレメントを作成する。
+	 * <p>
+	 * タイトルエレメントを拡張する場合、このメソッドをオーバーライドし拡張したエレメントを返却する。
+	 * </p>
+	 * 
+	 * @return エレメント
+	 */
+	protected TitleElement createTitleElement() {
+		TitleElement element = new TitleElement(dataset.getTitle(), design.getTitleStyle(), isDebugMode());
 		return element;
 	}
 
+	/**
+	 * 凡例エレメントを作成する。
+	 * <p>
+	 * 凡例エレメントを拡張する場合、このメソッドをオーバーライドし拡張したエレメントを返却する。
+	 * </p>
+	 * 
+	 * @return エレメント
+	 */
 	protected LegendElement createLegendElement() {
 		return null;
-	}
-
-	protected static float pixelLimit(final float aValue) {
-		if (aValue > 100000) {
-			return 100000;
-		} else if (aValue < -100000) {
-			return -100000;
-		}
-		return aValue;
 	}
 
 	protected static class ScaleValue {
