@@ -126,9 +126,15 @@ public class PieChartPlot extends AbstractChartPlot<PieDataset, PieChartDesign> 
 			}
 
 			int angle = 90;
+			int acrAngle = 0;
 			for (int index = 0; index < dataList.size(); index++) {
 				PieData data = dataList.get(index);
-				float acrAngle = (float) (-1 * 360.f * data.getValue() / totalValue);
+
+				if (index + 1 == dataList.size()) {
+					acrAngle = -270 - angle;
+				} else {
+					acrAngle = (int) (-1 * 360.f * data.getValue() / totalValue);
+				}
 
 				Color fillColor = aStyle.getDataFillColor(index);
 				if (ObjectUtility.isNotNull(fillColor)) {
@@ -143,7 +149,12 @@ public class PieChartPlot extends AbstractChartPlot<PieDataset, PieChartDesign> 
 			angle = 90;
 			for (int index = 0; index < dataList.size(); index++) {
 				PieData data = dataList.get(index);
-				float acrAngle = (float) (-1 * 360.f * data.getValue() / totalValue);
+
+				if (index + 1 == dataList.size()) {
+					acrAngle = -270 - angle;
+				} else {
+					acrAngle = (int) (-1 * 360.f * data.getValue() / totalValue);
+				}
 
 				Color strokeColor = aStyle.getDataStrokeColor(index);
 				if (ObjectUtility.isNotNull(strokeColor)) {
