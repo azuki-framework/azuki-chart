@@ -40,12 +40,15 @@ public class PieChartExample {
 	}
 
 	public static PieDataset createDataset() {
-		PieDataset dataset = new PieDataset("Pie Chart");
+		PieDataset dataset = new PieDataset("ウェブブラウザ - シェア率");
 
-		dataset.addData(new PieData("日本", 50.f));
-		dataset.addData(new PieData("アメリカ", 30.f));
-		dataset.addData(new PieData("イギリス", 15.f));
-		dataset.addData(new PieData("ドイツ", 5.f));
+		dataset.addData(new PieData("Chrome", 27.25f));
+		dataset.addData(new PieData("IE", 23.65f));
+		dataset.addData(new PieData("FireFox", 18.87f));
+		dataset.addData(new PieData("Safari", 15.87f));
+		dataset.addData(new PieData("Android", 4.75f));
+		dataset.addData(new PieData("Opera", 4.59f));
+		dataset.addData(new PieData("Other", 5.02f));
 
 		return dataset;
 	}

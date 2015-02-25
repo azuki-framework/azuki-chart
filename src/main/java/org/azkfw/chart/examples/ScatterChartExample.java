@@ -44,7 +44,7 @@ public class ScatterChartExample {
 
 	public static ScatterDataset createDataset() {
 
-		ScatterDataset dataset = new ScatterDataset("Scatter Chart");
+		ScatterDataset dataset = new ScatterDataset();
 
 		ScatterSeries seriesSin = new ScatterSeries("sin(x)");
 		ScatterSeries seriesCos = new ScatterSeries("cos(x)");
