@@ -1,5 +1,8 @@
 *.class
 
+# Test temporary
+/tmp
+
 # Eclipse 
 /.settings
 .project
