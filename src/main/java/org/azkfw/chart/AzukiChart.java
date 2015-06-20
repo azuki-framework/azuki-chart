@@ -48,19 +48,19 @@ public final class AzukiChart {
 	/**
 	 * コンストラクタ
 	 * 
-	 * @param aPlot プロット情報
+	 * @param plot プロット情報
 	 */
-	public AzukiChart(final ChartPlot aPlot) {
-		plot = aPlot;
+	public AzukiChart(final ChartPlot plot) {
+		this.plot = plot;
 	}
 
 	/**
 	 * 背景色を設定する。
 	 * 
-	 * @param aColor 背景色
+	 * @param color 背景色
 	 */
-	public void setBackgoundColor(final Color aColor) {
-		backgroundColor = aColor;
+	public void setBackgoundColor(final Color color) {
+		backgroundColor = color;
 	}
 
 	/**

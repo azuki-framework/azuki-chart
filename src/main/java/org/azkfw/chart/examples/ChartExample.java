@@ -26,6 +26,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -66,9 +67,12 @@ public class ChartExample {
 	}
 
 	public static void main(final String[] args) {
-		File file = new File("sample.png");
+		File dir = Paths.get("tmp").toFile();
+		File file = Paths.get(dir.getAbsolutePath(), "sample.png").toFile();
 		if (1 == args.length) {
 			file = new File(args[0]);
+		} else {
+			dir.mkdirs();
 		}
 
 		//createAllChartNoData(file);

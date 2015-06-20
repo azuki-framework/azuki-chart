@@ -47,143 +47,148 @@ import org.azkfw.util.StringUtility;
  * @author Kawakicchi
  */
 public class AzukiChartUtility {
+	
+	/** デフォルト画像 横幅 */
+	private static final float DEFAULT_IMAGE_WIDTH = 800.f;
+	/** デフォルト画像 縦幅 */
+	private static final float DEFAULT_IMAGE_HEIGHT = 800.f;
+	/** 画像 BMP */
+	private static final String IMAGE_FORMAT_BMP = "bmp";
+	/** 画像 JPEG */
+	private static final String IMAGE_FORMAT_JPEG = "jpeg";
+	/** 画像 PNG */
+	private static final String IMAGE_FORMAT_PNG = "png";
+	
 
 	/**
 	 * グラフを描画したフレームを表示する。
 	 * 
-	 * @param aChart グラフ情報
-	 * @param aTitle タイトル
+	 * @param chart グラフ情報
 	 * @return 結果
 	 */
-	public static boolean showChartAsFrame(final AzukiChart aChart) {
-		return showChartAsFrame(aChart, null, 800.f, 800.f, null);
+	public static boolean showChartAsFrame(final AzukiChart chart) {
+		return showChartAsFrame(chart, null, DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT, null);
 	}
 
 	/**
 	 * グラフを描画したフレームを表示する。
 	 * 
-	 * @param aChart グラフ情報
-	 * @param aTitle タイトル
+	 * @param chart グラフ情報
+	 * @param title タイトル
 	 * @return 結果
 	 */
-	public static boolean showChartAsFrame(final AzukiChart aChart, final String aTitle) {
-		return showChartAsFrame(aChart, aTitle, 800.f, 800.f, null);
+	public static boolean showChartAsFrame(final AzukiChart chart, final String title) {
+		return showChartAsFrame(chart, title, DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT, null);
 	}
 
 	/**
 	 * グラフを描画したフレームを表示する。
 	 * 
-	 * @param aChart グラフ情報
-	 * @param aWidth グラフサイズ（横幅）
-	 * @param aHeight グラフサイズ（縦幅）
+	 * @param chart グラフ情報
+	 * @param width グラフサイズ（横幅）
+	 * @param height グラフサイズ（縦幅）
 	 * @return 結果
 	 */
-	public static boolean showChartAsFrame(final AzukiChart aChart, final float aWidth, final float aHeight) {
-		return showChartAsFrame(aChart, null, aWidth, aHeight, null);
+	public static boolean showChartAsFrame(final AzukiChart chart, final float width, final float height) {
+		return showChartAsFrame(chart, null, width, height, null);
 	}
 
 	/**
 	 * グラフを描画したフレームを表示する。
 	 * 
-	 * @param aChart グラフ情報
-	 * @param aTitle タイトル
-	 * @param aWidth グラフサイズ（横幅）
-	 * @param aHeight グラフサイズ（縦幅）
+	 * @param chart グラフ情報
+	 * @param title タイトル
+	 * @param width グラフサイズ（横幅）
+	 * @param height グラフサイズ（縦幅）
 	 * @return 結果
 	 */
-	public static boolean showChartAsFrame(final AzukiChart aChart, final String aTitle, final float aWidth, final float aHeight) {
-		return showChartAsFrame(aChart, aTitle, aWidth, aHeight, null);
+	public static boolean showChartAsFrame(final AzukiChart chart, final String title, final float width, final float height) {
+		return showChartAsFrame(chart, title, width, height, null);
 	}
 
 	/**
 	 * グラフを画像ファイル(BMP形式)に保存する。
 	 * 
-	 * @param aFile 画像ファイル
-	 * @param aChart グラフ情報
-	 * @param aWidth グラフサイズ（横幅）
-	 * @param aHeight グラフサイズ(縦幅)
+	 * @param file 画像ファイル
+	 * @param chart グラフ情報
+	 * @param width グラフサイズ（横幅）
+	 * @param height グラフサイズ(縦幅)
 	 * @return 結果
 	 * @throws IOException IO操作に起因する問題が発生した場合
 	 */
-	public static boolean saveChartAsBMP(final File aFile, final AzukiChart aChart, final float aWidth, final float aHeight) throws IOException {
-		return saveChart(aFile, aChart, aWidth, aHeight, "bmp");
+	public static boolean saveChartAsBMP(final File file, final AzukiChart chart, final float width, final float height) throws IOException {
+		return saveChart(file, chart, width, height, IMAGE_FORMAT_BMP);
 	}
 
 	/**
 	 * グラフを画像ファイル(Jpeg形式)に保存する。
 	 * 
-	 * @param aFile 画像ファイル
-	 * @param aChart グラフ情報
-	 * @param aWidth グラフサイズ（横幅）
-	 * @param aHeight グラフサイズ(縦幅)
+	 * @param file 画像ファイル
+	 * @param chart グラフ情報
+	 * @param width グラフサイズ（横幅）
+	 * @param height グラフサイズ(縦幅)
 	 * @return 結果
 	 * @throws IOException IO操作に起因する問題が発生した場合
 	 */
-	public static boolean saveChartAsJpeg(final File aFile, final AzukiChart aChart, final float aWidth, final float aHeight) throws IOException {
-		return saveChart(aFile, aChart, aWidth, aHeight, "jpeg");
+	public static boolean saveChartAsJpeg(final File file, final AzukiChart chart, final float width, final float height) throws IOException {
+		return saveChart(file, chart, width, height, IMAGE_FORMAT_JPEG);
 	}
 
 	/**
 	 * グラフを画像ファイル(PNG形式)に保存する。
 	 * 
-	 * @param aFile 画像ファイル
-	 * @param aChart グラフ情報
-	 * @param aWidth グラフサイズ（横幅）
-	 * @param aHeight グラフサイズ(縦幅)
+	 * @param file 画像ファイル
+	 * @param chart グラフ情報
+	 * @param width グラフサイズ（横幅）
+	 * @param height グラフサイズ(縦幅)
 	 * @return 結果
 	 * @throws IOException IO操作に起因する問題が発生した場合
 	 */
-	public static boolean saveChartAsPNG(final File aFile, final AzukiChart aChart, final float aWidth, final float aHeight) throws IOException {
-		return saveChart(aFile, aChart, aWidth, aHeight, "png");
+	public static boolean saveChartAsPNG(final File file, final AzukiChart chart, final float width, final float height) throws IOException {
+		return saveChart(file, chart, width, height, IMAGE_FORMAT_PNG);
 	}
 
 	/**
 	 * グラフを画像ファイルに保存する。
 	 * 
-	 * @param aFile 画像ファイル
-	 * @param aChart グラフ情報
-	 * @param aWidth グラフサイズ（横幅）
-	 * @param aHeight グラフサイズ(縦幅)
-	 * @param aFormat 画像形式
+	 * @param file 画像ファイル
+	 * @param chart グラフ情報
+	 * @param width グラフサイズ（横幅）
+	 * @param height グラフサイズ(縦幅)
+	 * @param format 画像形式
 	 * @return 結果
 	 * @throws IOException IO操作に起因する問題が発生した場合
 	 */
-	private static boolean saveChart(final File aFile, final AzukiChart aChart, final float aWidth, final float aHeight, final String aFormat)
+	private static boolean saveChart(final File file, final AzukiChart chart, final float width, final float height, final String format)
 			throws IOException {
 		boolean result = false;
 
-		int width = (int) aWidth;
-		int height = (int) aHeight;
-
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage((int)width, (int)height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		if (null != aChart) {
-			result = aChart.draw(g, 0, 0, width, height);
+		if (null != chart) {
+			result = chart.draw(g, 0, 0, width, height);
 		}
 		if (result) {
-			result = ImageIO.write(image, aFormat, aFile);
+			result = ImageIO.write(image, format, file);
 		}
 
 		return result;
 	}
 
-	private static boolean showChartAsFrame(final AzukiChart aChart, final String aTitle, final float aWidth, final float aHeight, final Frame parent) {
+	private static boolean showChartAsFrame(final AzukiChart chart, final String title, final float width, final float height, final Frame parent) {
 		boolean result = false;
 
-		int width = (int) aWidth;
-		int height = (int) aHeight;
-
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage((int)width, (int)height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		if (null != aChart) {
-			result = aChart.draw(g, 0, 0, width, height);
+		if (null != chart) {
+			result = chart.draw(g, 0, 0, width, height);
 		}
 		if (result) {
-			ChartFrame frame = new ChartFrame(image, aTitle);
+			ChartFrame frame = new ChartFrame(image, title);
 			frame.setVisible(true);
 		}
 
